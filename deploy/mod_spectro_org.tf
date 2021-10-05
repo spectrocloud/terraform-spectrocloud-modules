@@ -36,17 +36,20 @@ locals {
 
 module "SpectroOrg" {
   source          = "../"
-  sc_host         = "" #e.g: api.spectrocloud.com (for SaaS)
-  sc_username     = "" #e.g: user1@abc.com
-  sc_password     = ""        #e.g: supereSecure1!
-  sc_project_name = ""                  #e.g: Default
+  //  source          = "github.com/spectrocloud/terraform-spectrocloud-modules"
+
+
+  sc_host         = "stage.spectrocloud.com"   #e.g: api.spectrocloud.com (for SaaS)
+  sc_username     = "rishi+soak@spectrocloud.com" #e.g: user1@abc.com
+  sc_password     = "R1#rishi"         #e.g: supereSecure1!
+  sc_project_name = "sanity testing"                    #e.g: Default
 
   /*accounts = tomap({
     for k, v in module.fetcher_accounts.object_files :
     k => yamldecode(templatefile(join("", [local.accounts_folder, "/${k}"]), local.accounts_params))
   })*/
 
-  accounts = tomap({
+  /*accounts = tomap({
     for k, v in toset([
       "config/account-2.0/account-aws-1.yaml",
       "config/account-2.0/account-aws-2.yaml",
@@ -78,11 +81,12 @@ module "SpectroOrg" {
     ]) :
     k => yamldecode(templatefile(join("", [local.projects_folder, "/${k}"]), local.projects_params))
   })
+*/
 
   clusters = tomap({
   for k, v in toset([
     "cluster-eks-test.yaml",
   ]) :
-  k => yamldecode(file(join("", [local.clusters_folder, "/${k}"])))
+  k => yamldecode(file("/Users/rishi/work/git_clones/terraform-spectrocloud-modules/deploy/config/cluster-2.0/cluster-eks-demo.yaml"))
   })
 }
