@@ -9,7 +9,7 @@ locals {
   accounts_params = { ACCOUNT_DEV_NAME = "ehs-dev-030", ACCOUNT_PROD_NAME = "ehs-stg-004" }
 
   bsls_folder = "./"
-  bsl_params  = { BSL_NAME = "ehs-org-dev-storage-203" }
+  bsl_params  = { BSL_NAME = "qa-sharma" }
 
   profiles_folder = "./config/profile-2.0"
   profile_params = {
@@ -36,17 +36,17 @@ locals {
 
 module "SpectroOrg" {
   source          = "../"
-  sc_host         = "" #e.g: api.spectrocloud.com (for SaaS)
-  sc_username     = "" #e.g: user1@abc.com
-  sc_password     = ""        #e.g: supereSecure1!
-  sc_project_name = ""                  #e.g: Default
+  sc_host         = "api.stage.spectrocloud.com"    #e.g: api.spectrocloud.com (for SaaS)
+  sc_username     = "nikolay+demo@spectrocloud.com" #e.g: user1@abc.com
+  sc_password     = "welcome2Spectr0!1"             #e.g: supereSecure1!
+  sc_project_name = "Default"                       #e.g: Default
 
   /*accounts = tomap({
     for k, v in module.fetcher_accounts.object_files :
     k => yamldecode(templatefile(join("", [local.accounts_folder, "/${k}"]), local.accounts_params))
   })*/
 
-  accounts = tomap({
+  /*accounts = tomap({
     for k, v in toset([
       "config/account-2.0/account-aws-1.yaml",
       "config/account-2.0/account-aws-2.yaml",
@@ -63,8 +63,8 @@ module "SpectroOrg" {
 
   profiles = tomap({
     for k, v in toset([
-      "profile-infra-EHS20RC1_Base_Infra_Org.yaml",
-      "profile-addon-EHS20RC1_Pre-Reqs-Org.yaml",
+      "profile-infra.yaml",
+      "profile-addon-1.yaml",
     ]) :
     k => yamldecode(templatefile(join("", [local.profiles_folder, "/${k}"]), local.profile_params))
   })
@@ -77,12 +77,12 @@ module "SpectroOrg" {
       "project-providence-004.yaml"
     ]) :
     k => yamldecode(templatefile(join("", [local.projects_folder, "/${k}"]), local.projects_params))
-  })
+  })*/
 
   clusters = tomap({
-  for k, v in toset([
-    "cluster-eks-test.yaml",
-  ]) :
-  k => yamldecode(file(join("", [local.clusters_folder, "/${k}"])))
+    for k, v in toset([
+      "cluster-eks-test.yaml",
+    ]) :
+    k => yamldecode(file(join("", [local.clusters_folder, "/${k}"])))
   })
 }
