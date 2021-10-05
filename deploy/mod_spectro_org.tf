@@ -29,14 +29,17 @@ locals {
   projects_folder = "./config/project-2.0"
   projects_params = {}
 
+  clusters_folder = "./config/cluster-2.0"
+  clusters_params = {}
+
 }
 
 module "SpectroOrg" {
   source          = "../"
-  sc_host         = "api.dev.spectrocloud.com" #e.g: api.spectrocloud.com (for SaaS)
-  sc_username     = "nikolay@spectrocloud.com" #e.g: user1@abc.com
-  sc_password     = "welcome2Spectro1!"        #e.g: supereSecure1!
-  sc_project_name = "Default"                  #e.g: Default
+  sc_host         = "" #e.g: api.spectrocloud.com (for SaaS)
+  sc_username     = "" #e.g: user1@abc.com
+  sc_password     = ""        #e.g: supereSecure1!
+  sc_project_name = ""                  #e.g: Default
 
   /*accounts = tomap({
     for k, v in module.fetcher_accounts.object_files :
@@ -76,4 +79,10 @@ module "SpectroOrg" {
     k => yamldecode(templatefile(join("", [local.projects_folder, "/${k}"]), local.projects_params))
   })
 
+  clusters = tomap({
+  for k, v in toset([
+    "cluster-eks-test.yaml",
+  ]) :
+  k => yamldecode(file(join("", [local.clusters_folder, "/${k}"])))
+  })
 }

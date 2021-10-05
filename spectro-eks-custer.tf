@@ -1,0 +1,151 @@
+locals {
+
+  infra-pack-params-replaced = flatten([
+  for k, v in local.cluster_infra_profiles_map : [
+  for p in try(v.packs, []) : {
+    format("%s-%s", k, p.name) = join("\n", [
+    for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].manifest: x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].values) :
+    format(
+    replace(line, "/{(${join("|", keys(p.params))})}/", "%s"),
+    [
+    for value in flatten(regexall("{(${join("|", keys(p.params))})}", line)) :
+    lookup(p.params, value)
+    ]...
+    )
+    ])
+  } if p.override_type == "params"
+  ]])
+
+  infra-pack-template-params-replaced = flatten([
+  for k, v in local.cluster_infra_profiles_map : [
+  for p in try(v.packs, []) : {
+    format("%s-%s", k, p.name) = join("\n", flatten([for l in p.template_values: [
+      join("\n", [
+      for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].manifest: x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].values) :
+      format(
+      replace(line, "/{(${join("|", keys(l))})}/", "%s"),
+      [
+      for value in flatten(regexall("{(${join("|", keys(l))})}", line)) :
+      lookup(l, value)
+      ]...
+      )
+      ])
+    ]]))
+  } if p.override_type == "template"
+  ]])
+
+  addon-pack-template-params-replaced = flatten([
+  for k, v in local.cluster_addon_profiles_map : [
+    for l in v:[
+      for p in try(l.packs, []) : {
+      format("%s-%s", k, p.name) = join("\n", flatten([for l in p.template_values: [
+        join("\n", [
+        for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", l.name, p.name)].manifest: x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", l.name, p.name)].values) :
+        format(
+        replace(line, "/{(${join("|", keys(l))})}/", "%s"),
+        [
+        for value in flatten(regexall("{(${join("|", keys(l))})}", line)) :
+        lookup(l, value)
+        ]...
+        )
+        ])
+      ]]))
+    }if p.override_type == "template"]
+  ]
+  ])
+}
+
+resource "spectrocloud_cluster_eks" "this" {
+  for_each = var.clusters
+  name     = each.value.name
+
+  cluster_profile {
+    id = local.profile_map[each.value.profiles.infra.name].id
+
+    dynamic "pack" {
+      for_each = each.value.profiles.infra.packs
+      content {
+        name = pack.value.name
+        tag = pack.value.version
+        values = pack.value.override_type == "values" ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[0][format("%s-%s", each.value.name, pack.value.name)] : local.infra-pack-template-params-replaced[0][format("%s-%s", each.value.name, pack.value.name)])
+      }
+    }
+  }
+
+  dynamic cluster_profile {
+    for_each =  try(each.value.profiles.addons, [])
+
+    content {
+      id = local.profile_map[cluster_profile.value.name].id
+
+      dynamic "pack" {
+        for_each = try(cluster_profile.value.packs, [])
+        content {
+          name = pack.value.name
+          tag = pack.value.version
+          values = pack.value.override_type == "values" ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[0][format("%s-%s", each.value.name, pack.value.name)] : local.infra-pack-template-params-replaced[0][format("%s-%s", each.value.name, pack.value.name)])
+        }
+      }
+    }
+  }
+
+  cloud_account_id = local.cloud_account_map[each.value.cloud_account]
+
+  cloud_config {
+    region              = each.value.cloud_config.aws_region
+    vpc_id              = each.value.cloud_config.aws_vpc_id
+    az_subnets          = each.value.cloud_config.eks_subnets
+    azs                 = []
+    public_access_cidrs = []
+    endpoint_access     = each.value.cloud_config.endpoint_access
+  }
+
+  dynamic "machine_pool" {
+    for_each = each.value.node_groups
+    content {
+      name          = machine_pool.value.name
+      count         = machine_pool.value.count
+      instance_type = machine_pool.value.instance_type
+      az_subnets    = machine_pool.value.worker_subnets
+      disk_size_gb  = machine_pool.value.disk_size_gb
+      azs           = []
+    }
+  }
+
+  dynamic "fargate_profile" {
+    for_each = try(each.value.fargate_profiles, [])
+    content {
+      name            = fargate_profile.value.name
+      subnets         = fargate_profile.value.subnets
+      additional_tags = fargate_profile.value.additional_tags
+      dynamic "selector" {
+        for_each = fargate_profile.value.selectors
+        content {
+          namespace = selector.value.namespace
+          labels    = selector.value.labels
+        }
+      }
+    }
+  }
+
+  dynamic "backup_policy" {
+    for_each = try(each.value.backup_policy, [])
+    content {
+      schedule                  = backup_policy.value.schedule
+      backup_location_id        = local.bsl_map[backup_policy.value.backup_location]
+      prefix                    = backup_policy.value.prefix
+      expiry_in_hour            = 7200
+      include_disks             = true
+      include_cluster_resources = true
+    }
+  }
+
+  dynamic "scan_policy" {
+    for_each = try(each.value.scan_policy, [])
+    content {
+      configuration_scan_schedule = scan_policy.value.configuration_scan_schedule
+      penetration_scan_schedule   = scan_policy.value.penetration_scan_schedule
+      conformance_scan_schedule   = scan_policy.value.conformance_scan_schedule
+    }
+  }
+}
