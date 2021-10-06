@@ -46,7 +46,7 @@ module "SpectroOrg" {
     k => yamldecode(templatefile(join("", [local.accounts_folder, "/${k}"]), local.accounts_params))
   })*/
 
-  /*accounts = tomap({
+  accounts = tomap({
     for k, v in toset([
       "config/account-2.0/account-aws-1.yaml",
       "config/account-2.0/account-aws-2.yaml",
@@ -77,7 +77,16 @@ module "SpectroOrg" {
       "project-providence-004.yaml"
     ]) :
     k => yamldecode(templatefile(join("", [local.projects_folder, "/${k}"]), local.projects_params))
-  })*/
+  })
+
+  teams = zipmap([
+    "Project Admin",
+    "Project Viewer"
+  ],
+  [
+    "%s_admin",
+    "%s_view"
+  ])
 
   clusters = tomap({
     for k, v in toset([

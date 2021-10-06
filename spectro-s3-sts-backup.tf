@@ -3,8 +3,8 @@ locals {
   bsl_names = toset(flatten([for v in var.clusters : [for vv in v.backup_policy : vv.backup_location]]))
 
   bsl_map = {
-  for k, v in data.spectrocloud_backup_storage_location.this :
-  v.name => v.id
+    for k, v in data.spectrocloud_backup_storage_location.this :
+    v.name => v.id
   }
 }
 

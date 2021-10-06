@@ -1,57 +1,57 @@
 locals {
 
   infra-pack-params-replaced = flatten([
-  for k, v in local.cluster_infra_profiles_map : [
-  for p in try(v.packs, []) : {
-    format("%s-%s", k, p.name) = join("\n", [
-    for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].manifest: x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].values) :
-    format(
-    replace(line, "/{(${join("|", keys(p.params))})}/", "%s"),
-    [
-    for value in flatten(regexall("{(${join("|", keys(p.params))})}", line)) :
-    lookup(p.params, value)
-    ]...
-    )
-    ])
-  } if p.override_type == "params"
+    for k, v in local.cluster_infra_profiles_map : [
+      for p in try(v.packs, []) : {
+        format("%s-%s", k, p.name) = join("\n", [
+          for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].values) :
+          format(
+            replace(line, "/{(${join("|", keys(p.params))})}/", "%s"),
+            [
+              for value in flatten(regexall("{(${join("|", keys(p.params))})}", line)) :
+              lookup(p.params, value)
+            ]...
+          )
+        ])
+      } if p.override_type == "params"
   ]])
 
   infra-pack-template-params-replaced = flatten([
-  for k, v in local.cluster_infra_profiles_map : [
-  for p in try(v.packs, []) : {
-    format("%s-%s", k, p.name) = join("\n", flatten([for l in p.template_values: [
-      join("\n", [
-      for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].manifest: x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].values) :
-      format(
-      replace(line, "/{(${join("|", keys(l))})}/", "%s"),
-      [
-      for value in flatten(regexall("{(${join("|", keys(l))})}", line)) :
-      lookup(l, value)
-      ]...
-      )
-      ])
-    ]]))
-  } if p.override_type == "template"
+    for k, v in local.cluster_infra_profiles_map : [
+      for p in try(v.packs, []) : {
+        format("%s-%s", k, p.name) = join("\n", flatten([for l in p.template_values : [
+          join("\n", [
+            for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].values) :
+            format(
+              replace(line, "/{(${join("|", keys(l))})}/", "%s"),
+              [
+                for value in flatten(regexall("{(${join("|", keys(l))})}", line)) :
+                lookup(l, value)
+              ]...
+            )
+          ])
+        ]]))
+      } if p.override_type == "template"
   ]])
 
   addon-pack-template-params-replaced = flatten([
-  for k, v in local.cluster_addon_profiles_map : [
-    for l in v:[
-      for p in try(l.packs, []) : {
-      format("%s-%s", k, p.name) = join("\n", flatten([for l in p.template_values: [
-        join("\n", [
-        for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", l.name, p.name)].manifest: x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", l.name, p.name)].values) :
-        format(
-        replace(line, "/{(${join("|", keys(l))})}/", "%s"),
-        [
-        for value in flatten(regexall("{(${join("|", keys(l))})}", line)) :
-        lookup(l, value)
-        ]...
-        )
-        ])
-      ]]))
-    }if p.override_type == "template"]
-  ]
+    for k, v in local.cluster_addon_profiles_map : [
+      for l in v : [
+        for p in try(l.packs, []) : {
+          format("%s-%s", k, p.name) = join("\n", flatten([for l in p.template_values : [
+            join("\n", [
+              for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", l.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", l.name, p.name)].values) :
+              format(
+                replace(line, "/{(${join("|", keys(l))})}/", "%s"),
+                [
+                  for value in flatten(regexall("{(${join("|", keys(l))})}", line)) :
+                  lookup(l, value)
+                ]...
+              )
+            ])
+          ]]))
+      } if p.override_type == "template"]
+    ]
   ])
 }
 
@@ -65,15 +65,15 @@ resource "spectrocloud_cluster_eks" "this" {
     dynamic "pack" {
       for_each = each.value.profiles.infra.packs
       content {
-        name = pack.value.name
-        tag = pack.value.version
+        name   = pack.value.name
+        tag    = pack.value.version
         values = pack.value.override_type == "values" ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[0][format("%s-%s", each.value.name, pack.value.name)] : local.infra-pack-template-params-replaced[0][format("%s-%s", each.value.name, pack.value.name)])
       }
     }
   }
 
-  dynamic cluster_profile {
-    for_each =  try(each.value.profiles.addons, [])
+  dynamic "cluster_profile" {
+    for_each = try(each.value.profiles.addons, [])
 
     content {
       id = local.profile_map[cluster_profile.value.name].id
@@ -81,8 +81,8 @@ resource "spectrocloud_cluster_eks" "this" {
       dynamic "pack" {
         for_each = try(cluster_profile.value.packs, [])
         content {
-          name = pack.value.name
-          tag = pack.value.version
+          name   = pack.value.name
+          tag    = pack.value.version
           values = pack.value.override_type == "values" ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[0][format("%s-%s", each.value.name, pack.value.name)] : local.infra-pack-template-params-replaced[0][format("%s-%s", each.value.name, pack.value.name)])
         }
       }

@@ -1,29 +1,27 @@
-/*
-data "spectrocloud_role" "projectadmin" {
-  name = "Project Admin"
+data "spectrocloud_role" "roles" {
+  for_each = var.teams
+
+  name = each.key
 }
 
-data "spectrocloud_role" "projectviewer" {
-  name = "Project Viewer"
+locals {
+  project_teams = distinct(flatten([
+  for k, v in var.teams : [
+  for project in var.projects : {
+    project_name = project.name
+    team_name   = format(v, project.name)
+    role_id = data.spectrocloud_role.roles[k].id
+  }
+  ]
+  ]))
 }
 
-resource "spectrocloud_team" "admin_team" {
-  for_each = var.projects
+resource "spectrocloud_team" "project_team" {
+  count = length(local.project_teams)
 
-  name = format("%s_admin", each.value.name)
+  name = local.project_teams[count.index].team_name
   project_role_mapping {
-    id    = local.project_ids[each.value.name]
-    roles = [data.spectrocloud_role.projectadmin.id]
+    id    = local.project_ids[local.project_teams[count.index].project_name]
+    roles = [local.project_teams[count.index].role_id]
   }
 }
-
-resource "spectrocloud_team" "view_team" {
-  for_each = var.projects
-
-  name = format("%s_view", each.value.name)
-  project_role_mapping {
-    id    = local.project_ids[each.value.name]
-    roles = [data.spectrocloud_role.projectviewer.id]
-  }
-}
-*/

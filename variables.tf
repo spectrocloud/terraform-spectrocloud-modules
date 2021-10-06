@@ -18,7 +18,13 @@ variable "projects" {
   default = {}
 }
 
-variable "clusters" {
+variable "teams" {
   type    = map(any)
   default = {}
 }
+
+variable "clusters" {
+  type = map(any)
+  default = {}
+}
+
