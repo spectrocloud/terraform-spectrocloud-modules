@@ -1,0 +1,5 @@
+name: "${BSL_NAME}"
+region: "us-west-2"
+bucket_name: backup-restore
+arn: arn:aws:iam::123456789:role/SpectroCloudRole
+external_id: 4DHFIJ3diuvhoih=

@@ -1,0 +1,77 @@
+name: eks-dev-8
+cloud_account: aws-dev
+profiles:
+  infra:
+    name: Eks-Base-1
+    packs:
+      - name: kubernetes-eks
+        version: 1.21
+        override_type: params #[values, params, template]
+        params:
+          OIDC_IDENTITY_PROVIDER_NAME: eks-oidc
+          OIDC_CLAIM_NAME: oidc-custom-claim
+          OIDC_ISSUER_URL: https://123456-okta.com/111111/hello
+      - name: spectro-byo-manifest
+        version: 1.0.0
+        override_type: template #[values, params, template]
+        template_values:
+          - PROFILE_NAME: small-name # ${{PROFILE_NAME}} will be replaced with small
+            PROFILE_SPEC: small-spec # ${{PROFILE_NAME}} will be replaced with small
+          - PROFILE_NAME: small-name # ${{PROFILE_NAME}} will be replaced with small
+            PROFILE_SPEC: small-spec # ${{PROFILE_NAME}} will be replaced with small
+  addons:
+    - name: EHS-1.5-small-Admin-1
+      packs:
+        - name: spectro-byo-manifest
+          version: 1.0.0
+          override_type: template #[values, params, template]
+          template_values:
+            - LABEL_KEY: app # ${{PROFILE_NAME}} will be replaced with small
+              LABEL_VALUE: wordpressx-label # ${{PROFILE_NAME}} will be replaced with small
+              NAMESPACE_NAME: wordpressx # ${{PROFILE_NAME}} will be replaced with small
+    - name: pack-add-on
+      packs:
+        - name: nginx
+          version: 0.43.0
+          override_type: params #[values, params, template]
+          params:
+            NGINX_NAME_OVERRIDE: nginx-ingress
+            NGINX_REPO_IMAGE: k8s.gcr.io/ingress-nginx/controller
+        - name: spectro-byo-manifest
+          version: 1.0.0
+          override_type: params #[values, params, template]
+          params:
+            NGINX_NAME_OVERRIDE: nginx-ingress-addon-2
+cloud_config:
+  aws_region: us-east-1
+  aws_vpc_id: vpc-0b476babca
+  endpoint_access: private
+  eks_subnets:
+    us-east-1a: subnet-0a476babc,subnet-0dac476babcc
+    us-east-1b: subnet-08476babc,subnet-0d476babcb
+node_groups:
+  - name: worker-basic
+    count: 3
+    disk_size_gb: 61
+    instance_type: t3.large
+    worker_subnets:
+      us-east-1a: subnet-0476babcd5c
+      us-east-1b: subnet-0d476babc8b
+fargate_profiles:
+  - name: fg-1
+    subnets:
+      - subnet-0d476babc5c
+      - subnet-0d476babc8b
+    additional_tags: {hello: test1}
+    selectors:
+      - namespace: fargate
+        labels:
+          abc: cool
+backup_policy:
+  schedule: "0 0 * * SUN"
+  backup_location: qa-sharma
+  prefix: weekly
+scan_policy:
+  configuration_scan_schedule: "0 0 * * SUN"
+  penetration_scan_schedule: "0 0 * * SUN"
+  conformance_scan_schedule: "0 0 1 * *"
