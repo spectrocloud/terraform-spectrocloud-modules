@@ -1,58 +1,115 @@
 locals {
 
-  infra-pack-params-replaced = flatten([
+  infra-pack-params-replaced = { for v in flatten([
   for k, v in local.cluster_infra_profiles_map : [
   for p in try(v.packs, []) : {
-    format("%s-%s", k, p.name) = join("\n", [
+    name = format("%s-%s-%s", k, v.name, p.name)
+    value = join("\n", [
     for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].manifest: x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].values) :
     format(
-    replace(line, "/{(${join("|", keys(p.params))})}/", "%s"),
+    replace(line, "/%(${join("|", keys(p.params))})%/", "%s"),
     [
-    for value in flatten(regexall("{(${join("|", keys(p.params))})}", line)) :
+    for value in flatten(regexall("%(${join("|", keys(p.params))})%", line)) :
     lookup(p.params, value)
     ]...
     )
     ])
   } if p.override_type == "params"
-  ]])
+  ]]): v.name => v.value
+  }
 
-  infra-pack-template-params-replaced = flatten([
+  infra-pack-template-params-replaced = { for v in flatten([
   for k, v in local.cluster_infra_profiles_map : [
   for p in try(v.packs, []) : {
-    format("%s-%s", k, p.name) = join("\n", flatten([for l in p.template_values: [
+    name = format("%s-%s-%s", k, v.name, p.name)
+    value = join("\n", flatten([for l in p.template_values: [
       join("\n", [
       for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].manifest: x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].values) :
       format(
-      replace(line, "/{(${join("|", keys(l))})}/", "%s"),
+      replace(line, "/%(${join("|", keys(l))})%/", "%s"),
       [
-      for value in flatten(regexall("{(${join("|", keys(l))})}", line)) :
+      for value in flatten(regexall("%(${join("|", keys(l))})%", line)) :
       lookup(l, value)
       ]...
       )
       ])
     ]]))
   } if p.override_type == "template"
-  ]])
+  ]]): v.name => v.value
+  }
 
-  addon-pack-template-params-replaced = flatten([
+  addon_pack_params_replaced = { for v in flatten([
   for k, v in local.cluster_addon_profiles_map : [
-    for l in v:[
-      for p in try(l.packs, []) : {
-      format("%s-%s", k, p.name) = join("\n", flatten([for l in p.template_values: [
-        join("\n", [
-        for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", l.name, p.name)].manifest: x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", l.name, p.name)].values) :
-        format(
-        replace(line, "/{(${join("|", keys(l))})}/", "%s"),
-        [
-        for value in flatten(regexall("{(${join("|", keys(l))})}", line)) :
-        lookup(l, value)
-        ]...
-        )
-        ])
-      ]]))
-    }if p.override_type == "template"]
+  for e in v :[
+  for p in try(e.packs, []) : {
+    name = format("%s-%s-%s", k, e.name, p.name)
+    value = join("\n", [
+    for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].manifest: x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].values) :
+    format(
+    replace(line, "/%(${join("|", keys(p.params))})%/", "%s"),
+    [
+    for value in flatten(regexall("%(${join("|", keys(p.params))})%", line)) :
+    lookup(p.params, value)
+    ]...
+    )
+    ])
+  } if p.override_type == "params"
   ]
-  ])
+  ]]): v.name => v.value
+  }
+
+  addon_pack_template_params_replaced = { for v in flatten([
+  for k, v in local.cluster_addon_profiles_map : [
+  for e in v :[
+  for p in try(e.packs, []) : {
+    name = format("%s-%s-%s", k, e.name, p.name)
+    value = join("\n", flatten([for l in p.template_values: [
+      join("\n", [
+      for line in split("\n", try(p.is_manifest_pack, false) ? element([for x in local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].manifest: x.content if x.name == p.manifest_name], 0) : local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].values) :
+      format(
+      replace(line, "/%(${join("|", keys(l))})%/", "%s"),
+      [
+      for value in flatten(regexall("%(${join("|", keys(l))})%", line)) :
+      lookup(l, value)
+      ]...
+      )
+      ])
+    ]]))
+  }if p.override_type == "template"]
+  ]
+  ]): v.name => v.value
+  }
+
+  infra_pack_manifests = { for v in flatten([
+  for k, v in local.cluster_infra_profiles_map : [
+  for e in v :[
+  for p in try(e.packs, []) : {
+    name = format("%s-%s-%s", k, e.name, p.name)
+    value = [{
+      identifier = format("%s-%s-%s-%s", k, e.name, p.name, p.manifest_name)
+      name = p.manifest_name
+      content = lookup(local.infra-pack-params-replaced, format("%s-%s-%s", k, e.name, p.name), lookup(local.infra-pack-template-params-replaced, format("%s-%s-%s", k, e.name, p.name), ""))
+    }]
+  } if try(p.is_manifest_pack, false)]
+  ]
+  ]): v.name => v.value
+  }
+
+  addon_pack_manifests = { for v in flatten([
+  for k, v in local.cluster_addon_profiles_map : [
+  for e in v :[
+  for p in try(e.packs, []) : {
+    name = format("%s-%s-%s", k, e.name, p.name)
+    value = [{
+      identifier = format("%s-%s-%s-%s", k, e.name, p.name, p.manifest_name)
+      name = p.manifest_name
+      content = lookup(local.addon_pack_params_replaced, format("%s-%s-%s", k, e.name, p.name), lookup(local.addon_pack_template_params_replaced, format("%s-%s-%s", k, e.name, p.name), ""))
+    }]
+  } if try(p.is_manifest_pack, false)]
+  ]
+  ]): v.name => v.value
+  }
+
 }
 
 resource "spectrocloud_cluster_eks" "this" {
@@ -66,8 +123,17 @@ resource "spectrocloud_cluster_eks" "this" {
       for_each = each.value.profiles.infra.packs
       content {
         name = pack.value.name
-        tag = pack.value.version
-        values = pack.value.override_type == "values" ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[0][format("%s-%s", each.value.name, pack.value.name)] : local.infra-pack-template-params-replaced[0][format("%s-%s", each.value.name, pack.value.name)])
+        tag = try(pack.value.version, "")
+        type = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
+        values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)] : local.infra-pack-template-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)])
+
+        dynamic "manifest" {
+          for_each = try([local.infra_pack_manifests[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)]], [])
+          content {
+            name = manifest.value.name
+            content = manifest.value.content
+          }
+        }
       }
     }
   }
@@ -82,8 +148,17 @@ resource "spectrocloud_cluster_eks" "this" {
         for_each = try(cluster_profile.value.packs, [])
         content {
           name = pack.value.name
-          tag = pack.value.version
-          values = pack.value.override_type == "values" ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[0][format("%s-%s", each.value.name, pack.value.name)] : local.infra-pack-template-params-replaced[0][format("%s-%s", each.value.name, pack.value.name)])
+          tag = try(pack.value.version, "")
+          type = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
+          values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", cluster_profile.value.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.addon_pack_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)] : local.addon_pack_template_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)])
+
+          dynamic "manifest" {
+            for_each = try(local.addon_pack_manifests[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)], [])
+            content {
+              name = manifest.value.name
+              content = manifest.value.content
+            }
+          }
         }
       }
     }
@@ -129,7 +204,7 @@ resource "spectrocloud_cluster_eks" "this" {
   }
 
   dynamic "backup_policy" {
-    for_each = try(each.value.backup_policy, [])
+    for_each = try(tolist([each.value.backup_policy]), [])
     content {
       schedule                  = backup_policy.value.schedule
       backup_location_id        = local.bsl_map[backup_policy.value.backup_location]
@@ -141,7 +216,7 @@ resource "spectrocloud_cluster_eks" "this" {
   }
 
   dynamic "scan_policy" {
-    for_each = try(each.value.scan_policy, [])
+    for_each = try(tolist([each.value.scan_policy]), [])
     content {
       configuration_scan_schedule = scan_policy.value.configuration_scan_schedule
       penetration_scan_schedule   = scan_policy.value.penetration_scan_schedule

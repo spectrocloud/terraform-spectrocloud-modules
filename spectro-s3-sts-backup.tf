@@ -1,6 +1,5 @@
 locals {
-  //bsl_names = toset([for v in var.clusters : v.backup_policy.backup_location])
-  bsl_names = toset(flatten([for v in var.clusters : [for vv in v.backup_policy : vv.backup_location]]))
+  bsl_names = toset([for v in var.clusters : try(v.backup_policy.backup_location, "") if length(try(v.backup_policy.backup_location, "")) > 0 ])
 
   bsl_map = {
   for k, v in data.spectrocloud_backup_storage_location.this :
