@@ -1,4 +1,5 @@
-/*data "spectrocloud_role" "projectadmin" {
+/*
+data "spectrocloud_role" "projectadmin" {
   name = "Project Admin"
 }
 
@@ -24,4 +25,5 @@ resource "spectrocloud_team" "view_team" {
     id    = local.project_ids[each.value.name]
     roles = [data.spectrocloud_role.projectviewer.id]
   }
-}*/
+}
+*/
