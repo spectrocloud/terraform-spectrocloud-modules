@@ -14,7 +14,7 @@ locals {
 
   addon_profile_names = flatten([
     for v in var.clusters : [
-      for k in v.profiles.addons : k.name
+      for k in try(v.profiles.addons, []) : k.name
   ]])
 
   profile_names = toset(concat(local.infra_profile_names, local.addon_profile_names))
@@ -24,7 +24,6 @@ locals {
     v.name => v
   }
 
-  // map["cluster-profile-name-pack-name"]
   cluster-profile-pack = flatten([
     for k, v in data.spectrocloud_cluster_profile.this : [
       for p in v.pack : { format("%s-%s", k, p.name) = p }
@@ -46,7 +45,7 @@ locals {
 
   cluster_addon_profiles_map = {
     for v in var.clusters :
-    v.name => v.profiles.addons
+    v.name => try(v.profiles.addons, [])
   }
 }
 
