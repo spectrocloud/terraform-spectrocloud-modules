@@ -82,15 +82,14 @@ locals {
 
   infra_pack_manifests = { for v in flatten([
   for k, v in local.cluster_infra_profiles_map : [
-  for e in v :[
-  for p in try(e.packs, []) : {
-    name = format("%s-%s-%s", k, e.name, p.name)
-    value = [{
-      identifier = format("%s-%s-%s-%s", k, e.name, p.name, p.manifest_name)
+  for p in try(v.packs, []) : {
+    name = format("%s-%s-%s", k, v.name, p.name)
+    value = {
+      identifier = format("%s-%s-%s-%s", k, v.name, p.name, p.manifest_name)
       name = p.manifest_name
-      content = lookup(local.infra-pack-params-replaced, format("%s-%s-%s", k, e.name, p.name), lookup(local.infra-pack-template-params-replaced, format("%s-%s-%s", k, e.name, p.name), ""))
-    }]
-  } if try(p.is_manifest_pack, false)]
+      content = lookup(local.infra-pack-params-replaced, format("%s-%s-%s", k, v.name, p.name), lookup(local.infra-pack-template-params-replaced, format("%s-%s-%s", k, v.name, p.name), ""))
+    }
+  } if try(p.is_manifest_pack, false)
   ]
   ]): v.name => v.value
   }
