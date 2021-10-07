@@ -287,7 +287,6 @@ packs:
         spectro-proxy:
           namespace: cluster-{{ .spectro.system.cluster.uid }}
           server: "{{ .spectro.system.reverseproxy.server }}"
-          # Cluster UID - DO NOT CHANGE (new3)
           clusterUid: "{{ .spectro.system.cluster.uid }}"
           subdomain: cluster-{{ .spectro.system.cluster.uid }}
   - name: install-application

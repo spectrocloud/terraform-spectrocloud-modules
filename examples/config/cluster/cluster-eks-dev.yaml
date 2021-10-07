@@ -51,46 +51,27 @@ profiles:
             NAMESPACE_LABEL_KEY: app
             NAMESPACE_LABEL_VALUE: cluster2
   addons:
-    - name: addon-profile-1
-    - name: addon-profile-2
-      packs:
-        - name: nginx
-          version: 0.43.0
-          override_type: params #[values, params, template]
-          params:
-            NGINX_NAME_OVERRIDE: nginx-ingress
-            NGINX_REPO_IMAGE: k8s.gcr.io/ingress-nginx/controller
-        - name: profile-install
-          is_manifest_pack: true
-          manifest_name: profile-install-crd
-          override_type: template
-          params: # cluster profile pack value/manifest content will be repeated as many times map of params is specified
-            - NAMESPACE_NAME: namespace-cluster-10
-              NAMESPACE_LABEL_KEY: app
-              NAMESPACE_LABEL_VALUE: cluster1
-            - NAMESPACE_NAME: namespace-cluster-2
-              NAMESPACE_LABEL_KEY: app
-              NAMESPACE_LABEL_VALUE: cluster2
+    - name: profile_addon
 cloud_config:
   aws_region: us-east-1
-  aws_vpc_id: vpc-0bf456fc3c75abbbe
+  aws_vpc_id: vpc-0bf456fc3c7bbe
   endpoint_access: private
   eks_subnets:
-    us-east-1a: subnet-0931c5e4f5d4ba6d3,subnet-0c494a1ab5916ac3c
-    us-east-1b: subnet-022297ad4023c0f29,subnet-0a75634ca4c15df8f
+    us-east-1a: subnet-0931c5e4f56d3,subnet-0c494a15916ac3c
+    us-east-1b: subnet-022297ad=0f29,subnet-0a75634ca45df8f
 node_groups:
   - name: worker-basic
     count: 3
     disk_size_gb: 61
     instance_type: t3.large
     worker_subnets:
-      us-east-1a: subnet-0dac5b9c4d3ff0d5c
-      us-east-1b: subnet-0d710ba055593d68b
+      us-east-1a: subnet-0dac5b9c4d0d5c
+      us-east-1b: subnet-0d710ba055568b
 fargate_profiles:
   - name: fg-1
     subnets:
-      - subnet-0dac5b9c4d3ff0d5c
-      - subnet-0d710ba055593d68b
+      - subnet-0dac5b9c4d3d5c
+      - subnet-0d710ba055568b
     additional_tags: {hello: test1}
     selectors:
       - namespace: fargate
