@@ -5,7 +5,7 @@ profiles:
     name: EKS-Base
     packs:
       - name: kubernetes-eks
-        version: 1.20
+        version: "1.20"
         override_type: params #[values, params, template]
         params:
           OIDC_IDENTITY_PROVIDER_NAME: eks-oidc # parameter value in cluster profile pack values should be "%OIDC_IDENTITY_PROVIDER_NAME%"
@@ -39,17 +39,15 @@ profiles:
                           image: nginx:1.14.2
                           ports:
                             - containerPort: 80
-      - name: profile-installation
+      - name: install-application
         is_manifest_pack: true
-        manifest_name: profile-install-crd
+        manifest_name: install-app-crd
         override_type: template
         params: # cluster profile pack value/manifest content will be repeated as many times map of params is specified
-          - NAMESPACE_NAME: namespace-cluster-10
-            NAMESPACE_LABEL_KEY: app
-            NAMESPACE_LABEL_VALUE: cluster1
-          - NAMESPACE_NAME: namespace-cluster-2
-            NAMESPACE_LABEL_KEY: app
-            NAMESPACE_LABEL_VALUE: cluster2
+          - PROFILE_NAME: small-app
+            PROFILE_SPEC_NAME: small-app
+          - PROFILE_NAME: security-app
+            PROFILE_SPEC_NAME: security-app
   addons:
     - name: profile_addon
 cloud_config:

@@ -294,13 +294,10 @@ packs:
     manifests:
       - name: install-app-crd
         content: |
-          apiVersion: v1
-          kind: Namespace
+          apiVersion: ehl.ees/v1
+          kind: ProfileInstallation
           metadata:
-            name: sc-system
-      - name: install-app-config
-        content: |
-          apiVersion: v1
-          kind: Namespace
-          metadata:
-            name: sc-system-config
+            name: "%PROFILE_NAME%"
+          spec:
+            name: "%PROFILE_SPEC_NAME%"
+          ---
