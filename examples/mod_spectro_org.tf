@@ -1,5 +1,5 @@
 /*module "fetcher_accounts" {
-  source     = "../modules/fetcher"
+  source     = "./modules/fetcher"
   rsubfolder = local.accounts_folder
   rprefix    = "account-"
 }*/
@@ -79,14 +79,13 @@ module "SpectroOrg" {
     k => yamldecode(templatefile(join("", [local.projects_folder, "/${k}"]), local.projects_params))
   })
 
-  teams = zipmap([
-    "Project Admin",
-    "Project Viewer"
-  ],
-  [
-    "%s_admin",
-    "%s_view"
-  ])
+  teams =  tomap({
+  for k, v in toset([
+    "team-developer-abc.yaml",
+    "team-developer-arun.yaml",
+  ]) :
+  k => yamldecode(templatefile(join("", [local.projects_folder, "/${k}"]), local.projects_params))
+  })
 
   clusters = tomap({
     for k, v in toset([

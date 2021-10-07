@@ -1,0 +1,7 @@
+name: developer-abc
+description: New project for developer abc
+teams:
+  - name: developer-abc-admin
+    roles: ["Project Admin", "Project Viewer"]
+  - name: developer-abc-view
+    roles: ["Project Viewer"]
