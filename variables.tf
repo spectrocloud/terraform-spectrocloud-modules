@@ -9,7 +9,6 @@ variable "bsls" {
 }
 
 variable "profiles" {
-  type    = map(any)
   default = {}
 }
 
