@@ -4,14 +4,6 @@ data "spectrocloud_role" "data_roles" {
   name = each.value
 }
 
-output "test" {
-  value = var.teams
-}
-
-output "test2" {
-  value = data.spectrocloud_role.data_roles
-}
-
 locals {
   project_roles = distinct(flatten([
     for v in var.teams : [

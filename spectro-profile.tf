@@ -53,10 +53,6 @@ data "spectrocloud_cluster_profile" "this" {
   for_each = local.profile_names
 
   name = each.value
-
-  depends_on = [
-    resource.spectrocloud_cluster_profile.profile_resource
-  ]
 }
 
 resource "spectrocloud_cluster_profile" "profile_resource" {

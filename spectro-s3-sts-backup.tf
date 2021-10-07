@@ -11,10 +11,6 @@ data "spectrocloud_backup_storage_location" "this" {
   for_each = local.bsl_names
 
   name = each.value
-
-  depends_on = [
-    resource.spectrocloud_backup_storage_location.bsl
-  ]
 }
 
 resource "spectrocloud_backup_storage_location" "bsl" {

@@ -12,10 +12,6 @@ data "spectrocloud_cloudaccount_aws" "this" {
   for_each = local.cloud_account_names
 
   name = each.value
-
-  depends_on = [
-    resource.spectrocloud_cloudaccount_aws.account
-  ]
 }
 
 resource "spectrocloud_cloudaccount_aws" "account" {
