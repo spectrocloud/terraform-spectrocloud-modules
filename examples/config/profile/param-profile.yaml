@@ -7,6 +7,6 @@ OIDC_ISSUER_URL: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_ooohgyhf
 
 RABBITMQ_PACK_VERSION: "8.15.2"
 
-string: "${string}"
+string: "$${string}"
 
 ADDON_SPECTRO_REPO_URL: "https://addon-registry.gehc.spectrocloud.com"
