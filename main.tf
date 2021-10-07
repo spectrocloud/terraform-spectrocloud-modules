@@ -18,7 +18,7 @@ variable "sc_username" {
 
 variable "sc_password" {
   description = "Spectro Cloud Password"
-  sensitive   = true
+  //sensitive   = true
 }
 
 variable "sc_project_name" {

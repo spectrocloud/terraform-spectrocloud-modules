@@ -23,7 +23,6 @@ variable "teams" {
 }
 
 variable "clusters" {
-  type    = map(any)
   default = {}
 }
 

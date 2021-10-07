@@ -1,5 +1,5 @@
-name: profile_addon
-description: profile_addon
+name: addon-profile-1
+description: addon-profile-1
 type: add-on
 defaultRepoURL: "${REPO_URL}"
 

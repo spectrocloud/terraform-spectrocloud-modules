@@ -1,11 +1,5 @@
-/*module "fetcher_accounts" {
-  source     = "./modules/fetcher"
-  rsubfolder = local.accounts_folder
-  rprefix    = "account-"
-}*/
-
 locals {
-  accounts_params = { ACCOUNT_DEV_NAME = "ehs-dev-030", ACCOUNT_PROD_NAME = "ehs-stg-004" }
+  accounts_params = { ACCOUNT_DEV_NAME = "dev-030", ACCOUNT_PROD_NAME = "ehs-stg-004" }
 
   bsl_params = { BSL_NAME = "qa-sharma" }
 
@@ -30,16 +24,11 @@ locals {
 }
 
 module "SpectroOrg" {
-  source          = "../"
-  sc_host         = "api.stage.spectrocloud.com"    #e.g: api.spectrocloud.com (for SaaS)
-  sc_username     = "nikolay+demo@spectrocloud.com" #e.g: user1@abc.com
-  sc_password     = "welcome2Spectr0!1"             #e.g: supereSecure1!
+  source          = "github.com/spectrocloud/terraform-spectrocloud-modules"
+  sc_host         = ""    #e.g: api.spectrocloud.com (for SaaS)
+  sc_username     = "" #e.g: user1@abc.com
+  sc_password     = ""             #e.g: supereSecure1!
   sc_project_name = "Default"                       #e.g: Default
-
-  /*accounts = tomap({
-    for k, v in module.fetcher_accounts.object_files :
-    k => yamldecode(templatefile(join("", [local.accounts_folder, "/${k}"]), local.accounts_params))
-  })*/
 
   accounts = {
     for k in fileset("config/account", "account-*.yaml") :
@@ -67,7 +56,7 @@ module "SpectroOrg" {
   }
 
   clusters = {
-  for k in fileset("config/cluster", "team-*.yaml") :
-  trimsuffix(k, ".yaml") => yamldecode(templatefile("config/project/${k}", {}))
+  for k in fileset("config/cluster", "cluster-eks-*.yaml") :
+  trimsuffix(k, ".yaml") => yamldecode(file("config/cluster/${k}"))
   }
 }

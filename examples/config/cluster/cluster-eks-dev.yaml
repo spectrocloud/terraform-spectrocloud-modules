@@ -2,7 +2,7 @@ name: eks-dev
 cloud_account: dev-030
 profiles:
   infra:
-    name: EKS-Base
+    name: profile_infra
     packs:
       - name: kubernetes-eks
         version: "1.20"
