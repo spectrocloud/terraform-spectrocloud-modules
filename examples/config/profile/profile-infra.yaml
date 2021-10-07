@@ -2,7 +2,6 @@ name: profile_infra
 description: profile_infra
 type: cluster
 defaultRepoURL: "${REPO_URL}"
-
 packs:
   - name: "amazon-linux-eks"
     type: "spectro"
@@ -10,74 +9,67 @@ packs:
     server: "${SPECTRO_REPO_URL}"
     version: "1.0.0"
     values: "# AMI will be selected automatically based on the kubernetes version, region chosen"
-
   - name: "kubernetes-eks"
     type: "spectro"
     layer: "k8s"
     server: "${SPECTRO_REPO_URL}"
     version: "1.20"
-    tag: "1.20.x"
     values: |
-      # spectrocloud.com/enabled-presets: Control Plane Logging:logging-disabled
       ## EKS settings
       managedControlPlane:
 
-      ## Controlplane Logging
-      logging:
+        ## Controlplane Logging
+        logging:
 
-      # Setting to toggle Kubernetes API Server logging (kube-apiserver)
-      apiServer: false
+          # Setting to toggle Kubernetes API Server logging (kube-apiserver)
+          apiServer: false
 
-      # Setting to toggle the Kubernetes API audit logging
-      audit: false
+          # Setting to toggle the Kubernetes API audit logging
+          audit: false
 
-      # Setting to toggle the cluster authentication logging
-      authenticator: false
+          # Setting to toggle the cluster authentication logging
+          authenticator: false
 
-      # Setting to toggle the controller manager (kube-controller-manager) logging
-      controllerManager: false
+          # Setting to toggle the controller manager (kube-controller-manager) logging
+          controllerManager: false
 
-      # Setting to toggle the Kubernetes scheduler (kube-scheduler) logging
-      scheduler: false
+          # Setting to toggle the Kubernetes scheduler (kube-scheduler) logging
+          scheduler: false
 
-      # OIDC related config
-      # Uncomment below section when the EKS cluster has to be setup with OIDC authentication.
-      # Note : Leave the param values in this config as is, so that validation for these params will happen during cluster provisioning
-      oidcIdentityProvider:
+        # OIDC related config
+        oidcIdentityProvider:
+          identityProviderConfigName: '%OIDC_IDENTITY_PROVIDER_NAME%'       # The name of the OIDC provider configuration
+          issuerUrl: '%OIDC_ISSUER_URL%'       # The URL of the OpenID identity provider
+          clientId: '%OIDC_CLAIM_NAME%'           # The ID for the client application that makes authentication requests to the OpenID identity provider
+          usernameClaim: "email"                     # The JSON Web Token (JWT) claim to use as the username
+          usernamePrefix: "-"                        # The prefix that is prepended to username claims to prevent clashes with existing names
+          groupsClaim: "groups"                      # The JWT claim that the provider uses to return your groups
+          groupsPrefix: "-"                          # The prefix that is prepended to group claims to prevent clashes with existing names
+          requiredClaims:                            # The key value pairs that describe required claims in the identity token
 
-      #The name of the OIDC provider configuration
-      identityProviderConfigName: oidc1
+        ## A list of additional policies to attach to the control plane role
+        #roleAdditionalPolicies:
+        #- {{ arn for the policy1 | format "${string}" }}
+        #- {{ arn for the policy2 | format "${string}" }}
 
-      # The ID for the client application that makes authentication requests to the OpenID identity provider
-      clientId: "${OIDC_CLIENT_ID}"
+        ## Custom EKS node roleName for all the node groups
+        ## This self-managed IAM role(https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html) should include the required
+        ## policies - 'AmazonEKSWorkerNodePolicy','AmazonEC2ContainerRegistryReadOnly', 'AmazonSSMManagedInstanceCore' and 'AmazonEKS_CNI_Policy'
+        ## NOTE: The roleName cannot have the prefix 'ng-role_' since this is reserved for spectro-generated roles
+        #managedMachinePool:
+        #roleName: {{ name of the self-managed role | format "${string}" }}
 
-      #The URL of the OpenID identity provider that allows the API server to discover public signing keys for verifying tokens
-      issuerUrl: "${OIDC_ISSUER_URL}"
+        ## A list of additional policies to attach to the node group role
+        #roleAdditionalPolicies:
+        #- {{ arn for the policy1 | format "${string}" }}
+        #- {{ arn for the policy2 | format "${string}" }}
 
-      usernamePrefix: \"-\"
-
-      usernameClaim: email
-
-      groupsClaim: cognito:groups
-
+      ## Client configuration to add OIDC based authentication flags in kubeconfig
       clientConfig:
-      oidc-issuer-url: \"%oidcIssuerUrlMacro%\"
-      oidc-client-id: \"%oidcClientIdMacro%\"
-      oidc-extra-scope: profile,email
-
-
-      ## Custom EKS node roleName for all the node groups
-      ## This self-managed IAM role(https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html) should include the required
-      ## policies - 'AmazonEKSWorkerNodePolicy','AmazonEC2ContainerRegistryReadOnly', 'AmazonSSMManagedInstanceCore' and 'AmazonEKS_CNI_Policy'
-      ## NOTE: The roleName cannot have the prefix 'ng-role_' since this is reserved for spectro-generated roles
-      managedMachinePool:
-      roleName: spectrocloud-eks-iam-role
-
-      ## A list of additional policies to attach to the node group role
-      #roleAdditionalPolicies:
-      #- {{ arn for the policy1 | format \"${string}\" }}
-      #- {{ arn for the policy2 | format \"${string}\" }}
-
+        oidc-issuer-url: "{{ .spectro.pack.kubernetes-eks.managedControlPlane.oidcIdentityProvider.issuerUrl }}"
+        oidc-client-id: "{{ .spectro.pack.kubernetes-eks.managedControlPlane.oidcIdentityProvider.clientId }}"
+        oidc-client-secret: 1gsranjjmdgahm10j8r6m47ejokm9kafvcbhi3d48jlc3rfpprhv
+        oidc-extra-scope: profile,email
   - name: "cni-aws-vpc-eks"
     layer: "cni"
     server: "${SPECTRO_REPO_URL}"
@@ -110,7 +102,6 @@ packs:
       #Supported binding modes are Immediate, WaitForFirstConsumer
       #Setting this to WaitForFirstConsumer for AWS, so that the volumes gets created in the same AZ as that of the pods
       volumeBindingMode: \"WaitForFirstConsumer\"
-
   - name: "aws-ssm-agent"
     layer: "addon"
     server: "${SPECTRO_REPO_URL}"
@@ -211,7 +202,6 @@ packs:
                       hostPath:
                         path: /run/systemd
                         type: Directory
-
   - name: "spectro-rbac"
     layer: "addon"
     server: "${SPECTRO_REPO_URL}"
@@ -273,7 +263,6 @@ packs:
                       name: user1
                     - type: Group
                       name: group1
-
   - name: "spectro-byo-manifest"
     layer: "addon"
     server: "${SPECTRO_REPO_URL}"
@@ -284,199 +273,12 @@ packs:
         spectrocloud.com/install-priority: "0"
       manifests:
         byo-manifest:
-          contents: >
-
-            # Add the kubernetes resource templates you want to be applied on the cluster
-
-            # Use --- delimiter when adding multiple resources
-
-            # Note: Make sure to include all resource dependencies here
-
-
-            apiVersion: v1
-
-            kind: Namespace
-
-            metadata:
-              labels:
-                app: wordpress
-              name: wordpress
-            ---
-
-            apiVersion: v1
-
-            kind: Service
-
-            metadata:
-              name: wordpress-mysql
-              namespace: wordpress
-              labels:
-                app: wordpress
-            spec:
-              ports:
-                - port: 3306
-              selector:
-                app: wordpress
-                tier: mysql
-              clusterIP: None
-            ---
-
-            apiVersion: v1
-
-            kind: Secret
-
-            metadata:
-              name: mysql-pass
-              namespace: wordpress
-              labels:
-                app: wordpress
-            stringData:
-              password: hello123
-            ---
-
-            apiVersion: v1
-
-            kind: PersistentVolumeClaim
-
-            metadata:
-              name: mysql-pv-claim
-              namespace: wordpress
-              labels:
-                app: wordpress
-            spec:
-              accessModes:
-                - ReadWriteOnce
-              resources:
-                requests:
-                  storage: 20Gi
-            ---
-
-            apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
-
-            kind: Deployment
-
-            metadata:
-              name: wordpress-mysql
-              namespace: wordpress
-              labels:
-                app: wordpress
-            spec:
-              selector:
-                matchLabels:
-                  app: wordpress
-                  tier: mysql
-              strategy:
-                type: Recreate
-              template:
-                metadata:
-                  labels:
-                    app: wordpress
-                    tier: mysql
-                spec:
-                  containers:
-                  - image: mysql:5.6
-                    name: mysql
-                    env:
-                    - name: MYSQL_ROOT_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                          name: mysql-pass
-                          key: password
-                    ports:
-                    - containerPort: 3306
-                      name: mysql
-                    volumeMounts:
-                    - name: mysql-persistent-storage
-                      mountPath: /var/lib/mysql
-                  volumes:
-                  - name: mysql-persistent-storage
-                    persistentVolumeClaim:
-                      claimName: mysql-pv-claim
-            ---
-
-            apiVersion: v1
-
-            kind: Service
-
-            metadata:
-              name: wordpress
-              namespace: wordpress
-              labels:
-                app: wordpress
-            spec:
-              ports:
-                - port: 80
-              selector:
-                app: wordpress
-                tier: frontend
-              type: LoadBalancer
-            ---
-
-            apiVersion: v1
-
-            kind: PersistentVolumeClaim
-
-            metadata:
-              name: wp-pv-claim
-              namespace: wordpress
-              labels:
-                app: wordpress
-            spec:
-              accessModes:
-                - ReadWriteOnce
-              resources:
-                requests:
-                  storage: 20Gi
-            ---
-
-            apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
-
-            kind: Deployment
-
-            metadata:
-              name: wordpress
-              namespace: wordpress
-              labels:
-                app: wordpress
-            spec:
-              selector:
-                matchLabels:
-                  app: wordpress
-                  tier: frontend
-              strategy:
-                type: Recreate
-              template:
-                metadata:
-                  labels:
-                    app: wordpress
-                    tier: frontend
-                spec:
-                  containers:
-                  - image: wordpress:4.8-apache
-                    name: wordpress
-                    env:
-                    - name: WORDPRESS_DB_HOST
-                      value: wordpress-mysql
-                    - name: WORDPRESS_DB_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                          name: mysql-pass
-                          key: password
-                    ports:
-                    - containerPort: 80
-                      name: wordpress
-                    volumeMounts:
-                    - name: wordpress-persistent-storage
-                      mountPath: /var/www/html
-                  volumes:
-                  - name: wordpress-persistent-storage
-                    persistentVolumeClaim:
-                      claimName: wp-pv-claim
-
-  - name: "spectro-proxy"
-    layer: "addon"
+          contents: |
+            # Value will be overriden at cluster level
+  - name: spectro-proxy
+    layer: addon
     server: "${SPECTRO_REPO_URL}"
-    type: "spectro"
+    type: spectro
     version: "1.0.0"
     values: |
       pack:
@@ -488,3 +290,18 @@ packs:
           # Cluster UID - DO NOT CHANGE (new3)
           clusterUid: "{{ .spectro.system.cluster.uid }}"
           subdomain: cluster-{{ .spectro.system.cluster.uid }}
+  - name: install-application
+    type: manifest
+    manifests:
+      - name: install-app-crd
+        content: |
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: sc-system
+      - name: install-app-config
+        content: |
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: sc-system-config

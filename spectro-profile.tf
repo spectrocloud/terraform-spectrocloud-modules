@@ -47,6 +47,20 @@ locals {
     for v in var.clusters :
     v.name => try(v.profiles.addons, [])
   }
+
+  /*
+  map of <cluster-profile-pack> = [manifests]
+  */
+
+  cluster_profile_pack_manifests = { for v in flatten([
+    for k, v in var.profiles : [ //c = name of file
+      for p in v.packs : {       // v is profile
+        name  = format("%s-%s", v.name, p.name)
+        value = try(p.manifests, [])
+      }
+    ]
+    ]) : v.name => v.value
+  }
 }
 
 data "spectrocloud_pack" "data_packs" {
@@ -72,11 +86,22 @@ resource "spectrocloud_cluster_profile" "infra" {
   dynamic "pack" {
     for_each = each.value.packs
     content {
-      name   = pack.value.name
-      type   = pack.value.type
-      tag    = try(pack.value.tag, pack.value.version)
-      uid    = lookup(local.pack_mapping, join("", [pack.value.name, "-", pack.value.version]), "")
+      name = pack.value.name
+      type = try(pack.value.type, "spectro")
+      tag  = try(pack.value.version, "")
+      uid = lookup(local.pack_mapping, join("", [
+        pack.value.name,
+        "-",
+      pack.value.version]), "")
       values = pack.value.values
+
+      dynamic "manifest" {
+        for_each = try(local.cluster_profile_pack_manifests[format("%s-%s", each.value.name, pack.value.name)], [])
+        content {
+          name    = manifest.value.name
+          content = manifest.value.content
+        }
+      }
     }
   }
 }
