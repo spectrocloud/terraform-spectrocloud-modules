@@ -1,0 +1,7 @@
+name: "test-nik3"
+type: "ecr" # basic
+endpoint: "214575254960.dkr.ecr.us-west-1.amazonaws.com"
+is_private: true
+credential_type: "sts"
+arn: "arn:aws:iam::214575254960:role/stage-demo-ecr"
+external_id: "sJg2F_qzavDE7vHJh4c0bgvoUXkKdvXCObrheKOTMzM="

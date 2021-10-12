@@ -41,6 +41,11 @@ module "SpectroOrg" {
     for k in fileset("config/project", "team-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/project/${k}", {}))
   }
+
+  registries = {
+    for k in fileset("config/registry", "registry-*.yaml") :
+    trimsuffix(k, ".yaml") => yamldecode(templatefile("config/registry/${k}", {}))
+  }
 }
 
 module "SpectroProject" {

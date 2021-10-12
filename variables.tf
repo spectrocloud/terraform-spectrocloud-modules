@@ -22,6 +22,11 @@ variable "teams" {
   default = {}
 }
 
+variable "registries" {
+  type    = map(any)
+  default = {}
+}
+
 variable "clusters" {
   default = {}
 }
