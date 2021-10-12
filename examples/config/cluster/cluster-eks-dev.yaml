@@ -1,5 +1,5 @@
 name: eks-dev
-cloud_account: dev-030
+cloud_account: "${ACCOUNT_DEV_NAME}"
 profiles:
   infra:
     name: profile_infra
@@ -8,6 +8,7 @@ profiles:
         version: "1.20"
         override_type: params #[values, params, template]
         params:
+          MACHINE_POOL_ROLE_NAME: MACHINE_POOL_ROLE_NAME_1
           OIDC_IDENTITY_PROVIDER_NAME: eks-oidc # parameter value in cluster profile pack values should be "%OIDC_IDENTITY_PROVIDER_NAME%"
           OIDC_CLAIM_NAME: oidc-custom-claim # parameter value in cluster profile pack values should be "%OIDC_CLAIM_NAME%"
           OIDC_ISSUER_URL: https://123456-okta.com/111111/hello # parameter value in cluster profile pack values should be "%OIDC_ISSUER_URL%"
