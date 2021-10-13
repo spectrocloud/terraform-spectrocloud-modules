@@ -47,15 +47,15 @@ locals {
     ]) : v.name => v.value
   }
 
-  packs = flatten([for v in var.profiles : [for vv in v.packs : vv if can(vv.version)]])
+  packs         = flatten([for v in var.profiles : [for vv in v.packs : vv if can(vv.version)]])
   pack_names    = [for v in local.packs : v.name]
   pack_versions = [for v in local.packs : v.version]
 
   count     = length(local.pack_names)
   pack_uids = [for index, v in local.packs : data.spectrocloud_pack.data_packs[index].id]
   pack_mapping = zipmap(
-  [for i, v in local.packs : join("", [v.name, "-", v.version])],
-  [for v in local.pack_uids : v]
+    [for i, v in local.packs : join("", [v.name, "-", v.version])],
+    [for v in local.pack_uids : v]
   )
 }
 

@@ -49,6 +49,7 @@ module "SpectroOrg" {
 }
 
 module "SpectroProject" {
+  depends_on = [module.SpectroOrg]
   source = "github.com/spectrocloud/terraform-spectrocloud-modules"
 
   clusters = {
