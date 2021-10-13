@@ -1,5 +1,5 @@
 locals {
-  accounts_params = { ACCOUNT_DEV_NAME = "ehs-dev-030", ACCOUNT_PROD_NAME = "ehs-stg-004" }
+  accounts_params = { ACCOUNT_DEV_NAME = "dev-030", ACCOUNT_PROD_NAME = "prod-004" }
   bsl_params      = { BSL_NAME = "qa-sharma" }
   profile_params = {
     SPECTRO_REPO_URL       = "https://registry.spectrocloud.com",
@@ -41,13 +41,19 @@ module "SpectroOrg" {
     for k in fileset("config/project", "team-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/project/${k}", {}))
   }
+
+  registries = {
+    for k in fileset("config/registry", "registry-*.yaml") :
+    trimsuffix(k, ".yaml") => yamldecode(templatefile("config/registry/${k}", {}))
+  }
 }
 
 module "SpectroProject" {
+  depends_on = [module.SpectroOrg]
   source = "github.com/spectrocloud/terraform-spectrocloud-modules"
 
   clusters = {
     for k in fileset("config/cluster", "cluster-eks-*.yaml") :
-    trimsuffix(k, ".yaml") => yamldecode(templatefile("config/cluster/${k}", {}))
+    trimsuffix(k, ".yaml") => yamldecode(templatefile("config/cluster/${k}", local.accounts_params))
   }
 }

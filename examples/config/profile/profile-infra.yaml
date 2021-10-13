@@ -56,8 +56,8 @@ packs:
         ## This self-managed IAM role(https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html) should include the required
         ## policies - 'AmazonEKSWorkerNodePolicy','AmazonEC2ContainerRegistryReadOnly', 'AmazonSSMManagedInstanceCore' and 'AmazonEKS_CNI_Policy'
         ## NOTE: The roleName cannot have the prefix 'ng-role_' since this is reserved for spectro-generated roles
-        #managedMachinePool:
-        #roleName: {{ name of the self-managed role | format "${string}" }}
+        managedMachinePool:
+          roleName: "%MACHINE_POOL_ROLE_NAME%"
 
         ## A list of additional policies to attach to the node group role
         #roleAdditionalPolicies:
