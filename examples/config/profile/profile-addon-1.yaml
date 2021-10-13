@@ -324,11 +324,3 @@ packs:
             corednsPathPrefix: ""
             clientCert: ""
             clientCertKey: ""
-
-  - name: "spectro-byo-manifest"
-    type: "spectro"
-    layer: "addon"
-    server: "${ADDON_SPECTRO_REPO_URL}"
-    version: "1.0.0"
-    values: |
-      #Empty manifest.

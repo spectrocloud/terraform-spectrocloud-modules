@@ -50,7 +50,7 @@ profiles:
           - PROFILE_NAME: security-app
             PROFILE_SPEC_NAME: security-app
   addons:
-    - name: profile_addon
+    - name: addon-profile-1
 cloud_config:
   aws_region: us-east-1
   aws_vpc_id: vpc-0bf456fc3c7bbe

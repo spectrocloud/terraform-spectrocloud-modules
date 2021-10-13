@@ -15,7 +15,7 @@ locals {
 }
 
 module "SpectroOrg" {
-  source = "../"
+  source = "github.com/spectrocloud/terraform-spectrocloud-modules"
 
   accounts = {
     for k in fileset("config/account", "account-*.yaml") :
@@ -49,8 +49,7 @@ module "SpectroOrg" {
 }
 
 module "SpectroProject" {
-  depends_on = [module.SpectroOrg]
-  source = "../"
+  source = "github.com/spectrocloud/terraform-spectrocloud-modules"
 
   clusters = {
     for k in fileset("config/cluster", "cluster-eks-*.yaml") :
