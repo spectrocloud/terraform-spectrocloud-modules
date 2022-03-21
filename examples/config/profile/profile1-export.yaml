@@ -1,0 +1,227 @@
+name: ehl-dicom-nik
+uid: 620a7eb211667f4c46f57fdf
+description: dicom profile
+type: add-on
+packs:
+  - name: eis-series-install-notifier
+    type: helm
+    layer: addon
+    registry_uid: 622a58174a85b30ed2a9875a
+    registry: helm-blr-ees
+    version: 1.0.0-58eadf5
+    tag: 1.0.0-58eadf5
+    values: |-
+      pack:
+        namespace: "core"
+        spectrocloud.com/install-priority: "700"
+        releaseNameOverride:
+          eis-series-install-notifier: eis-series-install-notifier
+        content:
+          charts:
+            - repo: https://blr-artifactory.cloud/artifactory/helm-ees-all/
+              name: eis-series-install-notifier
+              version: 1.0.0-58eadf5
+          images:
+            - blr-artifactory.cloud/docker-eis-all/eis_series_install_notifier/eis_series_install_notifier:1.0.0-58eadf5
+  - name: eis-dcm-deletion-service
+    type: helm
+    layer: addon
+    registry_uid: 622a58174a85b30ed2a9875a
+    registry: helm-blr-ees
+    version: 1.0.1-463f4d9
+    tag: 1.0.1-463f4d9
+    values: |-
+      pack:
+        namespace: "core"
+        spectrocloud.com/install-priority: "700"
+        releaseNameOverride:
+          eis-dcm-deletion-service: eis-dcm-deletion-service
+        content:
+          charts:
+            - repo: https://blr-artifactory.cloud/artifactory/helm-ees-all/
+              name: eis-dcm-deletion-service
+              version: 1.0.1-463f4d9
+          images:
+            - blr-artifactory.cloud/docker-eis-all/eis_dicom_service_deletion/eis_dicom_service_deletion:1.0.1-463f4d9
+  - name: eis-dcm-auto-delete-service
+    type: helm
+    layer: addon
+    registry_uid: 622a58174a85b30ed2a9875a
+    registry: helm-blr-ees
+    version: 1.0.0-48aaaff
+    tag: 1.0.0-48aaaff
+    values: |-
+      pack:
+        namespace: "core"
+        spectrocloud.com/install-priority: "700"
+        releaseNameOverride:
+          eis-dcm-auto-delete-service: eis-dcm-auto-delete-service
+        content:
+          charts:
+            - repo: https://blr-artifactory.cloud/artifactory/helm-ees-all/
+              name: eis-dcm-auto-delete-service
+              version: 1.0.0-48aaaff
+          images:
+            - blr-artifactory.cloud/docker-eis-all/eis_dcm_auto_delete_service/eis_dcm_auto_delete_service:1.0.0-48aaaff
+  - name: eis-dcm-services-stow
+    type: helm
+    layer: addon
+    registry_uid: 622a58174a85b30ed2a9875a
+    registry: helm-blr-ees
+    version: 1.1.0-e7042f9
+    tag: 1.1.0-e7042f9
+    values: |-
+      pack:
+        namespace: "core"
+        spectrocloud.com/install-priority: "700"
+        releaseNameOverride:
+          eis-dcm-services-stow: eis-dcm-services-stow
+        content:
+          charts:
+            - repo: https://blr-artifactory.cloud/artifactory/helm-ees-all/
+              name: eis-dcm-services-stow
+              version: 1.1.0-e7042f9
+          images:
+            - blr-artifactory.cloud/docker-eis-all/eis-dicom-services-stow/eis-dicom-services-stow:1.1.0-e7042f9
+  - name: eis-dcm-services-query
+    type: helm
+    layer: addon
+    registry_uid: 622a58174a85b30ed2a9875a
+    registry: helm-blr-ees
+    version: 1.1.0-20a7a47
+    tag: 1.1.0-20a7a47
+    values: |-
+      pack:
+        namespace: "core"
+        spectrocloud.com/install-priority: "700"
+        releaseNameOverride:
+          eis-dcm-services-query: eis-dcm-services-query
+        content:
+          charts:
+            - repo: https://blr-artifactory.cloud/artifactory/helm-ees-all/
+              name: eis-dcm-services-query
+              version: 1.1.0-20a7a47
+          images:
+            - blr-artifactory.cloud/docker-eis-all/eis_dicom_services_query/eis_dicom_services_query:1.1.0-20a7a47
+  - name: eis-dcm-services-wado
+    type: helm
+    layer: addon
+    registry_uid: 622a58174a85b30ed2a9875a
+    registry: helm-blr-ees
+    version: 20.0.1-6b17e72
+    tag: 20.0.1-6b17e72
+    values: |-
+      pack:
+        namespace: "core"
+        spectrocloud.com/install-priority: "700"
+        releaseNameOverride:
+          eis-dcm-services-wado: eis-dcm-services-wado
+        content:
+          charts:
+            - repo: https://blr-artifactory.cloud/artifactory/helm-ees-all/
+              name: eis-dcm-services-wado
+              version: 20.0.1-6b17e72
+          images:
+            - blr-artifactory.cloud/docker-eis-all/eis_dicom_services_wado/eis_dicom_services_wado:20.0.1-6b17e72
+  - name: ehl-redis
+    type: helm
+    layer: addon
+    registry_uid: 622a58174a85b30ed2a9875a
+    registry: helm-blr-ees
+    version: 0.0.1-da507a4
+    tag: 0.0.1-da507a4
+    values: |-
+      pack:
+        namespace: "core"
+        spectrocloud.com/install-priority: "700"
+        releaseNameOverride:
+          ehl-redis: ehl-redis
+        content:
+          charts:
+            - repo: https://blr-artifactory.cloud/artifactory/helm-ees-all/
+              name: ehl-redis
+              version: 0.0.1-da507a4
+          images:
+            - blr-artifactory.cloud/docker-eis-all/redis:5.0.7
+            - blr-artifactory.cloud/docker-eis-all/ehl-redis/redis-sentinel:5.0.7-debian-10-r17
+  - name: eis-dcm-uid-service
+    type: helm
+    layer: addon
+    registry_uid: 622a58174a85b30ed2a9875a
+    registry: helm-blr-ees
+    version: 0.0.3-fcc3cd8
+    tag: 0.0.3-fcc3cd8
+    values: |-
+      pack:
+        namespace: "core"
+        releaseNameOverride:
+          eis-dcm-uid-service: eis-dcm-uid-service
+        spectrocloud.com/install-priority: "700"
+        content:
+          charts:
+            - repo: https://blr-artifactory.cloud/artifactory/helm-ees-all/
+              name: eis-dcm-uid-service
+              version: 0.0.3-fcc3cd8
+          images:
+            - blr-artifactory.cloud/docker-eis-all/eis_dcm_uid_service/eis_dcm_uid_service:0.0.3-fcc3cd8
+  - name: eis-dcm-remote-query
+    type: helm
+    layer: addon
+    registry_uid: 622a58174a85b30ed2a9875a
+    registry: helm-blr-ees
+    version: 1.0.0-acd567a
+    tag: 1.0.0-acd567a
+    values: |-
+      pack:
+        namespace: "core"
+        spectrocloud.com/install-priority: "700"
+        releaseNameOverride:
+          eis-dcm-remote-query: eis-dcm-remote-query
+        content:
+          charts:
+            - repo: https://blr-artifactory.cloud/artifactory/helm-ees-all/
+              name: eis-dcm-remote-query
+              version: 1.0.0-acd567a
+          images:
+            - blr-artifactory.cloud/docker-eis-all/eis-dcm-remote-query/eis-dcm-remote-query:1.0.0-acd567a
+  - name: transformer
+    type: helm
+    layer: addon
+    registry_uid: 622a58174a85b30ed2a9875a
+    registry: helm-blr-ees
+    version: 1.0.0-e593de3
+    tag: 1.0.0-e593de3
+    values: |-
+      pack:
+        namespace: "core"
+        releaseNameOverride:
+          transformer: transformer
+        content:
+          charts:
+            - repo: https://blr-artifactory.cloud/artifactory/helm-ees-all/
+              name: transformer
+              version: 1.0.0-e593de3
+          images:
+            - blr-artifactory.cloud/docker-eis-all/transformer/transformer:1.0.0-e593de3
+        spectrocloud.com/install-priority: "700"
+  - name: eis-dcm-scp
+    type: helm
+    layer: addon
+    registry_uid: 622a58174a85b30ed2a9875a
+    registry: helm-blr-ees
+    version: 1.1.0-bb42bbb
+    tag: 1.1.0-bb42bbb
+    values: |-
+      pack:
+        namespace: "core"
+        spectrocloud.com/install-priority: "700"
+        releaseNameOverride:
+          eis-dcm-scp: eis-dcm-scp
+        content:
+          charts:
+            - repo: https://blr-artifactory.cloud/artifactory/helm-ees-all/
+              name: eis-dcm-scp
+              version: 1.1.0-bb42bbb
+          images:
+            - blr-artifactory.cloud/docker-eis-all/eis_dicom_services_scp/eis_dicom_services_scp:1.1.0-bb42bbb
+            - blr-artifactory.cloud/docker-eis-all/trust-store-watcher/key_trust_watcher:1.0.0-928b21b

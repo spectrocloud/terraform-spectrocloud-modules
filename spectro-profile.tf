@@ -44,26 +44,45 @@ locals {
         value = try(p.manifests, [])
       }
     ]
-    ]) : v.name => v.value
+    ]) : v.name => v.value...
   }
 
   packs         = flatten([for v in var.profiles : [for vv in v.packs : vv if can(vv.version)]])
-  pack_names    = [for v in local.packs : v.name]
-  pack_versions = [for v in local.packs : v.version]
+  pack_data_names    = [for v in local.packs : v.name]
 
-  count     = length(local.pack_names)
+  pack_versions = [for v in local.packs : v.version]
+  pack_types = [for v in local.packs : v.type]
+  pack_all_registries = [for v in local.packs : v.registry]
+  pack_registries = [for v in local.packs : v.registry if v.type != "helm" && v.registry != ""]
+  helm_registries = [for v in local.packs : v.registry if v.type == "helm"]
+
+
   pack_uids = [for index, v in local.packs : data.spectrocloud_pack.data_packs[index].id]
   pack_mapping = zipmap(
     [for i, v in local.packs : join("", [v.name, "-", v.version])],
     [for v in local.pack_uids : v]
   )
+  registry_pack_map = {
+    for k, v in data.spectrocloud_registry_pack.registry_pack :
+    v.name => v.id...
+  }
+  registry_helm_map = {
+    for k, v in data.spectrocloud_registry_helm.registry_helm :
+    v.name => v.id...
+  }
+}
+
+output "registry_pack_map" {
+  value = local.registry_helm_map["helm-blr-ees"][0]
 }
 
 data "spectrocloud_pack" "data_packs" {
-  count = length(local.pack_names)
+  count = length(local.pack_data_names)
 
-  name    = local.pack_names[count.index]
+  name    = local.pack_data_names[count.index]
   version = local.pack_versions[count.index]
+  type = local.pack_types[count.index]
+  registry_uid = try(try(local.registry_pack_map[local.pack_all_registries[count.index]][0], local.registry_helm_map[local.pack_all_registries[count.index]][0]), "")
 }
 
 data "spectrocloud_cluster_profile" "this" {
@@ -72,11 +91,23 @@ data "spectrocloud_cluster_profile" "this" {
   name = each.value
 }
 
+data "spectrocloud_registry_pack" "registry_pack" {
+  count = length(local.pack_registries)
+
+  name    = local.pack_registries[count.index]
+}
+
+data "spectrocloud_registry_helm" "registry_helm" {
+  count = length(local.helm_registries)
+
+  name    = local.helm_registries[count.index]
+}
+
 resource "spectrocloud_cluster_profile" "profile_resource" {
   for_each    = var.profiles
   name        = each.value.name
   description = each.value.description
-  cloud       = "eks"
+  cloud       = try(each.value.cloudType, "")
   type        = each.value.type
 
   dynamic "pack" {
@@ -85,11 +116,13 @@ resource "spectrocloud_cluster_profile" "profile_resource" {
       name   = pack.value.name
       type   = try(pack.value.type, "spectro")
       tag    = try(pack.value.version, "")
+      registry_uid = try(try(local.registry_pack_map[pack.value.registry][0], local.registry_helm_map[pack.value.registry][0]), "")
+      #registry_uid = pack.value.registry_uid
       uid    = lookup(local.pack_mapping, join("", [pack.value.name, "-", try(pack.value.version, "")]), "uid")
       values = try(pack.value.values, "")
 
       dynamic "manifest" {
-        for_each = toset(try(local.cluster_profile_pack_manifests[format("%s-%s", each.value.name, pack.value.name)], []))
+        for_each = toset(try(local.cluster_profile_pack_manifests[format("%s-%s", each.value.name, pack.value.name)][0], []))
         content {
           name    = manifest.value.name
           content = manifest.value.content

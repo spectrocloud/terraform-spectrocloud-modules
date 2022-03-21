@@ -9,4 +9,4 @@ RABBITMQ_PACK_VERSION: "8.15.2"
 
 string: "$${string}"
 
-ADDON_SPECTRO_REPO_URL: "https://addon-registry.gehc.spectrocloud.com"
+ADDON_SPECTRO_REPO_URL: "https://addon-registry.spectrocloud.com"
