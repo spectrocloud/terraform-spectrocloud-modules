@@ -11,11 +11,7 @@ resource "spectrocloud_cluster_eks" "this" {
         name   = pack.value.name
         tag    = try(pack.value.version, "")
         type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
-        values = (try(pack.value.is_manifest_pack, false)) ?
-        local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values :
-        (pack.value.override_type == "values") ? pack.value.values :
-        (pack.value.override_type == "params" ? local.infra-pack-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)] :
-        local.infra-pack-template-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)])
+        values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)] : local.infra-pack-template-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)])
 
         dynamic "manifest" {
           for_each = try([local.infra_pack_manifests[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)]], [])
@@ -40,11 +36,7 @@ resource "spectrocloud_cluster_eks" "this" {
           name   = pack.value.name
           tag    = try(pack.value.version, "")
           type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
-          values = (try(pack.value.is_manifest_pack, false)) ?
-          local.cluster-profile-pack-map[format("%s-%s", cluster_profile.value.name, pack.value.name)].values :
-          (pack.value.override_type == "values") ? pack.value.values : //if override_type is values, get values from yaml file
-          (pack.value.override_type == "params" ? local.addon_pack_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)] :
-          local.addon_pack_template_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)])
+          values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", cluster_profile.value.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.addon_pack_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)] : local.addon_pack_template_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)])
 
           dynamic "manifest" {
             for_each = try(local.addon_pack_manifests[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)], [])
