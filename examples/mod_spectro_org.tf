@@ -28,10 +28,10 @@ module "SpectroOrg" {
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/appliance/${k}", local.appliances_params))
   }
 
-  bsls = {
+  /*bsls = {
     for k in fileset("config/bsl", "bsl-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/bsl/${k}", local.bsl_params))
-  }
+  }*/
 
   profiles = {
     for k in fileset("config/profile", "profile-*.yaml") :
@@ -46,24 +46,24 @@ module "SpectroOrg" {
   teams = {
     for k in fileset("config/project", "team-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/project/${k}", {}))
-  }
+  }*/
 
   registries = {
     for k in fileset("config/registry", "registry-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/registry/${k}", {}))
-  }*/
+  }
 }
 
-/*output "debug" {
-  value = module.SpectroOrg.registry_pack_map
-}*/
+output "debug" {
+  value = module.SpectroProject.cluster_appliance_uids
+}
 
 module "SpectroProject" {
   depends_on = [module.SpectroOrg]
   source = "../"
 
   clusters = {
-  for k in fileset("config/cluster", "cluster-eks-*.yaml") :
-  trimsuffix(k, ".yaml") => yamldecode(templatefile("config/cluster/${k}", local.accounts_params))
+    for k in fileset("config/cluster", "cluster-*.yaml") :
+    trimsuffix(k, ".yaml") => yamldecode(templatefile("config/cluster/${k}", local.accounts_params))
   }
 }
