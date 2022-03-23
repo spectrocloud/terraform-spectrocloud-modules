@@ -1,4 +1,5 @@
 name: eks-dev
+cloudType: eks
 cloud_account: "${ACCOUNT_DEV_NAME}"
 profiles:
   infra:

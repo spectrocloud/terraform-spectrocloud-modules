@@ -206,4 +206,13 @@ locals {
     ]) : v.name => v.value
   }
 
+
+    cluster_map = { for i, cluster in var.clusters : tostring(i) => cluster }
+    eks_keys = compact([for i, cluster in local.cluster_map : cluster.cloudType == "eks" ? i : ""])
+    eks_clusters     = [for key in local.eks_keys : lookup(local.cluster_map, key)]
+    libvirt_keys = compact([for i, cluster in local.cluster_map : cluster.cloudType == "libvirt" ? i : ""])
+    libvirt_clusters     = [for key in local.libvirt_keys : lookup(local.cluster_map, key)]
+  #edge
+  #vsphere-edge
+
 }

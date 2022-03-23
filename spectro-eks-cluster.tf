@@ -1,5 +1,5 @@
 resource "spectrocloud_cluster_eks" "this" {
-  for_each = var.clusters
+  for_each = { for x in local.eks_clusters: x.name => x }
   name     = each.value.name
 
   cluster_profile {

@@ -1,0 +1,55 @@
+name: libvirt-dev
+cloudType: libvirt
+profiles:
+  infra:
+    name: libvirt-gpu-full
+cloud_config:
+  aws_region: us-east-1
+  aws_vpc_id: vpc-0bf456fc3c7bbe
+  endpoint_access: private
+  eks_subnets:
+    us-east-1a: subnet-0931c5e4f56d3,subnet-0c494a15916ac3c
+    us-east-1b: subnet-022297ad=0f29,subnet-0a75634ca45df8f
+node_groups:
+  - name: master-pool
+    control_plane: true
+    control_plane_as_worker: true
+    count: 1
+    disk_size_gb: 60
+    memory_mb: 8192
+    cpu: 2
+    cpus_sets: 1
+    attached_disks_size_gb: "10"
+    placements:
+      - appliance: "libvirt-nik15-mar-21"
+        network_type: "bridge"
+        network_names: "br0"
+        network: "br"
+        image_storage_pool: "ehl_images"
+        target_storage_pool: "ehl_images"
+        data_storage_pool: "ehl_data"
+
+  - name: worker-pool
+    count: 3
+    disk_size_gb: 60
+    memory_mb: 8192
+    cpu: 4
+    cpus_sets: 1
+    attached_disks_size_gb: "10"
+    placements:
+      - appliance: "libvirt-nik15-mar-21"
+        network_type: "bridge"
+        network_names: "br0"
+        network: "br"
+        image_storage_pool: "ehl_images"
+        target_storage_pool: "ehl_images"
+        data_storage_pool: "ehl_data"
+
+backup_policy:
+  schedule: "0 0 * * SUN"
+  backup_location: qa-sharma
+  prefix: weekly
+scan_policy:
+  configuration_scan_schedule: "0 0 * * SUN"
+  penetration_scan_schedule: "0 0 * * SUN"
+  conformance_scan_schedule: "0 0 1 * *"

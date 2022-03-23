@@ -72,9 +72,9 @@ locals {
   }
 }
 
-output "registry_pack_map" {
+/*output "registry_pack_map" {
   value = local.registry_helm_map["helm-blr-ees"][0]
-}
+}*/
 
 data "spectrocloud_pack" "data_packs" {
   count = length(local.pack_data_names)
@@ -118,6 +118,7 @@ resource "spectrocloud_cluster_profile" "profile_resource" {
       tag    = try(pack.value.version, "")
       registry_uid = try(try(local.registry_pack_map[pack.value.registry][0], local.registry_helm_map[pack.value.registry][0]), "")
       #registry_uid = pack.value.registry_uid
+      # uid = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
       uid    = lookup(local.pack_mapping, join("", [pack.value.name, "-", try(pack.value.version, "")]), "uid")
       values = try(pack.value.values, "")
 

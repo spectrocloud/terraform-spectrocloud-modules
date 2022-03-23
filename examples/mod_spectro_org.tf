@@ -1,5 +1,6 @@
 locals {
   accounts_params = { ACCOUNT_DEV_NAME = "dev-030", ACCOUNT_PROD_NAME = "prod-004" }
+  appliances_params = {}
   bsl_params      = { BSL_NAME = "qa-sharma" }
   profile_params = {
     SPECTRO_REPO_URL       = "https://registry.spectrocloud.com",
@@ -17,15 +18,20 @@ locals {
 module "SpectroOrg" {
   source = "../"
 
-  /*accounts = {
+  accounts = {
     for k in fileset("config/account", "account-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/account/${k}", local.accounts_params))
+  }
+
+  appliances = {
+    for k in fileset("config/appliance", "appliance-*.yaml") :
+    trimsuffix(k, ".yaml") => yamldecode(templatefile("config/appliance/${k}", local.appliances_params))
   }
 
   bsls = {
     for k in fileset("config/bsl", "bsl-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/bsl/${k}", local.bsl_params))
-  } */
+  }
 
   profiles = {
     for k in fileset("config/profile", "profile-*.yaml") :
@@ -37,7 +43,7 @@ module "SpectroOrg" {
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/project/${k}", local.projects_params))
   }
 
-  /*teams = {
+  teams = {
     for k in fileset("config/project", "team-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/project/${k}", {}))
   }
@@ -48,6 +54,16 @@ module "SpectroOrg" {
   }*/
 }
 
-output "debug" {
+/*output "debug" {
   value = module.SpectroOrg.registry_pack_map
+}*/
+
+module "SpectroProject" {
+  depends_on = [module.SpectroOrg]
+  source = "../"
+
+  clusters = {
+  for k in fileset("config/cluster", "cluster-eks-*.yaml") :
+  trimsuffix(k, ".yaml") => yamldecode(templatefile("config/cluster/${k}", local.accounts_params))
+  }
 }

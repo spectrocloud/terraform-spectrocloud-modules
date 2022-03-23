@@ -1,0 +1,272 @@
+resource "spectrocloud_cluster_libvirt" "this" {
+  for_each = { for x in local.libvirt_clusters: x.name => x }
+  name     = each.value.name
+
+  cluster_profile {
+    id = local.profile_map[each.value.profiles.infra.name].id
+
+    dynamic "pack" {
+      for_each = each.value.profiles.infra.packs
+      content {
+        name   = pack.value.name
+        tag    = try(pack.value.version, "")
+        type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
+        values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)] : local.infra-pack-template-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)])
+
+        dynamic "manifest" {
+          for_each = try([local.infra_pack_manifests[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)]], [])
+          content {
+            name    = manifest.value.name
+            content = manifest.value.content
+          }
+        }
+      }
+    }
+  }
+
+  dynamic "cluster_profile" {
+    for_each = try(each.value.profiles.addons, [])
+
+    content {
+      id = local.profile_map[cluster_profile.value.name].id
+
+      dynamic "pack" {
+        for_each = try(cluster_profile.value.packs, [])
+        content {
+          name   = pack.value.name
+          tag    = try(pack.value.version, "")
+          type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
+          values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", cluster_profile.value.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.addon_pack_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)] : local.addon_pack_template_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)])
+
+          dynamic "manifest" {
+            for_each = try(local.addon_pack_manifests[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)], [])
+            content {
+              name    = manifest.value.name
+              content = manifest.value.content
+            }
+          }
+        }
+      }
+    }
+  }
+
+  cloud_account_id = local.cloud_account_map[each.value.cloud_account]
+
+  cloud_config {
+    ssh_key = each.value.cloud_config.ssh_key
+    vip = each.value.cloud_config.vip
+    # ntp
+  }
+
+  dynamic "machine_pool" {
+    for_each = each.value.node_groups
+    content {
+      name          = machine_pool.value.name
+      control_plane           = try(machine_pool.value.control_plane, false)
+      control_plane_as_worker = try(machine_pool.value.control_plane_as_worker, false)
+      count                   = machine_pool.value.count
+
+      instance_type {
+        disk_size_gb    = machine_pool.value.disk_size_gb
+        memory_mb = machine_pool.value.memory_mb
+        cpu          = machine_pool.value.cpu
+        cpus_sets = machine_pool.value.cpus_sets
+        attached_disks_size_gb = machine_pool.value.attached_disks_size_gb
+      }
+
+      dynamic "placements" {
+        for_each = each.value.placements
+
+        content {
+          appliance_id = data.spectrocloud_appliance.this[each.value.appliance_id].id
+          network_type = each.value.network_type
+          network_names = each.value.network_names
+          image_storage_pool = "ubuntu"
+          target_storage_pool = "guest_images"
+          data_storage_pool = "tmp"
+          network = "br"
+        }
+      }
+    }
+  }
+
+  dynamic "backup_policy" {
+    for_each = try(tolist([each.value.backup_policy]), [])
+    content {
+      schedule                  = backup_policy.value.schedule
+      backup_location_id        = local.bsl_map[backup_policy.value.backup_location]
+      prefix                    = backup_policy.value.prefix
+      expiry_in_hour            = 7200
+      include_disks             = true
+      include_cluster_resources = true
+    }
+  }
+
+  dynamic "scan_policy" {
+    for_each = try(tolist([each.value.scan_policy]), [])
+    content {
+      configuration_scan_schedule = scan_policy.value.configuration_scan_schedule
+      penetration_scan_schedule   = scan_policy.value.penetration_scan_schedule
+      conformance_scan_schedule   = scan_policy.value.conformance_scan_schedule
+    }
+  }
+}
+
+/*
+{
+	"metadata": {
+		"annotations": {},
+		"name": "test-bm-1",
+		"labels": {}
+	},
+	"spec": {
+		"cloudConfig": {
+			"sshKeys": [
+				"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCr3hE9IS5UUDPqNOiEWVJvVDS0v57QKjb1o9ubvvATQNg2T3x+inckfzfgX3et1H9X1oSp0FqY1+Mmy5nfTtTyIj5Get1cntcC4QqdZV8Op1tmpI01hYMj4lLn55WNaXgDt+35tJ47kWRr5RqTGV05MPNWN3klaVsePsqa+MgCjnLfCBiOz1tpBOgxqPNqtQPXh+/T/Ul6ZDUW/rySr9iNR9uGd04tYzD7wdTdvmZSRgWEre//IipNzMnnZC7El5KJCQn8ksF+DYY9eT9NtNFEMALTZC6hn8BnMc14zqxoJP/GNHftmig8TJC500Uofdr4OKTCRr1JwHS79Cx9LyZdAp/1D8mL6bIMyGOTPVQ8xUpmEYj77m1kdiCHCk22YtLyfUWuQ0SC+2p1soDoNfJUpmxcKboOTZsLq1HDCFrqSyLUWS1PrYZ/MzhsPrsDewB1iHLbYDt87r2odJOpxMO1vNWMOYontODdr5JPKBpCcd/noNyOy/m4Spntytfb/J3kM1oz3dpPfN0xXmC19uR1xHklmbtg1j784IMu7umI2ZCpUwLADAodkbxmbacdkp5I+1NFgrFamvnTjjQAvRexV31m4m9GielKFQ4tCCId2yagMBWRFn5taEhb3SKnRxBcAzaJLopUyErOtqxvSywGvb53v4MEShqBaQSUv4gHfw== spectro2022"
+			],
+			"controlPlaneEndpoint": {
+				"host": "192.168.100.15",
+				"type": "VIP"
+			}
+		},
+		"machinePoolConfig": [
+			{
+				"cloudConfig": {
+					"instanceType": {
+						"numCPUs": 2,
+						"memoryInMB": 8192
+					},
+					"placements": [
+						{
+							"hostUid": "libvirt-nik15-mar-21",
+							"dataStoragePool": "ehl_data",
+							"sourceStoragePool": "ehl_images",
+							"targetStoragePool": "ehl_images",
+							"networks": [
+								{
+									"networkName": "br0",
+									"networkType": "bridge"
+								}
+							]
+						}
+					],
+					"rootDiskInGB": 60,
+					"nonRootDisksInGB": [
+						{
+							"sizeInGB": 10
+						}
+					]
+				},
+				"poolConfig": {
+					"name": "master-pool",
+					"size": 1,
+					"labels": [
+						"master"
+					],
+					"isControlPlane": true,
+					"useControlPlaneAsWorker": true,
+					"taints": [],
+					"additionalLabels": {},
+					"updateStrategy": {
+						"type": "RollingUpdateScaleOut"
+					}
+				}
+			},
+			{
+				"cloudConfig": {
+					"instanceType": {
+						"numCPUs": 4,
+						"memoryInMB": 8192
+					},
+					"placements": [
+						{
+							"hostUid": "libvirt-nik15-mar-21",
+							"dataStoragePool": "ehl_data",
+							"sourceStoragePool": "ehl_images",
+							"targetStoragePool": "ehl_images",
+							"networks": [
+								{
+									"networkName": "br0",
+									"networkType": "bridge"
+								}
+							]
+						}
+					],
+					"rootDiskInGB": 60,
+					"nonRootDisksInGB": [
+						{
+							"sizeInGB": 10
+						}
+					]
+				},
+				"poolConfig": {
+					"name": "worker-pool",
+					"size": 3,
+					"maxSize": 3,
+					"minSize": 1,
+					"labels": [
+						"worker"
+					],
+					"taints": [],
+					"additionalLabels": {},
+					"updateStrategy": {
+						"type": "RollingUpdateScaleOut"
+					}
+				}
+			}
+		],
+		"cloudAccountUid": null,
+		"edgeHostUid": "",
+		"profiles": [
+			{
+				"uid": "62396b84ef293300d6a625cc",
+				"packValues": [
+					{
+						"tag": "LTS__20.04",
+						"name": "ubuntu-libvirt",
+						"type": "spectro",
+						"values": "# Spectro Golden images includes most of the hardening standards recommended by CIS benchmarking v1.5\n\n# Uncomment below section to\n# 1. Include custom files to be copied over to the nodes and/or\n# 2. Execute list of commands before or after kubeadm init/join is executed\n#\nkubeadmconfig:\n  preKubeadmCommands:\n  - echo \"Executing pre kube admin config commands\"\n  - update-ca-certificates\n  postKubeadmCommands:\n  - echo \"Executing post kube admin config commands\"\n  - mkdir -p /etc/containerd/conf.d/\n  files:\n  - targetPath: /usr/local/share/ca-certificates/ca.crt\n    targetOwner: \"root:root\"\n    targetPermissions: \"0644\"\n    content: |\n      -----BEGIN CERTIFICATE-----\n      MIIDozCCAougAwIBAgIQeO8XlqAMLhxvtCap35yktzANBgkqhkiG9w0BAQsFADBS\n      MQswCQYDVQQGEwJVUzEhMB8GA1UEChMYR2VuZXJhbCBFbGVjdHJpYyBDb21wYW55\n      MSAwHgYDVQQDExdHRSBFeHRlcm5hbCBSb290IENBIDIuMTAeFw0xNTAzMDUwMDAw\n      MDBaFw0zNTAzMDQyMzU5NTlaMFIxCzAJBgNVBAYTAlVTMSEwHwYDVQQKExhHZW5l\n      cmFsIEVsZWN0cmljIENvbXBhbnkxIDAeBgNVBAMTF0dFIEV4dGVybmFsIFJvb3Qg\n      Q0EgMi4xMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzCzT4wNRZtr2\n      XTzoTMjppjulZfG35/nOt44q2zg47sxwgZ8o4qjcrwzIhsntoFrRQssjXSF5qXdC\n      zsm1G7f04qEBimuOH/X+CidWX+sudCS8VyRjXi9cyvUW4/mYKCLXv5M6HhEoIHCD\n      Xdo6yUr5mSrf18qRR3yUFz0HYXopa2Ls3Q6lBvEUO2Xw04vqVvmg1h7S5jYuZovC\n      oIbd2+4QGdoSZPgtSNpCxSR+NwtPpzYZpmqiUuDGfVpO3HU42APB0c60D91cJho6\n      tZpXYHDsR/RxYGm02K/iMGefD5F4YMrtoKoHbskty6+u5FUOrUgGATJJGtxleg5X\n      KotQYu8P1wIDAQABo3UwczASBgNVHRMBAf8ECDAGAQH/AgECMA4GA1UdDwEB/wQE\n      AwIBBjAuBgNVHREEJzAlpCMwITEfMB0GA1UEAxMWR0UtUm9vdC1DT00tUlNBLTIw\n      NDgtMTAdBgNVHQ4EFgQU3N2mUCJBCLYgtpZyxBeBMJwNZuowDQYJKoZIhvcNAQEL\n      BQADggEBACF4Zsf2Nm0FpVNeADUH+sl8mFgwL7dfL7+6n7hOgH1ZXcv6pDkoNtVE\n      0J/ZPdHJW6ntedKEZuizG5BCclUH3IyYK4/4GxNpFXugmWnKGy2feYwVae7Puyd7\n      /iKOFEGCYx4C6E2kq3aFjJqiq1vbgSS/B0agt1D3rH3i/+dXVxx8ZjhyZMuN+cgS\n      pZL4gnhnSXFAGissxJhKsNkYgvKdOETRNn5lEgfgVyP2iOVqEguHk2Gu0gHSouLu\n      5ad/qyN+Zgbjx8vEWlywmhXb78Gaf/AwSGAwQPtmQ0310a4DulGxo/kcuS78vFH1\n      mwJmHm9AIFoqBi8XpuhGmQ0nvymurEk=\n      -----END CERTIFICATE-----",
+						"manifests": []
+					},
+					{
+						"tag": "1.21.8",
+						"name": "kubernetes",
+						"type": "spectro",
+						"values": "pack:\n  k8sHardening: True\n  #CIDR Range for Pods in cluster\n  # Note : This must not overlap with any of the host or service network\n  podCIDR: \"172.10.0.0/16\"\n  #CIDR notation IP range from which to assign service cluster IPs\n  # Note : This must not overlap with any IP ranges assigned to nodes for pods.\n  serviceClusterIpRange: \"11.0.0.0/22\"\n\n# KubeAdm customization for kubernetes hardening. Below config will be ignored if k8sHardening property above is disabled\nkubeadmconfig:\n  apiServer:\n    certSANs:\n    - \"cluster-{{ .spectro.system.cluster.uid }}.{{ .spectro.system.reverseproxy.server }}\"\n    extraArgs:\n      # Note : secure-port flag is used during kubeadm init. Do not change this flag on a running cluster\n      secure-port: \"6443\"\n      anonymous-auth: \"true\"\n      insecure-port: \"0\"\n      profiling: \"false\"\n      disable-admission-plugins: \"AlwaysAdmit\"\n      default-not-ready-toleration-seconds: \"60\"\n      default-unreachable-toleration-seconds: \"60\"\n      enable-admission-plugins: \"NamespaceLifecycle,ServiceAccount,NodeRestriction,PodSecurityPolicy\"\n      audit-log-path: /var/log/apiserver/audit.log\n      audit-policy-file: /etc/kubernetes/audit-policy.yaml\n      audit-log-maxage: \"30\"\n      audit-log-maxbackup: \"10\"\n      audit-log-maxsize: \"100\"\n      authorization-mode: RBAC,Node\n      tls-cipher-suites: \"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_GCM_SHA256\"\n    extraVolumes:\n      - name: audit-log\n        hostPath: /var/log/apiserver\n        mountPath: /var/log/apiserver\n        pathType: DirectoryOrCreate\n      - name: audit-policy\n        hostPath: /etc/kubernetes/audit-policy.yaml\n        mountPath: /etc/kubernetes/audit-policy.yaml\n        readOnly: true\n        pathType: File\n  controllerManager:\n    extraArgs:\n      profiling: \"false\"\n      terminated-pod-gc-threshold: \"25\"\n      pod-eviction-timeout: \"1m0s\"\n      use-service-account-credentials: \"true\"\n      feature-gates: \"RotateKubeletServerCertificate=true\"\n  scheduler:\n    extraArgs:\n      profiling: \"false\"\n  kubeletExtraArgs:\n    read-only-port : \"0\"\n    event-qps: \"0\"\n    feature-gates: \"RotateKubeletServerCertificate=true\"\n    protect-kernel-defaults: \"true\"\n    tls-cipher-suites: \"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_GCM_SHA256\"\n  files:\n    - path: hardening/audit-policy.yaml\n      targetPath: /etc/kubernetes/audit-policy.yaml\n      targetOwner: \"root:root\"\n      targetPermissions: \"0600\"\n    - path: hardening/privileged-psp.yaml\n      targetPath: /etc/kubernetes/hardening/privileged-psp.yaml\n      targetOwner: \"root:root\"\n      targetPermissions: \"0600\"\n    - path: hardening/90-kubelet.conf\n      targetPath: /etc/sysctl.d/90-kubelet.conf\n      targetOwner: \"root:root\"\n      targetPermissions: \"0600\"\n  preKubeadmCommands:\n    # For enabling 'protect-kernel-defaults' flag to kubelet, kernel parameters changes are required\n    - 'echo \"====> Applying kernel parameters for Kubelet\"'\n    - 'sysctl -p /etc/sysctl.d/90-kubelet.conf'\n  postKubeadmCommands:\n    # Apply the privileged PodSecurityPolicy on the first master node ; Otherwise, CNI (and other) pods won't come up\n    # Sometimes api server takes a little longer to respond. Retry if applying the pod-security-policy manifest fails\n    - 'export KUBECONFIG=/etc/kubernetes/admin.conf && [ -f \"$KUBECONFIG\" ] && { echo \" ====> Applying PodSecurityPolicy\" ; until $(kubectl apply -f /etc/kubernetes/hardening/privileged-psp.yaml > /dev/null ); do echo \"Failed to apply PodSecurityPolicies, will retry in 5s\" ; sleep 5 ; done ; } || echo \"Skipping PodSecurityPolicy for worker nodes\"'\n\n# Client configuration to add OIDC based authentication flags in kubeconfig\n#clientConfig:\n  #oidc-issuer-url: \"{{ .spectro.pack.kubernetes.kubeadmconfig.apiServer.extraArgs.oidc-issuer-url }}\"\n  #oidc-client-id: \"{{ .spectro.pack.kubernetes.kubeadmconfig.apiServer.extraArgs.oidc-client-id }}\"\n  #oidc-client-secret: 1gsranjjmdgahm10j8r6m47ejokm9kafvcbhi3d48jlc3rfpprhv\n  #oidc-extra-scope: profile,email",
+						"manifests": []
+					},
+					{
+						"tag": "3.19.0",
+						"name": "cni-calico",
+						"type": "spectro",
+						"values": "pack:\n  content:\n    images:\n      - gcr.io/spectro-images-public/calico/kube-controllers:v3.19.0\n      - gcr.io/spectro-images-public/calico/node:v3.19.0\n      - gcr.io/spectro-images-public/calico/cni:v3.19.0\n      - gcr.io/spectro-images-public/calico/pod2daemon-flexvol:v3.19.0\n      \nmanifests:\n  calico:\n\n    # IPAM type to use. Supported types are calico-ipam, host-local\n    ipamType: \"calico-ipam\"\n\n    # Should be one of CALICO_IPV4POOL_IPIP or CALICO_IPV4POOL_VXLAN\n    encapsulationType: \"CALICO_IPV4POOL_IPIP\"\n\n    # Should be one of Always, CrossSubnet, Never\n    encapsulationMode: \"Always\"",
+						"manifests": []
+					},
+					{
+						"tag": "1.8.0",
+						"name": "csi-rook-ceph",
+						"type": "spectro",*/
+/*"manifests": []
+}
+]
+}
+],
+"policies": {
+"scanPolicy": {}
+},
+"clusterConfig": {
+"machineManagementConfig": {
+"osPatchConfig": {
+"schedule": "",
+"patchOnBoot": false
+}
+},
+"updateWorkerPoolsInParallel": true,
+"resources": {
+"namespaces": [],
+"rbacs": []
+}
+}
+}
+}
+*/
