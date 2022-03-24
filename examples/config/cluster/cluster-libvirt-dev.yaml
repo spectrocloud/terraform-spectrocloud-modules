@@ -4,12 +4,8 @@ profiles:
   infra:
     name: libvirt-gpu-full
 cloud_config:
-  aws_region: us-east-1
-  aws_vpc_id: vpc-0bf456fc3c7bbe
-  endpoint_access: private
-  eks_subnets:
-    us-east-1a: subnet-0931c5e4f56d3,subnet-0c494a15916ac3c
-    us-east-1b: subnet-022297ad=0f29,subnet-0a75634ca45df8f
+  ssh_key: spectro2022
+  vip: 192.168.100.15
 node_groups:
   - name: master-pool
     control_plane: true
@@ -45,10 +41,6 @@ node_groups:
         target_storage_pool: "ehl_images"
         data_storage_pool: "ehl_data"
 
-backup_policy:
-  schedule: "0 0 * * SUN"
-  backup_location: qa-sharma
-  prefix: weekly
 scan_policy:
   configuration_scan_schedule: "0 0 * * SUN"
   penetration_scan_schedule: "0 0 * * SUN"

@@ -48,14 +48,15 @@ module "SpectroOrg" {
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/project/${k}", {}))
   }*/
 
-  registries = {
+  /*registries = {
     for k in fileset("config/registry", "registry-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/registry/${k}", {}))
-  }
+  }*/
+
 }
 
 output "debug" {
-  value = module.SpectroProject.cluster_appliance_uids
+  value = module.SpectroProject.libvirt-cluster
 }
 
 module "SpectroProject" {
