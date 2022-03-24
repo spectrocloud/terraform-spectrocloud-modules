@@ -16,7 +16,7 @@ locals {
 }
 
 module "SpectroOrg" {
-  source = "../"
+  source = "../../"
 
   accounts = {
     for k in fileset("config/account", "account-*.yaml") :
@@ -61,7 +61,7 @@ output "debug" {
 
 module "SpectroProject" {
   depends_on = [module.SpectroOrg]
-  source = "../"
+  source = "../../"
 
   clusters = {
     for k in fileset("config/cluster", "cluster-*.yaml") :

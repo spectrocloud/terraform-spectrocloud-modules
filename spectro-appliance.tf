@@ -1,7 +1,7 @@
 locals {
   // cluster appliances
   cluster_appliance_uids = flatten([
-    for cluster_key, cluster in var.clusters : [
+    for cluster_key, cluster in local.all_edge_clusters : [
     for node_group_key, node_group in cluster.node_groups : [
     for placement_key, placement in node_group.placements : placement.appliance
   ]]])

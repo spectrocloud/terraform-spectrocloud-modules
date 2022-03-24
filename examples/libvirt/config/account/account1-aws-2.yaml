@@ -1,0 +1,3 @@
+name: "${ACCOUNT_PROD_NAME}"
+arn: "arn:aws:iam::1235678:role/spectrocloud-deployment-role"
+external_id: "3Srjvrnemlkjsh="
