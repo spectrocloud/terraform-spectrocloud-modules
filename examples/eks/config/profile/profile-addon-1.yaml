@@ -5,6 +5,7 @@ defaultRepoURL: "${REPO_URL}"
 
 packs:
   - name: "minio"
+    registry: Public Repo
     type: "spectro"
     layer: "addon"
     server: "${ADDON_SPECTRO_REPO_URL}"

@@ -1,12 +1,19 @@
-resource "spectrocloud_cluster_eks" "this" {
-  for_each = { for x in local.eks_clusters: x.name => x }
+resource "spectrocloud_cluster_libvirt" "this" {
+  for_each = { for x in local.libvirt_clusters: x.name => x }
   name     = each.value.name
 
+  cloud_config {
+    ssh_key = each.value.cloud_config.ssh_key
+    vip = each.value.cloud_config.vip
+    # ntp
+  }
+
+  #infra profile
   cluster_profile {
     id = local.profile_map[each.value.profiles.infra.name].id
 
     dynamic "pack" {
-      for_each = each.value.profiles.infra.packs
+      for_each = try(each.value.profiles.infra.packs, [])
       content {
         name   = pack.value.name
         tag    = try(pack.value.version, "")
@@ -23,6 +30,36 @@ resource "spectrocloud_cluster_eks" "this" {
       }
     }
   }
+
+  #system profile
+  dynamic "cluster_profile" {
+    for_each = try([each.value.profiles.system.name], [])
+    content {
+      id = local.profile_map[each.value.profiles.system.name].id
+
+      dynamic "pack" {
+        for_each = try(each.value.profiles.system.packs, [])
+        content {
+          name   = pack.value.name
+          tag    = try(pack.value.version, "")
+          type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
+          values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.system.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.system.name, pack.value.name)] : local.infra-pack-template-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.system.name, pack.value.name)])
+
+          dynamic "manifest" {
+            for_each = try([
+              local.infra_pack_manifests[format("%s-%s-%s", each.value.name, each.value.profiles.system.name, pack.value.name)]
+            ], [])
+            content {
+              name    = manifest.value.name
+              content = manifest.value.content
+            }
+          }
+        }
+      }
+    }
+  }
+
+  #TODO: add system profile reference 1-1 for libvirt, edge and edge-vsphere.
 
   dynamic "cluster_profile" {
     for_each = try(each.value.profiles.addons, [])
@@ -50,41 +87,34 @@ resource "spectrocloud_cluster_eks" "this" {
     }
   }
 
-  cloud_account_id = local.cloud_account_map[each.value.cloud_account]
-
-  cloud_config {
-    region              = each.value.cloud_config.aws_region
-    vpc_id              = each.value.cloud_config.aws_vpc_id
-    az_subnets          = each.value.cloud_config.eks_subnets
-    azs                 = []
-    public_access_cidrs = []
-    endpoint_access     = each.value.cloud_config.endpoint_access
-  }
-
   dynamic "machine_pool" {
     for_each = each.value.node_groups
     content {
       name          = machine_pool.value.name
-      count         = machine_pool.value.count
-      instance_type = machine_pool.value.instance_type
-      az_subnets    = machine_pool.value.worker_subnets
-      disk_size_gb  = machine_pool.value.disk_size_gb
-      azs           = []
-    }
-  }
+      control_plane           = try(machine_pool.value.control_plane, false)
+      control_plane_as_worker = try(machine_pool.value.control_plane_as_worker, false)
+      count                   = machine_pool.value.count
 
-  dynamic "fargate_profile" {
-    for_each = try(each.value.fargate_profiles, [])
-    content {
-      name            = fargate_profile.value.name
-      subnets         = fargate_profile.value.subnets
-      additional_tags = fargate_profile.value.additional_tags
-      dynamic "selector" {
-        for_each = fargate_profile.value.selectors
+      dynamic "placements" {
+        for_each = machine_pool.value.placements
+
         content {
-          namespace = selector.value.namespace
-          labels    = selector.value.labels
+          appliance_id = placements.value.appliance
+          network_type = placements.value.network_type
+          network_names = placements.value.network_names
+          image_storage_pool = placements.value.image_storage_pool
+          target_storage_pool = placements.value.target_storage_pool
+          data_storage_pool = placements.value.data_storage_pool
+          network = placements.value.network
         }
+      }
+
+      instance_type {
+        disk_size_gb           = machine_pool.value.disk_size_gb
+        memory_mb              = machine_pool.value.memory_mb
+        cpu                    = machine_pool.value.cpu
+        cpus_sets              = machine_pool.value.cpus_sets
+        attached_disks_size_gb = machine_pool.value.attached_disks_size_gb
       }
     }
   }

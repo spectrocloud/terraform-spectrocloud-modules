@@ -1,0 +1,87 @@
+name: eks-dev
+cloudType: eks
+cloud_account: "${ACCOUNT_DEV_NAME}"
+profiles:
+  infra:
+    name: profile_infra
+    packs:
+      - name: kubernetes-eks
+        version: "1.20"
+        override_type: params #[values, params, template]
+        params:
+          MACHINE_POOL_ROLE_NAME: MACHINE_POOL_ROLE_NAME_1
+          OIDC_IDENTITY_PROVIDER_NAME: eks-oidc # parameter value in cluster profile pack values should be "%OIDC_IDENTITY_PROVIDER_NAME%"
+          OIDC_CLAIM_NAME: oidc-custom-claim # parameter value in cluster profile pack values should be "%OIDC_CLAIM_NAME%"
+          OIDC_ISSUER_URL: https://123456-okta.com/111111/hello # parameter value in cluster profile pack values should be "%OIDC_ISSUER_URL%"
+      - name: spectro-byo-manifest
+        version: 1.0.0
+        override_type: values #[values, params, template]
+        values: | # complete value will be overriden at cluster level
+          manifests:
+            byo-manifest:
+              contents: |
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: nginx-deployment
+                  labels:
+                    app: nginx
+                spec:
+                  replicas: 3
+                  selector:
+                    matchLabels:
+                      app: nginx
+                  template:
+                    metadata:
+                      labels:
+                        app: nginx
+                    spec:
+                      containers:
+                        - name: nginx
+                          image: nginx:1.14.2
+                          ports:
+                            - containerPort: 80
+      - name: install-application
+        is_manifest_pack: true
+        manifest_name: install-app-crd
+        override_type: template
+        params: # cluster profile pack value/manifest content will be repeated as many times map of params is specified
+          - PROFILE_NAME: small-app
+            PROFILE_SPEC_NAME: small-app
+          - PROFILE_NAME: security-app
+            PROFILE_SPEC_NAME: security-app
+  addons:
+    - name: addon-profile-1
+cloud_config:
+  aws_region: us-east-1
+  aws_vpc_id: vpc-0bf456fc3c7bbe
+  endpoint_access: private
+  eks_subnets:
+    us-east-1a: subnet-0931c5e4f56d3,subnet-0c494a15916ac3c
+    us-east-1b: subnet-022297ad=0f29,subnet-0a75634ca45df8f
+node_groups:
+  - name: worker-basic
+    count: 3
+    disk_size_gb: 61
+    instance_type: t3.large
+    worker_subnets:
+      us-east-1a: subnet-0dac5b9c4d0d5c
+      us-east-1b: subnet-0d710ba055568b
+fargate_profiles:
+  - name: fg-1
+    subnets:
+      - subnet-0dac5b9c4d3d5c
+      - subnet-0d710ba055568b
+    additional_tags: {hello: test1}
+    selectors:
+      - namespace: fargate
+        labels:
+          abc: cool
+backup_policy:
+  schedule: "0 0 * * SUN"
+  backup_location: qa-sharma
+  prefix: weekly
+scan_policy:
+  configuration_scan_schedule: "0 0 * * SUN"
+  penetration_scan_schedule: "0 0 * * SUN"
+  conformance_scan_schedule: "0 0 1 * *"

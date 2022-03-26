@@ -3,6 +3,11 @@ variable "accounts" {
   default = {}
 }
 
+variable "appliances" {
+  type    = map(any)
+  default = {}
+}
+
 variable "bsls" {
   type    = map(any)
   default = {}
