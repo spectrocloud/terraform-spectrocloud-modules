@@ -8,6 +8,7 @@ resource "spectrocloud_cluster_libvirt" "this" {
     # ntp
   }
 
+  #infra profile
   cluster_profile {
     id = local.profile_map[each.value.profiles.infra.name].id
 
@@ -29,6 +30,36 @@ resource "spectrocloud_cluster_libvirt" "this" {
       }
     }
   }
+
+  #system profile
+  dynamic "cluster_profile" {
+    for_each = try([each.value.profiles.system.name], [])
+    content {
+      id = local.profile_map[each.value.profiles.system.name].id
+
+      dynamic "pack" {
+        for_each = try(each.value.profiles.system.packs, [])
+        content {
+          name   = pack.value.name
+          tag    = try(pack.value.version, "")
+          type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
+          values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.system.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.system.name, pack.value.name)] : local.infra-pack-template-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.system.name, pack.value.name)])
+
+          dynamic "manifest" {
+            for_each = try([
+              local.infra_pack_manifests[format("%s-%s-%s", each.value.name, each.value.profiles.system.name, pack.value.name)]
+            ], [])
+            content {
+              name    = manifest.value.name
+              content = manifest.value.content
+            }
+          }
+        }
+      }
+    }
+  }
+
+  #TODO: add system profile reference 1-1 for libvirt, edge and edge-vsphere.
 
   dynamic "cluster_profile" {
     for_each = try(each.value.profiles.addons, [])
@@ -108,12 +139,4 @@ resource "spectrocloud_cluster_libvirt" "this" {
       conformance_scan_schedule   = scan_policy.value.conformance_scan_schedule
     }
   }
-}
-
-output "libvirt-cluster" {
-  value = flatten([
-for cluster_key, cluster in local.libvirt_clusters : [
-for node_group_key, node_group in cluster.node_groups : [
-for placement_key, placement in node_group.placements : placement
-]]])
 }

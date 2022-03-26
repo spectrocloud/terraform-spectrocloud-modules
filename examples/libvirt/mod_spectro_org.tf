@@ -55,9 +55,11 @@ module "SpectroOrg" {
 
 }
 
+/*
 output "debug" {
   value = module.SpectroProject.libvirt-cluster
 }
+*/
 
 module "SpectroProject" {
   depends_on = [module.SpectroOrg]

@@ -1,12 +1,17 @@
 locals {
   infra_profile_names = [for v in var.clusters : v.profiles.infra.name]
 
+  system_profile_names = flatten([
+    for v in var.clusters : [
+      for k in try(v.profiles.system, []) : k
+  ]])
+
   addon_profile_names = flatten([
     for v in var.clusters : [
       for k in try(v.profiles.addons, []) : k.name
   ]])
 
-  profile_names = toset(concat(local.infra_profile_names, local.addon_profile_names))
+  profile_names = toset(concat(concat(local.infra_profile_names, local.addon_profile_names), local.system_profile_names))
 
   profile_map = { //profiles is map of profile name and complete cluster profile object
     for k, v in data.spectrocloud_cluster_profile.this :

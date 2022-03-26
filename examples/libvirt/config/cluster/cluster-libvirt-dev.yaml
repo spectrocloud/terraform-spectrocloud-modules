@@ -1,8 +1,13 @@
 name: libvirt-dev
 cloudType: libvirt
+wait: false
 profiles:
   infra:
     name: libvirt-gpu-full
+  system:
+    name: system-profile
+  #addons:
+  #  - name: addon-profile-1
 cloud_config:
   ssh_key: spectro2022
   vip: 192.168.100.15
@@ -26,7 +31,7 @@ node_groups:
         data_storage_pool: "ehl_data"
 
   - name: worker-pool
-    count: 4
+    count: 3
     disk_size_gb: 60
     memory_mb: 8192
     cpu: 4
