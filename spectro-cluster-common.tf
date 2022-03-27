@@ -42,14 +42,14 @@ locals {
         value = join("\n", [
           for line in split("\n", try(p.is_manifest_pack, false) ?
             element([for x in local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
-            local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].values) :
-              format(
-                replace(line, "/%(${join("|", keys(p.params))})%/", "%s"),
-                [
-                  for value in flatten(regexall("%(${join("|", keys(p.params))})%", line)) :
-                  lookup(p.params, value)
-                ]...
-              )
+          local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].values) :
+          format(
+            replace(line, "/%(${join("|", keys(p.params))})%/", "%s"),
+            [
+              for value in flatten(regexall("%(${join("|", keys(p.params))})%", line)) :
+              lookup(p.params, value)
+            ]...
+          )
         ])
       } if p.override_type == "params"
     ]]) : v.name => v.value
@@ -112,15 +112,15 @@ locals {
         value = join("\n", flatten([for l in p.params : [
           join("\n", [
             for line in split("\n", try(p.is_manifest_pack, false) ?
-            element([for x in local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
+              element([for x in local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
             local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].values) :
-              format(
-                replace(line, "/%(${join("|", keys(l))})%/", "%s"),
-                [
-                  for value in flatten(regexall("%(${join("|", keys(l))})%", line)) :
-                  lookup(l, value)
-                ]...
-              )
+            format(
+              replace(line, "/%(${join("|", keys(l))})%/", "%s"),
+              [
+                for value in flatten(regexall("%(${join("|", keys(l))})%", line)) :
+                lookup(l, value)
+              ]...
+            )
           ])
         ]]))
       } if p.override_type == "template"
@@ -134,15 +134,15 @@ locals {
           name = format("%s-%s-%s", k, e.name, p.name)
           value = join("\n", [
             for line in split("\n", try(p.is_manifest_pack, false) ?
-            element([for x in local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
+              element([for x in local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
             local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].values) :
-              format(
-                replace(line, "/%(${join("|", keys(p.params))})%/", "%s"),
-                [
-                  for value in flatten(regexall("%(${join("|", keys(p.params))})%", line)) :
-                  lookup(p.params, value)
-                ]...
-              )
+            format(
+              replace(line, "/%(${join("|", keys(p.params))})%/", "%s"),
+              [
+                for value in flatten(regexall("%(${join("|", keys(p.params))})%", line)) :
+                lookup(p.params, value)
+              ]...
+            )
           ])
         } if p.override_type == "params"
       ]
@@ -157,15 +157,15 @@ locals {
           value = join("\n", flatten([for l in p.params : [
             join("\n", [
               for line in split("\n", try(p.is_manifest_pack, false) ?
-              element([for x in local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
+                element([for x in local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
               local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].values) :
-                format(
-                  replace(line, "/%(${join("|", keys(l))})%/", "%s"),
-                  [
-                    for value in flatten(regexall("%(${join("|", keys(l))})%", line)) :
-                    lookup(l, value)
-                  ]...
-                )
+              format(
+                replace(line, "/%(${join("|", keys(l))})%/", "%s"),
+                [
+                  for value in flatten(regexall("%(${join("|", keys(l))})%", line)) :
+                  lookup(l, value)
+                ]...
+              )
             ])
           ]]))
       } if p.override_type == "template"]
@@ -180,7 +180,7 @@ locals {
         value = {
           identifier = format("%s-%s-%s-%s", k, v.name, p.name, p.manifest_name)
           name       = p.manifest_name
-          content    = lookup(local.infra-pack-params-replaced, format("%s-%s-%s", k, v.name, p.name),
+          content = lookup(local.infra-pack-params-replaced, format("%s-%s-%s", k, v.name, p.name),
             lookup(local.infra-pack-template-params-replaced, format("%s-%s-%s", k, v.name, p.name), "")
           )
         }
@@ -197,7 +197,7 @@ locals {
           value = [{
             identifier = format("%s-%s-%s-%s", k, e.name, p.name, p.manifest_name)
             name       = p.manifest_name
-            content    = lookup(local.addon_pack_params_replaced, format("%s-%s-%s", k, e.name, p.name),
+            content = lookup(local.addon_pack_params_replaced, format("%s-%s-%s", k, e.name, p.name),
               lookup(local.addon_pack_template_params_replaced, format("%s-%s-%s", k, e.name, p.name), "")
             )
           }]
@@ -207,13 +207,13 @@ locals {
   }
 
 
-    cluster_map = { for i, cluster in var.clusters : tostring(i) => cluster }
-    eks_keys = compact([for i, cluster in local.cluster_map : cluster.cloudType == "eks" ? i : ""])
-    eks_clusters     = [for key in local.eks_keys : lookup(local.cluster_map, key)]
-    libvirt_keys = compact([for i, cluster in local.cluster_map : cluster.cloudType == "libvirt" ? i : ""])
-    libvirt_clusters     = [for key in local.libvirt_keys : lookup(local.cluster_map, key)]
-    // all edge clusters
-    all_edge_clusters = setunion(local.libvirt_clusters)
+  cluster_map      = { for i, cluster in var.clusters : tostring(i) => cluster }
+  eks_keys         = compact([for i, cluster in local.cluster_map : cluster.cloudType == "eks" ? i : ""])
+  eks_clusters     = [for key in local.eks_keys : lookup(local.cluster_map, key)]
+  libvirt_keys     = compact([for i, cluster in local.cluster_map : cluster.cloudType == "libvirt" ? i : ""])
+  libvirt_clusters = [for key in local.libvirt_keys : lookup(local.cluster_map, key)]
+  // all edge clusters
+  all_edge_clusters = setunion(local.libvirt_clusters)
   #edge
   #vsphere-edge
 

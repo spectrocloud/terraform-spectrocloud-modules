@@ -1,11 +1,12 @@
 resource "spectrocloud_cluster_libvirt" "this" {
-  for_each = { for x in local.libvirt_clusters: x.name => x }
+  for_each = { for x in local.libvirt_clusters : x.name => x }
   name     = each.value.name
+  tags     = try(each.value.tags, [])
 
   cloud_config {
-    ssh_key = each.value.cloud_config.ssh_key
-    vip = each.value.cloud_config.vip
-    # ntp
+    ssh_key     = try(each.value.cloud_config.ssh_key, "")
+    vip         = try(each.value.cloud_config.vip, "")
+    ntp_servers = try(each.value.cloud_config.ntp_servers, [])
   }
 
   #infra profile
@@ -90,7 +91,7 @@ resource "spectrocloud_cluster_libvirt" "this" {
   dynamic "machine_pool" {
     for_each = each.value.node_groups
     content {
-      name          = machine_pool.value.name
+      name                    = machine_pool.value.name
       control_plane           = try(machine_pool.value.control_plane, false)
       control_plane_as_worker = try(machine_pool.value.control_plane_as_worker, false)
       count                   = machine_pool.value.count
@@ -99,13 +100,13 @@ resource "spectrocloud_cluster_libvirt" "this" {
         for_each = machine_pool.value.placements
 
         content {
-          appliance_id = placements.value.appliance
-          network_type = placements.value.network_type
-          network_names = placements.value.network_names
-          image_storage_pool = placements.value.image_storage_pool
+          appliance_id        = placements.value.appliance
+          network_type        = placements.value.network_type
+          network_names       = placements.value.network_names
+          image_storage_pool  = placements.value.image_storage_pool
           target_storage_pool = placements.value.target_storage_pool
-          data_storage_pool = placements.value.data_storage_pool
-          network = placements.value.network
+          data_storage_pool   = placements.value.data_storage_pool
+          network             = placements.value.network
         }
       }
 

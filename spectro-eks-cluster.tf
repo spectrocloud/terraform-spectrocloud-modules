@@ -1,6 +1,7 @@
 resource "spectrocloud_cluster_eks" "this" {
-  for_each = { for x in local.eks_clusters: x.name => x }
+  for_each = { for x in local.eks_clusters : x.name => x }
   name     = each.value.name
+  tags     = try(each.value.tags, [])
 
   cluster_profile {
     id = local.profile_map[each.value.profiles.infra.name].id

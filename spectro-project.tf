@@ -10,4 +10,5 @@ resource "spectrocloud_project" "project" {
 
   name        = each.value.name
   description = each.value.description
+  tags        = try(each.value.tags, [])
 }
