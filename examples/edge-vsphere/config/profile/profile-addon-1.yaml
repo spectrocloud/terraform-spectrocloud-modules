@@ -1,7 +1,7 @@
 name: addon-profile-1
 description: addon-profile-1
-type: add-on
 cloudType: all
+type: add-on
 defaultRepoURL: "${REPO_URL}"
 
 packs:

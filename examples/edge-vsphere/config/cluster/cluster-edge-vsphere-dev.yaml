@@ -1,0 +1,47 @@
+name: nikwithcred-mar25
+cloudType: edge-vsphere
+edge_host_uid: nik-withcreds-mar25
+wait: false
+profiles:
+  infra:
+    name: withcredentials-full
+  system:
+    name: system-profile-withcreds
+  addons:
+    - name: addon-profile-1
+cloud_config:
+  ssh_key: spectro2022
+  vip: 192.168.100.15
+  static_ip: false
+  network_type: VIP
+  datacenter: "Spectrocloud"
+  folder: "nikolay-ws/spc-nikwithcred-mar25"
+node_groups:
+  - name: master-pool
+    control_plane: true
+    control_plane_as_worker: true
+    count: 1
+    disk_size_gb: 40
+    memory_mb: 4096
+    cpu: 2
+    placement:
+      cluster: "Spectrocloud"
+      resource_pool: ""
+      datastore: "VOL_SC_CMP1_02"
+      network: "Spectro-Pvt-Net06"
+
+  - name: worker-pool
+    count: 1
+    disk_size_gb: 40
+    memory_mb: 8192
+    cpu: 4
+    placement:
+      cluster: "Spectrocloud"
+      resource_pool: ""
+      datastore: "VOL_SC_CMP1_02"
+      network: "Spectro-Pvt-Net06"
+
+scan_policy:
+  configuration_scan_schedule: "0 0 * * SUN"
+  penetration_scan_schedule: "0 0 * * SUN"
+  conformance_scan_schedule: "0 0 1 * *"

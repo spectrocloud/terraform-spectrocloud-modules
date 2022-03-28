@@ -6,8 +6,8 @@ profiles:
     name: libvirt-gpu-full
   system:
     name: system-profile
-  #addons:
-  #  - name: addon-profile-1
+  addons:
+    - name: addon-profile-1
 cloud_config:
   ssh_key: spectro2022
   vip: 192.168.100.15

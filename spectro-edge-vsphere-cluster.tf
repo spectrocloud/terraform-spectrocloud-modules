@@ -1,12 +1,15 @@
-resource "spectrocloud_cluster_libvirt" "this" {
-  for_each = { for x in local.libvirt_clusters : x.name => x }
+resource "spectrocloud_cluster_edge_vsphere" "this" {
+  for_each = { for x in local.edge_vsphere_clusters: x.name => x }
   name     = each.value.name
-  tags     = try(each.value.tags, [])
+  edge_host_uid = each.value.edge_host_uid
 
   cloud_config {
-    ssh_key     = try(each.value.cloud_config.ssh_key, "")
-    vip         = try(each.value.cloud_config.vip, "")
-    ntp_servers = try(each.value.cloud_config.ntp_servers, [])
+    ssh_key = each.value.cloud_config.ssh_key
+    static_ip = each.value.cloud_config.static_ip
+    network_type = each.value.cloud_config.network_type
+    vip = each.value.cloud_config.vip
+    datacenter = each.value.cloud_config.datacenter
+    folder     = each.value.cloud_config.folder
   }
 
   #infra profile
@@ -89,31 +92,22 @@ resource "spectrocloud_cluster_libvirt" "this" {
   dynamic "machine_pool" {
     for_each = each.value.node_groups
     content {
-      name                    = machine_pool.value.name
+      name          = machine_pool.value.name
       control_plane           = try(machine_pool.value.control_plane, false)
       control_plane_as_worker = try(machine_pool.value.control_plane_as_worker, false)
       count                   = machine_pool.value.count
 
-      dynamic "placements" {
-        for_each = machine_pool.value.placements
-
-        content {
-          appliance_id        = placements.value.appliance
-          network_type        = placements.value.network_type
-          network_names       = placements.value.network_names
-          image_storage_pool  = placements.value.image_storage_pool
-          target_storage_pool = placements.value.target_storage_pool
-          data_storage_pool   = placements.value.data_storage_pool
-          network             = placements.value.network
-        }
+      placement {
+          cluster       = machine_pool.value.placement.cluster
+          resource_pool = machine_pool.value.placement.resource_pool
+          datastore     = machine_pool.value.placement.datastore
+          network       = machine_pool.value.placement.network
       }
 
       instance_type {
         disk_size_gb           = machine_pool.value.disk_size_gb
         memory_mb              = machine_pool.value.memory_mb
         cpu                    = machine_pool.value.cpu
-        cpus_sets              = machine_pool.value.cpus_sets
-        attached_disks_size_gb = machine_pool.value.attached_disks_size_gb
       }
     }
   }
