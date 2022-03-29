@@ -214,6 +214,8 @@ locals {
     libvirt_clusters     = [for key in local.libvirt_keys : lookup(local.cluster_map, key)]
     edge_vsphere_keys = compact([for i, cluster in local.cluster_map : cluster.cloudType == "edge-vsphere" ? i : ""])
     edge_vsphere_clusters     = [for key in local.edge_vsphere_keys : lookup(local.cluster_map, key)]
+    edge_keys = compact([for i, cluster in local.cluster_map : cluster.cloudType == "edge" ? i : ""])
+    edge_clusters     = [for key in local.edge_keys : lookup(local.cluster_map, key)]
     // all edge clusters
     all_edge_clusters = setunion(local.libvirt_clusters)
   #edge

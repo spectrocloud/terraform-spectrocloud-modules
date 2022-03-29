@@ -4,7 +4,7 @@ edge_host_uid: nik-withcreds-mar25
 wait: false
 profiles:
   infra:
-    name: withcredentials-full
+    name: withcredentials-full-tf
   system:
     name: system-profile-withcreds
   addons:

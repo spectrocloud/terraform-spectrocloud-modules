@@ -1,4 +1,4 @@
-name: withcredentials-full
+name: withcredentials-full-tf
 description: ""
 type: cluster
 cloudType: vsphere

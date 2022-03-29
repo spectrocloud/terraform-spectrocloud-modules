@@ -1,0 +1,25 @@
+name: edge-tf
+cloudType: edge
+wait: false
+profiles:
+  infra:
+    name: withoutcreds-full
+cloud_config:
+  ssh_key: spectro2022
+node_groups:
+  - name: master-pool
+    control_plane: true
+    control_plane_as_worker: true
+    count: 1
+    placements:
+      - appliance: "edge-mar-6"
+
+  - name: worker-pool
+    count: 1
+    placements:
+      - appliance: "edge-mar-6"
+
+scan_policy:
+  configuration_scan_schedule: "0 0 * * SUN"
+  penetration_scan_schedule: "0 0 * * SUN"
+  conformance_scan_schedule: "0 0 1 * *"
