@@ -1,0 +1,673 @@
+name: bm-system-profile
+description: bm-system-profile
+type: system
+cloudType: all
+packs:
+  - name: "pfsense-gateway"
+    type: manifest
+    registry: Public Repo
+    manifests:
+      - name: pfsense-gateway-config
+        content: |
+          ---
+          apiVersion: v1
+          data:
+            user-data.tmpl: |
+              #cloud-config
+              write_files:
+              - encoding: base64
+                content: $${CONFIG_XML}
+                owner: root:root
+                path: /cf/conf/config.xml
+                permissions: '0644'
+            config-xml.tmpl: |
+              <?xml version="1.0"?>
+              <pfsense>
+                  <version>21.5</version>
+                  <lastchange></lastchange>
+                  <system>
+                      <optimization>normal</optimization>
+                      <hostname>gateway</hostname>
+                      <domain>edison</domain>
+                      <group>
+                          <name>all</name>
+                          <description><![CDATA[All Users]]></description>
+                          <scope>system</scope>
+                          <gid>1998</gid>
+                      </group>
+                      <group>
+                          <name>admins</name>
+                          <description><![CDATA[System Administrators]]></description>
+                          <scope>system</scope>
+                          <gid>1999</gid>
+                          <member>0</member>
+                          <priv>page-all</priv>
+                      </group>
+                      <user>
+                          <name>admin</name>
+                          <descr><![CDATA[System Administrator]]></descr>
+                          <scope>system</scope>
+                          <groupname>admins</groupname>
+                          <bcrypt-hash>$2y$10$K3ejlPZsxpqhd63EzyNgf.qK4RDhlSvW2ln.gIq7kbkVdlRiZ1XB2</bcrypt-hash>
+                          <uid>0</uid>
+                          <priv>user-shell-access</priv>
+                          <dashboardcolumns>2</dashboardcolumns>
+                          <authorizedkeys>c3NoLXJzYSBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFCZ1FDdzR4OW43NEtsVnRqUnBBRUhSVWJldnI2dVBDa0NnYkpHSTBKTUFhdnJ3K2JlTmI1V0wyOE1nOFU0MzBiWnhJRWFHU05pSXQreDk2aGFPY0RjOEFaMjRDa0Uxb1ZUS2x6aExyQkJGc0hmaVpuMHRYK1dtZWIyaGZBcmxQRnk2ZXJaZHRVTTUrYUQ2VFBYZmR4M0VWT2FBRzNncTFhbS9lSzFBM1NPVTVjTnFZMExjcWpGVDc0dG03T0NNc1VFSkg4emlCKzQ3ZTh2TWtDZjVIcTJqdVd5RjU0NTNiYzRaRHBMcW1hSXZ0UGpyN3NyQllLczI2MWpxRFlOWEF1aytyTExoRUt4VmNuY1o1U1pDbDJyWGVIdlRnb3lqZE1IWjYvWTNKZXhuYmg0Q2dkUVlmUU9HQStyQ01mVy9MTmFBV2hCUUlWRzZ1QU5mSEhhMTZQVE1XQTQzdlhTdUFCQ0VRQmR5VVhMQi9WWFlmcklOWTJQTnNPOG1FenVWcFRSaEQrSnRpT3BFejVQTlNXZk9qSUpSYjBBSjVDR2pHb0pSczdrck5QKzZsUWlTL0k5TnV4OThURjRla2FsYkMrOG9wUGFnTEhuL2NxaG9sSm1qQXp6QzV1by9yY1VKcldUNEYvODNoYmpUdEhKT01KdEZXV2lZcURmUWVoOENGOUJoeGs9IHJvb3RAbG9jYWxob3N0</authorizedkeys>
+                          <ipsecpsk></ipsecpsk>
+                          <webguicss>pfSense.css</webguicss>
+                      </user>
+                      <user>
+                          <scope>user</scope>
+                          <bcrypt-hash>$2y$10$5i3toKDJLCdLS0w71m7TF.49vokuIneuA97Tq3cJYotKzeEbn0Lqu</bcrypt-hash>
+                          <descr><![CDATA[system gateway service]]></descr>
+                          <name>sysgwservice</name>
+                          <expires></expires>
+                          <dashboardcolumns>2</dashboardcolumns>
+                          <authorizedkeys></authorizedkeys>
+                          <ipsecpsk></ipsecpsk>
+                          <webguicss>pfSense.css</webguicss>
+                          <uid>2001</uid>
+                          <priv>user-shell-access</priv>
+                      </user>
+                      <nextuid>2000</nextuid>
+                      <nextgid>2000</nextgid>
+                      <timeservers>$${NTP}</timeservers>
+                      <webgui>
+                          <protocol>http</protocol>
+                          <loginautocomplete></loginautocomplete>
+                          <ssl-certref>602232b5962a3</ssl-certref>
+                          <dashboardcolumns>2</dashboardcolumns>
+                          <port>28080</port>
+                          <max_procs>2</max_procs>
+                          <webguicss>pfSense.css</webguicss>
+                          <logincss>1e3f75;</logincss>
+                          <nodnsrebindcheck></nodnsrebindcheck>
+                      </webgui>
+                      <disablenatreflection>yes</disablenatreflection>
+                      <disablesegmentationoffloading></disablesegmentationoffloading>
+                      <disablelargereceiveoffloading></disablelargereceiveoffloading>
+                      <ipv6allow></ipv6allow>
+                      <maximumtableentries>400000</maximumtableentries>
+                      <powerd_ac_mode>hadp</powerd_ac_mode>
+                      <powerd_battery_mode>hadp</powerd_battery_mode>
+                      <powerd_normal_mode>hadp</powerd_normal_mode>
+                      <bogons>
+                          <interval>monthly</interval>
+                      </bogons>
+                      <already_run_config_upgrade></already_run_config_upgrade>
+                      <ssh>
+                          <enable>enabled</enable>
+                          <sshdagentforwarding>enabled</sshdagentforwarding>
+                          <port>25812</port>
+                      </ssh>
+                      <timezone>Etc/UTC</timezone>
+                      <serialspeed>115200</serialspeed>
+                      <primaryconsole>serial</primaryconsole>
+                      <sshguard_threshold></sshguard_threshold>
+                      <sshguard_blocktime></sshguard_blocktime>
+                      <sshguard_detection_time></sshguard_detection_time>
+                      <sshguard_whitelist></sshguard_whitelist>
+                      <language>en_US</language>
+                      <disablechecksumoffloading></disablechecksumoffloading>
+                      <hn_altq_enable></hn_altq_enable>
+                      <dnsserver>$${DNS_1}</dnsserver>
+                      <dnsserver>$${DNS_2}</dnsserver>
+                      <dnsallowoverride></dnsallowoverride>
+                  </system>
+                    <interfaces>
+                        <wan>
+                            <enable></enable>
+                            <if>vtnet1</if>
+                            <descr><![CDATA[WAN]]></descr>
+                            <ipaddr>$${IP_ADDR_WAN}</ipaddr>
+                            <dhcphostname></dhcphostname>
+                            <alias-address></alias-address>
+                            <alias-subnet>32</alias-subnet>
+                            <dhcprejectfrom></dhcprejectfrom>
+                            <adv_dhcp_pt_timeout></adv_dhcp_pt_timeout>
+                            <adv_dhcp_pt_retry></adv_dhcp_pt_retry>
+                            <adv_dhcp_pt_select_timeout></adv_dhcp_pt_select_timeout>
+                            <adv_dhcp_pt_reboot></adv_dhcp_pt_reboot>
+                            <adv_dhcp_pt_backoff_cutoff></adv_dhcp_pt_backoff_cutoff>
+                            <adv_dhcp_pt_initial_interval></adv_dhcp_pt_initial_interval>
+                            <adv_dhcp_pt_values>SavedCfg</adv_dhcp_pt_values>
+                            <adv_dhcp_send_options></adv_dhcp_send_options>
+                            <adv_dhcp_request_options></adv_dhcp_request_options>
+                            <adv_dhcp_required_options></adv_dhcp_required_options>
+                            <adv_dhcp_option_modifiers></adv_dhcp_option_modifiers>
+                            <adv_dhcp_config_advanced></adv_dhcp_config_advanced>
+                            <adv_dhcp_config_file_override></adv_dhcp_config_file_override>
+                            <adv_dhcp_config_file_override_path></adv_dhcp_config_file_override_path>
+                            <ipaddrv6>dhcp6</ipaddrv6>
+                            <dhcp6-duid></dhcp6-duid>
+                            <dhcp6-ia-pd-len>0</dhcp6-ia-pd-len>
+                            <adv_dhcp6_prefix_selected_interface>wan</adv_dhcp6_prefix_selected_interface>
+                            <spoofmac></spoofmac>
+                        </wan>
+                      <lan>
+                          <enable></enable>
+                          <if>vtnet0</if>
+                          <descr><![CDATA[LAN]]></descr>
+                          <spoofmac></spoofmac>
+                          <ipaddr>$${IP_ADDR_LAN}</ipaddr>
+                          <subnet>$${SUBNET_LAN}</subnet>
+                      </lan>
+                  </interfaces>
+                  <staticroutes>
+                  </staticroutes>
+                  <dhcpd>
+                      <lan>
+                          <range>
+                              <from>$${DHCP_RANGE_START}</from>
+                              <to>$${DHCP_RANGE_END}</to>
+                          </range>
+                          <enable></enable>
+                          <failover_peerip></failover_peerip>
+                          <dhcpleaseinlocaltime></dhcpleaseinlocaltime>
+                          <defaultleasetime>94670856</defaultleasetime>
+                          <maxleasetime>189341712</maxleasetime>
+                          <netmask></netmask>
+                          <gateway></gateway>
+                          <domain></domain>
+                          <domainsearchlist></domainsearchlist>
+                          <ddnsdomain></ddnsdomain>
+                          <ddnsdomainprimary></ddnsdomainprimary>
+                          <ddnsdomainsecondary></ddnsdomainsecondary>
+                          <ddnsdomainkeyname></ddnsdomainkeyname>
+                          <ddnsdomainkeyalgorithm>hmac-md5</ddnsdomainkeyalgorithm>
+                          <ddnsdomainkey></ddnsdomainkey>
+                          <mac_allow></mac_allow>
+                          <mac_deny></mac_deny>
+                          <ddnsclientupdates>allow</ddnsclientupdates>
+                          <ntpserver>gateway.edison</ntpserver>
+                          <tftp></tftp>
+                          <ldap></ldap>
+                          <nextserver></nextserver>
+                          <filename></filename>
+                          <filename32></filename32>
+                          <filename64></filename64>
+                          <rootpath></rootpath>
+                          <numberoptions></numberoptions>
+                      </lan>
+                  </dhcpd>
+                  <dhcpdv6>
+                      <lan>
+                          <range>
+                              <from>::1000</from>
+                              <to>::2000</to>
+                          </range>
+                          <ramode>assist</ramode>
+                          <rapriority>medium</rapriority>
+                      </lan>
+                  </dhcpdv6>
+                  <snmpd>
+                      <syslocation></syslocation>
+                      <syscontact></syscontact>
+                      <rocommunity>public</rocommunity>
+                  </snmpd>
+                  <diag>
+                      <ipv6nat></ipv6nat>
+                  </diag>
+                  <syslog>
+                      <filterdescriptions>1</filterdescriptions>
+                  </syslog>
+                  <nat>
+                      <outbound>
+                          <mode>automatic</mode>
+                      </outbound>
+                  </nat>
+                  <filter>
+                      <rule>
+                          <id></id>
+                          <tracker>1626111739</tracker>
+                          <type>pass</type>
+                          <interface>wan</interface>
+                          <ipprotocol>inet</ipprotocol>
+                          <tag></tag>
+                          <tagged></tagged>
+                          <max></max>
+                          <max-src-nodes></max-src-nodes>
+                          <max-src-conn></max-src-conn>
+                          <max-src-states></max-src-states>
+                          <statetimeout></statetimeout>
+                          <statetype><![CDATA[keep state]]></statetype>
+                          <os></os>
+                          <protocol>tcp</protocol>
+                          <source>
+                              <any></any>
+                          </source>
+                          <destination>
+                              <any></any>
+                              <port>25812</port>
+                          </destination>
+                          <descr><![CDATA[For SSH Agent Forwarding]]></descr>
+                      </rule>
+                      <rule>
+                          <type>pass</type>
+                          <ipprotocol>inet</ipprotocol>
+                          <descr><![CDATA[Default allow LAN to any rule]]></descr>
+                          <interface>lan</interface>
+                          <tracker>0100000101</tracker>
+                          <source>
+                              <network>lan</network>
+                          </source>
+                          <destination>
+                              <any></any>
+                          </destination>
+                      </rule>
+                      <separator>
+                          <wan></wan>
+                          <lan></lan>
+                      </separator>
+                  </filter>
+                  <shaper></shaper>
+                  <ipsec>
+                      <vtimaps></vtimaps>
+                  </ipsec>
+                  <aliases></aliases>
+                  <proxyarp></proxyarp>
+                  <cron>
+                      <item>
+                          <minute>1,31</minute>
+                          <hour>0-5</hour>
+                          <mday>*</mday>
+                          <month>*</month>
+                          <wday>*</wday>
+                          <who>root</who>
+                          <command>/usr/bin/nice -n20 adjkerntz -a</command>
+                      </item>
+                      <item>
+                          <minute>1</minute>
+                          <hour>3</hour>
+                          <mday>1</mday>
+                          <month>*</month>
+                          <wday>*</wday>
+                          <who>root</who>
+                          <command>/usr/bin/nice -n20 /etc/rc.update_bogons.sh</command>
+                      </item>
+                      <item>
+                          <minute>1</minute>
+                          <hour>1</hour>
+                          <mday>*</mday>
+                          <month>*</month>
+                          <wday>*</wday>
+                          <who>root</who>
+                          <command>/usr/bin/nice -n20 /etc/rc.dyndns.update</command>
+                      </item>
+                      <item>
+                          <minute>*/60</minute>
+                          <hour>*</hour>
+                          <mday>*</mday>
+                          <month>*</month>
+                          <wday>*</wday>
+                          <who>root</who>
+                          <command>/usr/bin/nice -n20 /usr/local/sbin/expiretable -v -t 3600 virusprot</command>
+                      </item>
+                      <item>
+                          <minute>30</minute>
+                          <hour>12</hour>
+                          <mday>*</mday>
+                          <month>*</month>
+                          <wday>*</wday>
+                          <who>root</who>
+                          <command>/usr/bin/nice -n20 /etc/rc.update_urltables</command>
+                      </item>
+                      <item>
+                          <minute>1</minute>
+                          <hour>0</hour>
+                          <mday>*</mday>
+                          <month>*</month>
+                          <wday>*</wday>
+                          <who>root</who>
+                          <command>/usr/bin/nice -n20 /etc/rc.update_pkg_metadata</command>
+                      </item>
+                      <item>
+                          <minute>*/1</minute>
+                          <hour>*</hour>
+                          <mday>*</mday>
+                          <month>*</month>
+                          <wday>*</wday>
+                          <who>root</who>
+                          <command>/usr/sbin/newsyslog</command>
+                      </item>
+                      <item>
+                          <minute>1</minute>
+                          <hour>3</hour>
+                          <mday>*</mday>
+                          <month>*</month>
+                          <wday>*</wday>
+                          <who>root</who>
+                          <command>/etc/rc.periodic daily</command>
+                      </item>
+                      <item>
+                          <minute>15</minute>
+                          <hour>4</hour>
+                          <mday>*</mday>
+                          <month>*</month>
+                          <wday>6</wday>
+                          <who>root</who>
+                          <command>/etc/rc.periodic weekly</command>
+                      </item>
+                      <item>
+                          <minute>30</minute>
+                          <hour>5</hour>
+                          <mday>1</mday>
+                          <month>*</month>
+                          <wday>*</wday>
+                          <who>root</who>
+                          <command>/etc/rc.periodic monthly</command>
+                      </item>
+                  </cron>
+                  <wol></wol>
+                  <rrd>
+                      <enable></enable>
+                  </rrd>
+                  <widgets>
+                      <sequence>system_information:col1:show,netgate_services_and_support:col2:show,interfaces:col2:show</sequence>
+                      <period>10</period>
+                  </widgets>
+                  <openvpn></openvpn>
+                  <dnshaper></dnshaper>
+                  <unbound>
+                      <active_interface>all</active_interface>
+                      <outgoing_interface>all</outgoing_interface>
+                      <custom_options></custom_options>
+                      <hideidentity></hideidentity>
+                      <hideversion></hideversion>
+                      <dnssecstripped></dnssecstripped>
+                      <port></port>
+                      <sslcertref>602232b5962a3</sslcertref>
+                      <regdhcp></regdhcp>
+                      <regdhcpstatic></regdhcpstatic>
+                      <forwarding></forwarding>
+                      <system_domain_local_zone_type>transparent</system_domain_local_zone_type>
+                      <tlsport></tlsport>
+                  </unbound>
+                  <revision>
+                      <time>1645639988</time>
+                      <description><![CDATA[admin@192.168.100.10 (Local Database): System:  NTP servers: &quot;&quot; -&gt; &quot;ntp.ge.com&quot;]]></description>
+                      <username><![CDATA[admin@192.168.100.10 (Local Database)]]></username>
+                  </revision>
+                  <cert>
+                      <refid>602232b5962a3</refid>
+                      <descr><![CDATA[webConfigurator default (602232b5962a3)]]></descr>
+                      <type>server</type>
+                      <crt>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVoRENDQTJ5Z0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREJhTVRnd05nWURWUVFLRXk5d1psTmwKYm5ObElIZGxZa052Ym1acFozVnlZWFJ2Y2lCVFpXeG1MVk5wWjI1bFpDQkRaWEowYVdacFkyRjBaVEVlTUJ3RwpBMVVFQXhNVmNHWlRaVzV6WlMwMk1ESXlNekppTlRrMk1tRXpNQjRYRFRJeE1ESXdPVEEyTlRrd01Wb1hEVEl5Ck1ETXhOREEyTlRrd01Wb3dXakU0TURZR0ExVUVDaE12Y0daVFpXNXpaU0IzWldKRGIyNW1hV2QxY21GMGIzSWcKVTJWc1ppMVRhV2R1WldRZ1EyVnlkR2xtYVdOaGRHVXhIakFjQmdOVkJBTVRGWEJtVTJWdWMyVXROakF5TWpNeQpZalU1TmpKaE16Q0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU1ZblNtUG93OUt6Cml5b2ZVeW5ZaGN2YnN3YTVaVFVYTVVmZGdjaTlzamp2Ymw1eUhHZlhaY1BCdzRuUk14eUQ4enE0dEtuZ2EzSEkKNFNqbDJkamljdHM2c0loQ1FxbUg4bGpUWWVjRkw3WDlpRUdWaHpnU0tPcURzS3NUeGhaMEs0TkVwMlM1bUdTUgowZ0pWbTlBeTJDUzhVWUFjRFUrVmd5bVR5cVVUZW5CcEVyVzlWSEZmUnhxZTBUcFlmT2tXbjRSb3RxMnNrRGlhCnN4dWhWd2pMU3dNR2lqSnJ0aTM3UGQyRnd0UW1CRGY4TEI3NmhuY1BpMmVDWXE1Ly9EZnllZkRPOVVEZ0ZxL3QKNHp6d3JkT2FTcGJoVzVRV0RjWGtNQU96OGNxTTJZZVFxVVZGRGV0aFFPcnZrMjQyaXRMTWtzWmh5aHFOL21ITgpTN0JZN3F6QXVCY0NBd0VBQWFPQ0FWTXdnZ0ZQTUFrR0ExVWRFd1FDTUFBd0VRWUpZSVpJQVliNFFnRUJCQVFECkFnWkFNQXNHQTFVZER3UUVBd0lGb0RBekJnbGdoa2dCaHZoQ0FRMEVKaFlrVDNCbGJsTlRUQ0JIWlc1bGNtRjAKWldRZ1UyVnlkbVZ5SUVObGNuUnBabWxqWVhSbE1CMEdBMVVkRGdRV0JCUzY1eDhTQmJhY3FsN3gzL05UcEFqTgpPUlpaNmpDQmdnWURWUjBqQkhzd2VZQVV1dWNmRWdXMm5LcGU4ZC96VTZRSXpUa1dXZXFoWHFSY01Gb3hPREEyCkJnTlZCQW9UTDNCbVUyVnVjMlVnZDJWaVEyOXVabWxuZFhKaGRHOXlJRk5sYkdZdFUybG5ibVZrSUVObGNuUnAKWm1sallYUmxNUjR3SEFZRFZRUURFeFZ3WmxObGJuTmxMVFl3TWpJek1tSTFPVFl5WVRPQ0FRQXdKd1lEVlIwbApCQ0F3SGdZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ0JnZ3JCZ0VGQlFnQ0FqQWdCZ05WSFJFRUdUQVhnaFZ3ClpsTmxibk5sTFRZd01qSXpNbUkxT1RZeVlUTXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBTVFoWi9JNy8vbVAKSVh0dHo0Y0V3MlQ5SjdlSlpGQStSUy9UcStPUVlMU2tSWTNTQVh0cElYWWRhTkdFYWxuVDM4ZmZ6VllFb2hLawpKTXpTUURkUkxYYmZRS2oxZi9ZM1B0NFlOeFg2Q2lFTUI4cWFINFlOZmphVk1pdVloaUIwKzZiaW9Ic1plR2tECitQYlEzTzZ3cUg3aWVlMEM0Q2FHUUhWVFphQ2dOelBFUU9WYmdJc245Wm1UZlBETHF4OG9RZkRybm1ETzFwV1kKWHowMDlWTmRyb3VWNlVEc0xlSTd2VjAwQ3RNa2NFSU1ZTlBaSHliYjZ4Y3EzRU1BQjlYdG9BeklLYXdGWDA3bwo1bkR1T3dqZ0d2SzdqcHp1bmxpNm54TVNlYlpocjdXOWQra1ZUQU1Qbk5zd2ZsY0hvZXo5NXFYVGZzSjA3MXVzCmZYLzloSWZ6cHlzPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</crt>
+                      <prv>LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2UUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktjd2dnU2pBZ0VBQW9JQkFRREdKMHBqNk1QU3M0c3EKSDFNcDJJWEwyN01HdVdVMUZ6RkgzWUhJdmJJNDcyNWVjaHhuMTJYRHdjT0owVE1jZy9NNnVMU3A0R3R4eU9Fbwo1ZG5ZNG5MYk9yQ0lRa0twaC9KWTAySG5CUysxL1loQmxZYzRFaWpxZzdDckU4WVdkQ3VEUktka3VaaGtrZElDClZadlFNdGdrdkZHQUhBMVBsWU1wazhxbEUzcHdhUksxdlZSeFgwY2FudEU2V0h6cEZwK0VhTGF0ckpBNG1yTWIKb1ZjSXkwc0RCb295YTdZdCt6M2RoY0xVSmdRMy9Dd2Urb1ozRDR0bmdtS3VmL3czOG5ud3p2VkE0QmF2N2VNOAo4SzNUbWtxVzRWdVVGZzNGNURBRHMvSEtqTm1Ia0tsRlJRM3JZVURxNzVOdU5vclN6SkxHWWNvYWpmNWh6VXV3CldPNnN3TGdYQWdNQkFBRUNnZ0VBU1BrWlBUZndQYjBmSi9FSFNHYlR4eUp1aUxCbjVDaFpYclRsWWM3eVBtTjIKaXRPTlFIU2pwbmJLRXd2MnZhNmVPV2JpS1psYkdEazVLajJUZjNyTmY0emFqQ09TdHlvNGhwdTU5MEVDdEF2ZApUUUhMSFV3YXcxcWlDaTZyQ1lQWXJtdnZGWG4vOURGN1hKNjRWZkVUaGx2UHk5VUkxZUVpdjRJTTQ4UUxtQytECjZ2dlNRUXQzc0dxVXJjTlFPejRROUQ1RmJMVThYWFFqZEhFVThWY1oyQlBSWU1tZHRwS0FVUUo2M3MxVDliR3kKaUhMWFdRb1BFWkpZN3lLWERjYmQ2T20zKzB4VXhEVFlmdTExdDk5dHBLaWFmM0plcFVHTEMvN0pwZ2hjN21seApmUWVhSWtoTGphSGZJalNBUWV6UTJqd1hmWGJib1AvNXp2dENhK0Q1QVFLQmdRRGtvYVhHZHBNNC9yUFgyTThaCk1wSlhBZEhvRE5CRDVWVXlqTnphRnBvTFFZa1lDWHdESHgvZnR5VDJHcnJibmdScEdzdndzWEVnS09NK3BGOGoKeVI0OG9LU1A3b1lpMFp5SUpKVERJZ2djczltMXRUVk1xd0NLNGVqTmNzZnV4ZGhma255U2l2bm45N0VnaFUrOQpQREpCamdRZys2NytIdEtBQmRzNG9mSnVnUUtCZ1FEZDM2ZGNvSEJoc1liYWlEM2cyVFdHTDhHeDNNWEI2dlQyCjFJamlISFg0U0xEQi9nMWlGUW5jQkkzM01SV3Q1ajhVc3dZWnE5bWdSZDlXNy95eDNLcFlYUU8rdDZKakcrVkQKVm43T2xPQ2s5Y3FCN0Vhbm9ZaFRmcXVSbGhYUkoxK1gyem9ITmJ6Zm0xbU5YNWtKeWdPZ1BlYy9PWmpZWnV1ZQpkWnFVUHpDS2x3S0JnUUNkVmRCckh6WjVSbTRrNEFMRTZGUmtvOC83ekxXVnc4QTVwVTVtbHA4emw4bnNUTHFXCnUxaUg3OVR6dDdsWFlRclArYXpXMm9WckNEZzU1NHZCYUtueU51cUlVakRrelRMWFRiVkNBNjFwY3lzakxLeWQKTWlDUmNwMXVwTXFKdW9VSVlCcHlEa21rSklRMFNRbHl4SFloUHNZQW5MTDBGZW51U0Jsd2c2SCtBUUtCZ0FxWgprOHBXRStobTdkVms2dWZpR0srSGVvNS95S2JpRGIvNUdXME1CUXJPbGpzK1l1OUxxQVB0NThabWZ1Mm04VjZRCnl2clEvZjJ0T09WVFk5UXZnYWZsRWJlNzJETTU4dk1MbjlWSXdZNi8rMlBIb1B5RE9Cc2RFeDlLZDFKZHVqQnMKRmRLZ1c1eW5ORmtQdHlVRGxMYkVIbGNqN2t4d1psTlV0UVRlRy9pVEFvR0FHb1d5QmJBeWcxbjhWcVBZMm9oTgpnR0FNRm13bzBtQjhWZXN2TFh4TzZubFlKMUI5RWRHVDNvR0FFSzFkc084ZzR1WXMwMkFQYWxEUnFoaUIzV2JGCnVPQ1dxRDljZ2Z6TGdWaXdkOHVLTXFhSHNOTjRWeXpIZ0UyYWY3QnlLa2czQWRBUXFDNk56ZXVvRzRhYm14OWcKTzRwVWFqZWdBd3Nic2lUektmYVpUNEE9Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K</prv>
+                  </cert>
+                  <installedpackages>
+                      <package>
+                          <name>API</name>
+                          <internal_name>api</internal_name>
+                          <descr><![CDATA[The missing REST API package for pfSense]]></descr>
+                          <website>https://github.com/jaredhendrickson13/pfsense-api</website>
+                          <category>System</category>
+                          <version>%%PKGVERSION%%</version>
+                          <configurationfile>api.xml</configurationfile>
+                          <maintainer>jaredhendrickson13@gmail.com</maintainer>
+                          <conf>
+                              <enable></enable>
+                              <persist></persist>
+                              <allowed_interfaces>lan</allowed_interfaces>
+                              <authmode>jwt</authmode>
+                              <content_type>json</content_type>
+                              <server_key>e568b85aed939826ead0199aa4238e399c9e12806f4dc655f8ee4a74818a19a2</server_key>
+                              <jwt_exp>3600</jwt_exp>
+                              <keyhash>sha256</keyhash>
+                              <keybytes>16</keybytes>
+                              <keys></keys>
+                          </conf>
+                          <tabs>
+                              <tab>
+                                  <text><![CDATA[Settings]]></text>
+                                  <url>/api/</url>
+                                  <active></active>
+                              </tab>
+                              <tab>
+                                  <text><![CDATA[Documentation]]></text>
+                                  <url>/api/v1/</url>
+                                  <active></active>
+                              </tab>
+                          </tabs>
+                      </package>
+                      <menu>
+                          <name>API</name>
+                          <tooltiptext>The missing REST API package for pfSense</tooltiptext>
+                          <section>System</section>
+                          <url>/api/</url>
+                      </menu>
+                  </installedpackages>
+                  <ppps></ppps>
+                  <gateways></gateways>
+                  <ntpd>
+                      <orphan>5</orphan>
+                      <enable>enabled</enable>
+                      <ntpminpoll></ntpminpoll>
+                      <ntpmaxpoll></ntpmaxpoll>
+                      <dnsresolv>auto</dnsresolv>
+                      <interface>lan</interface>
+                      <logpeer>yes</logpeer>
+                      <logsys>yes</logsys>
+                  </ntpd>
+                  <dnsmasq>
+                      <enable></enable>
+                      <regdhcp></regdhcp>
+                      <regdhcpstatic></regdhcpstatic>
+                      <custom_options></custom_options>
+                      <interface></interface>
+                      <no_private_reverse></no_private_reverse>
+                      <domainoverrides>
+                          <domain>edison</domain>
+                          <ip>!</ip>
+                          <descr><![CDATA[To prevent non-local lookups for edison domain]]></descr>
+                      </domainoverrides>
+                  </dnsmasq>
+              </pfsense>
+          kind: ConfigMap
+          metadata:
+            name: pfsense-vm-files
+          ---
+          apiVersion: v1
+          data:
+            credentials: VVJJX1RFTVBMQVRFOiAicWVtdStzc2g6Ly8lc0Alcy9zeXN0ZW0/a2V5ZmlsZT0lcyZzb2NrZXQ9JXMma25vd25faG9zdHNfdmVyaWZ5PWlnbm9yZSI=
+          kind: Secret
+          metadata:
+            name: libvirt-account-creds
+          type: Opaque
+          ---
+          apiVersion: terraform.core.oam.dev/v1beta1
+          kind: Provider
+          metadata:
+            name: libvirt
+          spec:
+            provider: custom
+            credentials:
+              source: Secret
+              secretRef:
+                name: libvirt-account-creds
+                key: credentials
+          ---
+          apiVersion: terraform.core.oam.dev/v1beta1
+          kind: Configuration
+          metadata:
+            name: pfsense-gateway-vm-config
+          spec:
+            volumeSpec:
+              volumeMounts:
+                - name: libvirt
+                  mountPath: /var/run/libvirt/libvirt-sock
+                - name: spectro-directory
+                  mountPath: /opt/spectrocloud
+                - mountPath: "/var/files"
+                  name: files-vol
+              volumes:
+                - name: files-vol
+                  configMap:
+                    name: pfsense-vm-files
+                - name: libvirt
+                  hostPath:
+                    path: /var/run/libvirt/libvirt-sock
+                    type: Socket
+                - name: spectro-directory
+                  hostPath:
+                    path: /opt/spectrocloud
+                    type: Directory
+            deleteResource: true
+            variable:
+              VM_NAME: "pfsense-gateway-vm"
+              NTP: FROM_SECRET_REF
+              DNS_1: FROM_SECRET_REF
+              DNS_2: FROM_SECRET_REF
+              IP_ADDR_WAN: FROM_SECRET_REF
+              IP_ADDR_LAN: FROM_SECRET_REF
+              SUBNET_LAN: FROM_SECRET_REF
+              DHCP_RANGE_START: FROM_SECRET_REF
+              DHCP_RANGE_END: FROM_SECRET_REF
+            providerRef:
+              name: libvirt
+            hcl: |
+              terraform {
+                required_version = ">= 0.13"
+                required_providers {
+                  libvirt = {
+                    source  = "dmacvicar/libvirt"
+                    version = "0.6.14"
+                  }
+                }
+              }
+          
+              ##### VARIABLES #####
+              variable "URI_TEMPLATE" {
+                type = string
+                default = "qemu+ssh://%s@%s/system?keyfile=%s&socket=%s&known_hosts_verify=ignore"
+              }
+          
+              variable "NTP" {
+                type = string
+              }
+          
+              variable "DNS_1" {
+                type = string
+              }
+          
+              variable "DNS_2" {
+                type = string
+              }
+          
+              variable "IP_ADDR_WAN" {
+                type = string
+              }
+          
+              variable "IP_ADDR_LAN" {
+                type = string
+              }
+          
+              variable "SUBNET_LAN" {
+                type = string
+              }
+          
+              variable "DHCP_RANGE_START" {
+                type = string
+              }
+          
+              variable "DHCP_RANGE_END" {
+                type = string
+              }
+          
+              variable "LIBVIRT_SOCKET" {
+                type = string
+                default = "/var/run/libvirt/libvirt-sock"
+              }
+          
+              variable "VM_NAME" {
+                type = string
+                default = "pfsense-terraform"
+              }
+          
+              ##### OUTPUT #####
+              output "config_value" {
+                value = data.template_file.config.rendered
+              }
+          
+              output "user_data_value" {
+                value = data.template_file.user_data.rendered
+              }
+          
+              ##### PROVIDER #####
+              provider "libvirt" {
+                uri = "qemu:///system"
+                #uri = format(var.URI_TEMPLATE, var.SSH_USER, var.HOST_IP, var.SSH_KEY, var.LIBVIRT_SOCKET)
+              }
+          
+              data "template_file" "config" {
+                template = file("/var/files/config-xml.tmpl")
+                vars = {
+                  NTP = var.NTP
+                  DNS_1 = var.DNS_1
+                  DNS_2 = var.DNS_2
+                  IP_ADDR_WAN = var.IP_ADDR_WAN
+                  IP_ADDR_LAN = var.IP_ADDR_LAN
+                  SUBNET_LAN = var.SUBNET_LAN
+                  DHCP_RANGE_START = var.DHCP_RANGE_START
+                  DHCP_RANGE_END = var.DHCP_RANGE_END
+                }
+              }
+          
+              data "template_file" "user_data" {
+                template = file("/var/files/user-data.tmpl")
+                vars = {
+                  CONFIG_XML = base64encode(data.template_file.config.rendered)
+                }
+              }
+          
+              resource "libvirt_pool" "ubuntu" {
+                name = "ubuntuop"
+                type = "dir"
+                path = "/var/lib/libvirt/terraform-provider-libvirt-pool-ubuntuoperator"
+              }
+          
+              resource "libvirt_volume" "ubuntu-qcow2" {
+                name   = "ubuntu-qcow2"
+                pool   = libvirt_pool.ubuntu.name
+                source = "/opt/spectrocloud/vm-operator/pfsense-cloudinit-base-gehc-2.5.1-SC.qcow2"
+                format = "qcow2"
+              }
+          
+              resource "libvirt_cloudinit_disk" "commoninit" {
+                name           = "commoninit.iso"
+                user_data      = data.template_file.user_data.rendered
+                pool           = libvirt_pool.ubuntu.name
+              }
+          
+              resource "libvirt_domain" "domain-ubuntu" {
+                name   = var.VM_NAME
+                memory = "2048"
+                vcpu   = 1
+          
+                cloudinit = libvirt_cloudinit_disk.commoninit.id
+          
+                network_interface {
+                   bridge = "br0"
+                }
+          
+                network_interface {
+                  bridge = "br1"
+                }
+          
+                console {
+                  type        = "pty"
+                  target_port = "0"
+                  target_type = "serial"
+                }
+          
+                disk {
+                  volume_id = libvirt_volume.ubuntu-qcow2.id
+                }
+          
+                graphics {
+                  type        = "vnc"
+                  listen_type = "address"
+                  listen_address = "0.0.0.0"
+                  autoport    = true
+                }
+              }
