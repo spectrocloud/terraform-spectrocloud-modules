@@ -28,13 +28,13 @@ locals {
   }
 
   appliances = {
-    for k in fileset("config/", "appliance-*.yaml") :
-    trimsuffix(k, ".yaml") => yamldecode(file("config/${k}"))
+    for k in fileset("config/appliance", "appliance-*.yaml") :
+    trimsuffix(k, ".yaml") => yamldecode(file("config/appliance/${k}"))
   }
 
   clusters = {
-    for k in fileset("config", "cluster-*.yaml") :
-    trimsuffix(k, ".yaml") => yamldecode(file("config/${k}"))
+    for k in fileset("config/cluster", "cluster-*.yaml") :
+    trimsuffix(k, ".yaml") => yamldecode(file("config/cluster/${k}"))
   }
 }
 
