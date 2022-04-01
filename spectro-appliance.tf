@@ -22,7 +22,7 @@ data "spectrocloud_appliance" "this" {
 resource "spectrocloud_appliance" "appliance" {
   for_each = var.appliances
 
-  uid = each.value.uid
+  uid = each.value.id
   labels = try(each.value.name, false) ? {
     name = try(each.value.name, "")
   } : {}
