@@ -55,10 +55,10 @@ locals {
   packs           = flatten([for v in var.profiles : [for vv in v.packs : vv if can(vv.version)]])
   pack_data_names = [for v in local.packs : v.name]
 
-  pack_versions       = [for v in local.packs : v.version]
-  pack_types          = [for v in local.packs : v.type]
-  pack_all_registries = [for v in local.packs : v.registry]
-  pack_registries     = [for v in local.packs : v.registry if v.type != "helm" && v.registry != ""]
+  pack_versions              = [for v in local.packs : v.version]
+  pack_types                 = [for v in local.packs : v.type]
+  pack_all_registries        = [for v in local.packs : v.registry]
+  pack_registries            = [for v in local.packs : v.registry if v.type != "helm" && v.registry != ""]
   helm_registries_from_packs = [for v in local.packs : v.registry if v.type == "helm"]
 
 

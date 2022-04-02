@@ -17,7 +17,7 @@ data "spectrocloud_cloudaccount_tencent" "this" {
 resource "spectrocloud_cloudaccount_tencent" "account" {
   for_each = { for x in local.tke_accounts : x.name => x }
 
-  name        = each.value.name
-  tencent_secret_id = each.value.tencent_secret_id
+  name               = each.value.name
+  tencent_secret_id  = each.value.tencent_secret_id
   tencent_secret_key = each.value.tencent_secret_key
 }

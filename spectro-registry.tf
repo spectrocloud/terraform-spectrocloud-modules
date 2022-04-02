@@ -1,8 +1,8 @@
 locals {
-  registry_map  = {for i, registry in var.registries : tostring(i) => registry}
-  ecr_keys     = compact([for i, registry in local.registry_map : registry.type == "ecr" ? i : ""])
-  ecr_registries = [for key in local.ecr_keys : lookup(local.registry_map, key)]
-  helm_keys     = compact([for i, registry in local.registry_map : registry.type == "helm" ? i : ""])
+  registry_map    = { for i, registry in var.registries : tostring(i) => registry }
+  ecr_keys        = compact([for i, registry in local.registry_map : registry.type == "ecr" ? i : ""])
+  ecr_registries  = [for key in local.ecr_keys : lookup(local.registry_map, key)]
+  helm_keys       = compact([for i, registry in local.registry_map : registry.type == "helm" ? i : ""])
   helm_registries = [for key in local.helm_keys : lookup(local.registry_map, key)]
 }
 
@@ -25,10 +25,11 @@ resource "spectrocloud_registry_helm" "helm_registry" {
 
   name       = each.value.name
   endpoint   = each.value.endpoint
-  is_private = true
+  is_private = each.value.is_private
   credentials {
     credential_type = each.value.credential_type
-    username        = each.value.username
-    password        = each.value.password
+    username        = try(each.value.username, "")
+    password        = try(each.value.password, "")
+    token           = try(each.value.token, "")
   }
 }
