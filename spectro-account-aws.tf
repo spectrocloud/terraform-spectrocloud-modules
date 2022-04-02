@@ -1,5 +1,5 @@
 locals {
-  cloud_account_names = toset([for v in local.eks_clusters : v.cloud_account])
+  eks_cloud_account_names = toset([for v in local.eks_clusters : v.cloud_account])
 
   cloud_account_map = {
     for k, v in data.spectrocloud_cloudaccount_aws.this :
@@ -9,13 +9,13 @@ locals {
 
 
 data "spectrocloud_cloudaccount_aws" "this" {
-  for_each = local.cloud_account_names
+  for_each = local.eks_cloud_account_names
 
   name = each.value
 }
 
 resource "spectrocloud_cloudaccount_aws" "account" {
-  for_each = var.accounts
+  for_each = { for x in local.eks_accounts : x.name => x }
 
   type        = "sts"
   name        = each.value.name

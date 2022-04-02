@@ -113,7 +113,7 @@ resource "spectrocloud_cluster_libvirt" "this" {
         memory_mb              = machine_pool.value.memory_mb
         cpu                    = machine_pool.value.cpu
         cpus_sets              = machine_pool.value.cpus_sets
-        attached_disks_size_gb = machine_pool.value.attached_disks_size_gb
+        attached_disks_size_gb = try(machine_pool.value.attached_disks_size_gb, "")
       }
     }
   }

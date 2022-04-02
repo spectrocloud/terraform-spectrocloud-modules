@@ -1,0 +1,4 @@
+name: "tencent-account-tf-simyam"
+cloudType: tencent
+tencent_secret_id: "IKIDJTPEettfBTWO4VgdLnzzkJdiaMxMYYJn"
+tencent_secret_key: "KPFrQxNo21kFettfCVZNvCE1XmmWzKXX"

@@ -1,3 +1,4 @@
 name: "${ACCOUNT_DEV_NAME}"
+cloudType: aws
 arn: "arn:aws:iam::1234567:role/SpectroCloudRole"
 external_id: "eorijjonoiv="

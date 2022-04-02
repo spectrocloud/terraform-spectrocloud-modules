@@ -1,5 +1,5 @@
-resource "spectrocloud_cluster_eks" "this" {
-  for_each = { for x in local.eks_clusters : x.name => x }
+resource "spectrocloud_cluster_tke" "this" {
+  for_each = { for x in local.tke_clusters : x.name => x }
   name     = each.value.name
   tags     = try(each.value.tags, [])
 
@@ -7,7 +7,7 @@ resource "spectrocloud_cluster_eks" "this" {
     id = local.profile_map[each.value.profiles.infra.name].id
 
     dynamic "pack" {
-      for_each = each.value.profiles.infra.packs
+      for_each = try(each.value.profiles.infra.packs, [])
       content {
         name   = pack.value.name
         tag    = try(pack.value.version, "")
@@ -51,12 +51,12 @@ resource "spectrocloud_cluster_eks" "this" {
     }
   }
 
-  cloud_account_id = local.cloud_account_map[each.value.cloud_account]
+  cloud_account_id = local.tke_cloud_account_map[each.value.cloud_account]
 
   cloud_config {
-    region              = each.value.cloud_config.aws_region
-    vpc_id              = each.value.cloud_config.aws_vpc_id
-    az_subnets          = each.value.cloud_config.eks_subnets
+    region              = each.value.cloud_config.tke_region
+    vpc_id              = each.value.cloud_config.tke_vpc_id
+    az_subnets          = each.value.cloud_config.tke_subnets
     azs                 = []
     public_access_cidrs = []
     endpoint_access     = each.value.cloud_config.endpoint_access
@@ -71,22 +71,6 @@ resource "spectrocloud_cluster_eks" "this" {
       az_subnets    = machine_pool.value.worker_subnets
       disk_size_gb  = machine_pool.value.disk_size_gb
       azs           = []
-    }
-  }
-
-  dynamic "fargate_profile" {
-    for_each = try(each.value.fargate_profiles, [])
-    content {
-      name            = fargate_profile.value.name
-      subnets         = fargate_profile.value.subnets
-      additional_tags = fargate_profile.value.additional_tags
-      dynamic "selector" {
-        for_each = fargate_profile.value.selectors
-        content {
-          namespace = selector.value.namespace
-          labels    = selector.value.labels
-        }
-      }
     }
   }
 
