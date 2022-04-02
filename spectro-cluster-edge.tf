@@ -4,7 +4,7 @@ resource "spectrocloud_cluster_edge" "this" {
   tags     = try(each.value.tags, [])
 
   cloud_config {
-    ssh_key     = try(each.value.cloud_config.ssh_key, "")
+    ssh_key = try(each.value.cloud_config.ssh_key, "")
   }
 
   #infra profile
@@ -96,7 +96,7 @@ resource "spectrocloud_cluster_edge" "this" {
         for_each = machine_pool.value.placements
 
         content {
-          appliance_id        = placements.value.appliance
+          appliance_id = placements.value.appliance
         }
       }
 

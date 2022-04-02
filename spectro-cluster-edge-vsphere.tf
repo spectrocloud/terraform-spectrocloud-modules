@@ -1,15 +1,15 @@
 resource "spectrocloud_cluster_edge_vsphere" "this" {
-  for_each = { for x in local.edge_vsphere_clusters: x.name => x }
-  name     = each.value.name
+  for_each      = { for x in local.edge_vsphere_clusters : x.name => x }
+  name          = each.value.name
   edge_host_uid = each.value.edge_host_uid
 
   cloud_config {
-    ssh_key = each.value.cloud_config.ssh_key
-    static_ip = each.value.cloud_config.static_ip
+    ssh_key      = each.value.cloud_config.ssh_key
+    static_ip    = each.value.cloud_config.static_ip
     network_type = each.value.cloud_config.network_type
-    vip = each.value.cloud_config.vip
-    datacenter = each.value.cloud_config.datacenter
-    folder     = each.value.cloud_config.folder
+    vip          = each.value.cloud_config.vip
+    datacenter   = each.value.cloud_config.datacenter
+    folder       = each.value.cloud_config.folder
   }
 
   #infra profile
@@ -92,22 +92,22 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
   dynamic "machine_pool" {
     for_each = each.value.node_groups
     content {
-      name          = machine_pool.value.name
+      name                    = machine_pool.value.name
       control_plane           = try(machine_pool.value.control_plane, false)
       control_plane_as_worker = try(machine_pool.value.control_plane_as_worker, false)
       count                   = machine_pool.value.count
 
       placement {
-          cluster       = machine_pool.value.placement.cluster
-          resource_pool = machine_pool.value.placement.resource_pool
-          datastore     = machine_pool.value.placement.datastore
-          network       = machine_pool.value.placement.network
+        cluster       = machine_pool.value.placement.cluster
+        resource_pool = machine_pool.value.placement.resource_pool
+        datastore     = machine_pool.value.placement.datastore
+        network       = machine_pool.value.placement.network
       }
 
       instance_type {
-        disk_size_gb           = machine_pool.value.disk_size_gb
-        memory_mb              = machine_pool.value.memory_mb
-        cpu                    = machine_pool.value.cpu
+        disk_size_gb = machine_pool.value.disk_size_gb
+        memory_mb    = machine_pool.value.memory_mb
+        cpu          = machine_pool.value.cpu
       }
     }
   }
