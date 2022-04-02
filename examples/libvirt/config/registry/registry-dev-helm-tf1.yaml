@@ -1,0 +1,7 @@
+name: "test-helm-libvirt-nik2"
+type: "helm"
+endpoint: "123456.dkr.ecr.us-west-1.amazonaws.com"
+is_private: true
+credential_type: noAuth
+username: "user"
+password: "password"

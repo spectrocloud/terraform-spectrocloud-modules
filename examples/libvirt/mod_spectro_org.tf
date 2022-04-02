@@ -33,10 +33,10 @@ module "SpectroOrg" {
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/bsl/${k}", local.bsl_params))
   }*/
 
-  profiles = {
+  /*profiles = {
     for k in fileset("config/profile", "profile-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/profile/${k}", local.profile_params))
-  }
+  }*/
 
   /*projects = {
     for k in fileset("config/project", "project-*.yaml") :
@@ -48,10 +48,10 @@ module "SpectroOrg" {
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/project/${k}", {}))
   }*/
 
-  /*registries = {
+  registries = {
     for k in fileset("config/registry", "registry-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/registry/${k}", {}))
-  }*/
+  }
 
 }
 
@@ -65,8 +65,8 @@ module "SpectroProject" {
   depends_on = [module.SpectroOrg]
   source = "../../"
 
-  clusters = {
+  /*clusters = {
     for k in fileset("config/cluster", "cluster-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/cluster/${k}", local.accounts_params))
-  }
+  }*/
 }

@@ -59,7 +59,7 @@ locals {
   pack_types          = [for v in local.packs : v.type]
   pack_all_registries = [for v in local.packs : v.registry]
   pack_registries     = [for v in local.packs : v.registry if v.type != "helm" && v.registry != ""]
-  helm_registries     = [for v in local.packs : v.registry if v.type == "helm"]
+  helm_registries_from_packs = [for v in local.packs : v.registry if v.type == "helm"]
 
 
   pack_uids = [for index, v in local.packs : data.spectrocloud_pack.data_packs[index].id]
@@ -103,9 +103,9 @@ data "spectrocloud_registry_pack" "registry_pack" {
 }
 
 data "spectrocloud_registry_helm" "registry_helm" {
-  count = length(local.helm_registries)
+  count = length(local.helm_registries_from_packs)
 
-  name = local.helm_registries[count.index]
+  name = local.helm_registries_from_packs[count.index]
 }
 
 resource "spectrocloud_cluster_profile" "profile_resource" {

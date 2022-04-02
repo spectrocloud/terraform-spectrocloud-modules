@@ -1,4 +1,4 @@
-name: "test-nik2"
+name: "test-libvirt-nik2"
 type: "ecr" # basic
 endpoint: "123456.dkr.ecr.us-west-1.amazonaws.com"
 is_private: true
