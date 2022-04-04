@@ -23,7 +23,7 @@ resource "spectrocloud_appliance" "appliance" {
   for_each = var.appliances
 
   uid = each.value.id
-  labels = try(each.value.name, false) ? {
-    name = try(each.value.name, "")
+  labels = can(each.value.name) ? {
+    name = each.value.name
   } : {}
 }
