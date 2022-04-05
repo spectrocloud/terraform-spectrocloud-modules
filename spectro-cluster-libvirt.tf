@@ -114,7 +114,7 @@ resource "spectrocloud_cluster_libvirt" "this" {
         cpu                    = machine_pool.value.cpu
         cpus_sets              = try(machine_pool.value.cpus_sets, "")
         dynamic "attached_disks" {
-          for_each = machine_pool.value.attached_disks
+          for_each = try(machine_pool.value.attached_disks, [])
           content {
             managed = try(attached_disks.value.managed, false)
             size_in_gb = attached_disks.value.size_in_gb
