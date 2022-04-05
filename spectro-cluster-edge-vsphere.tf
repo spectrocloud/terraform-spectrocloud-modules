@@ -1,6 +1,7 @@
 resource "spectrocloud_cluster_edge_vsphere" "this" {
   for_each      = { for x in local.edge_vsphere_clusters : x.name => x }
   name          = each.value.name
+  tags     = try(each.value.tags, [])
   edge_host_uid = each.value.edge_host_uid
 
   cloud_config {
