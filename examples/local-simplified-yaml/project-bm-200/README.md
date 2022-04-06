@@ -1,0 +1,1 @@
+Bare metal appliance project

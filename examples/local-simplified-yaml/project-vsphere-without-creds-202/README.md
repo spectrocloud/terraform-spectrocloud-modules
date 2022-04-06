@@ -1,0 +1,1 @@
+Vsphere without creds appliance project
