@@ -9,6 +9,40 @@ resource "spectrocloud_cluster_libvirt" "this" {
     ntp_servers = try(each.value.cloud_config.ntp_servers, [])
   }
 
+  dynamic "cluster_rbac_binding" {
+    for_each = try(each.value.cluster_rbac_binding, [])
+    content {
+     type = cluster_rbac_binding.value.type
+
+     role = {
+       kind = cluster_rbac_binding.value.role.kind
+       name = cluster_rbac_binding.value.role.name
+     }
+
+     dynamic "subjects" {
+       for_each = try(cluster_rbac_binding.value.subjects, [])
+
+       content {
+           type = subjects.value.type
+           name = subjects.value.name
+           namespace  = try(subjects.value.namespace, "")
+        }
+     }
+    }
+  }
+
+  dynamic "namespaces" {
+    for_each = try(each.value.namespaces, [])
+
+    content {
+      name = namespaces.value.name
+      resource_allocation = {
+        cpu_cores  = try(namespaces.value.resource_allocation.cpu_cores, "")
+        memory_MiB = try(namespaces.value.resource_allocation.memory_MiB, "")
+      }
+    }
+  }
+
   #infra profile
   cluster_profile {
     id = local.profile_map[each.value.profiles.infra.name].id
@@ -93,6 +127,19 @@ resource "spectrocloud_cluster_libvirt" "this" {
       control_plane           = try(machine_pool.value.control_plane, false)
       control_plane_as_worker = try(machine_pool.value.control_plane_as_worker, false)
       count                   = machine_pool.value.count
+
+
+      additional_labels = try(machine_pool.value.additional_labels, tomap({}))
+
+      dynamic "taints" {
+        for_each = try(machine_pool.value.taints, [])
+
+        content {
+          key    = taints.value.key
+          value  = taints.value.value
+          effect = taints.value.effect
+        }
+      }
 
       dynamic "placements" {
         for_each = machine_pool.value.placements

@@ -152,10 +152,10 @@ packs:
       pack:
         content:
           images:
-            - gcr.io/spectro-images-public/calico/kube-controllers:v3.19.0
-            - gcr.io/spectro-images-public/calico/node:v3.19.0
-            - gcr.io/spectro-images-public/calico/cni:v3.19.0
-            - gcr.io/spectro-images-public/calico/pod2daemon-flexvol:v3.19.0
+            - image: gcr.io/spectro-images-public/calico/kube-controllers:v3.19.0
+            - image: gcr.io/spectro-images-public/calico/node:v3.19.0
+            - image: gcr.io/spectro-images-public/calico/cni:v3.19.0
+            - image: gcr.io/spectro-images-public/calico/pod2daemon-flexvol:v3.19.0
 
       manifests:
         calico:
@@ -178,14 +178,14 @@ packs:
       pack:
         content:
           images:
-            - k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.3.0
-            - k8s.gcr.io/sig-storage/csi-attacher:v3.3.0
-            - k8s.gcr.io/sig-storage/csi-snapshotter:v4.2.0
-            - k8s.gcr.io/sig-storage/csi-resizer:v1.3.0
-            - k8s.gcr.io/sig-storage/csi-provisioner:v3.0.0
-            - quay.io/cephcsi/cephcsi:v3.4.0
-            - quay.io/ceph/ceph:v16.2.7
-            - docker.io/rook/ceph:v1.8.0
+            - image: k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.3.0
+            - image: k8s.gcr.io/sig-storage/csi-attacher:v3.3.0
+            - image: k8s.gcr.io/sig-storage/csi-snapshotter:v4.2.0
+            - image: k8s.gcr.io/sig-storage/csi-resizer:v1.3.0
+            - image: k8s.gcr.io/sig-storage/csi-provisioner:v3.0.0
+            - image: quay.io/cephcsi/cephcsi:v3.4.0
+            - image: quay.io/ceph/ceph:v16.2.7
+            - image: docker.io/rook/ceph:v1.8.0
 
       manifests:
         storageclass:

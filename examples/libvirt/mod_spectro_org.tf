@@ -1,7 +1,7 @@
 locals {
-  accounts_params = { ACCOUNT_DEV_NAME = "dev-030", ACCOUNT_PROD_NAME = "prod-004" }
+  accounts_params   = { ACCOUNT_DEV_NAME = "dev-030", ACCOUNT_PROD_NAME = "prod-004" }
   appliances_params = {}
-  bsl_params      = { BSL_NAME = "qa-sharma" }
+  bsl_params        = { BSL_NAME = "qa-sharma" }
   profile_params = {
     SPECTRO_REPO_URL       = "https://registry.spectrocloud.com",
     REPO_URL               = "593235963820.dkr.ecr.us-west-2.amazonaws.com",
@@ -18,25 +18,20 @@ locals {
 module "SpectroOrg" {
   source = "../../"
 
-  accounts = {
+  /*accounts = {
     for k in fileset("config/account", "account-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/account/${k}", local.accounts_params))
-  }
-
-  appliances = {
-    for k in fileset("config/appliance", "appliance-*.yaml") :
-    trimsuffix(k, ".yaml") => yamldecode(templatefile("config/appliance/${k}", local.appliances_params))
-  }
+  }*/
 
   /*bsls = {
     for k in fileset("config/bsl", "bsl-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/bsl/${k}", local.bsl_params))
   }*/
 
-  /*profiles = {
+  profiles = {
     for k in fileset("config/profile", "profile-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/profile/${k}", local.profile_params))
-  }*/
+  }
 
   /*projects = {
     for k in fileset("config/project", "project-*.yaml") :
@@ -55,6 +50,18 @@ module "SpectroOrg" {
 
 }
 
+module "SpectroAppliances" {
+  depends_on = [module.SpectroOrg]
+
+  source = "../../"
+
+  /*appliances = {
+    for k in fileset("config/appliance", "appliance-*.yaml") :
+    trimsuffix(k, ".yaml") => yamldecode(templatefile("config/appliance/${k}", local.appliances_params))
+  }*/
+
+}
+
 /*
 output "debug" {
   value = module.SpectroProject.libvirt-cluster
@@ -62,11 +69,11 @@ output "debug" {
 */
 
 module "SpectroProject" {
-  depends_on = [module.SpectroOrg]
-  source = "../../"
+  depends_on = [module.SpectroAppliances]
+  source     = "../../"
 
-  /*clusters = {
+  clusters = {
     for k in fileset("config/cluster", "cluster-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/cluster/${k}", local.accounts_params))
-  }*/
+  }
 }
