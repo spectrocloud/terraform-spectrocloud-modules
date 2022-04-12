@@ -62,6 +62,40 @@ resource "spectrocloud_cluster_eks" "this" {
     endpoint_access     = each.value.cloud_config.endpoint_access
   }
 
+  dynamic "cluster_rbac_binding" {
+    for_each = try(each.value.cluster_rbac_binding, [])
+    content {
+      type = cluster_rbac_binding.value.type
+
+      role = {
+        kind = cluster_rbac_binding.value.role.kind
+        name = cluster_rbac_binding.value.role.name
+      }
+
+      dynamic "subjects" {
+        for_each = try(cluster_rbac_binding.value.subjects, [])
+
+        content {
+          type = subjects.value.type
+          name = subjects.value.name
+          namespace  = try(subjects.value.namespace, "")
+        }
+      }
+    }
+  }
+
+  dynamic "namespaces" {
+    for_each = try(each.value.namespaces, [])
+
+    content {
+      name = namespaces.value.name
+      resource_allocation = {
+        cpu_cores  = try(namespaces.value.resource_allocation.cpu_cores, "")
+        memory_MiB = try(namespaces.value.resource_allocation.memory_MiB, "")
+      }
+    }
+  }
+
   dynamic "machine_pool" {
     for_each = each.value.node_groups
     content {
@@ -71,6 +105,18 @@ resource "spectrocloud_cluster_eks" "this" {
       az_subnets    = machine_pool.value.worker_subnets
       disk_size_gb  = machine_pool.value.disk_size_gb
       azs           = []
+
+      additional_labels = try(machine_pool.value.additional_labels, tomap({}))
+
+      dynamic "taints" {
+        for_each = try(machine_pool.value.taints, [])
+
+        content {
+          key    = taints.value.key
+          value  = taints.value.value
+          effect = taints.value.effect
+        }
+      }
     }
   }
 

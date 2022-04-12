@@ -32,13 +32,13 @@ resource "spectrocloud_cluster_libvirt" "this" {
   }
 
   dynamic "namespaces" {
-    for_each = try(each.value.namespaces, "")
+    for_each = try(each.value.namespaces, [])
 
     content {
       name = namespaces.value.name
       resource_allocation = {
-        cpu_cores  = namespaces.value.resource_allocation.cpu_cores
-        memory_MiB = namespaces.value.resource_allocation.memory_MiB
+        cpu_cores  = try(namespaces.value.resource_allocation.cpu_cores, "")
+        memory_MiB = try(namespaces.value.resource_allocation.memory_MiB, "")
       }
     }
   }
