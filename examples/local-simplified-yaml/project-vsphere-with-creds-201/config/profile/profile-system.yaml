@@ -1,4 +1,4 @@
-name: system-profile-simyam-libvirt
+name: hospital-201-system-profile
 description: system-profile
 type: system
 cloudType: all
@@ -7,69 +7,16 @@ packs:
     type: manifest
     registry: Public Repo
     manifests:
-      - name: pfsense-gateway-config
+      - name: pfsense-config
         content: |
-          # unattended file
-          # ---
-          # edge:
-          #   additionalK8SResourceSpec:
-          #     storageResourceSpecs:
-          #       -
-          #         data:
-          #           TF_VAR_DHCP_RANGE_END: "192.168.100.250"
-          #           TF_VAR_DHCP_RANGE_START: "192.168.100.50"
-          #           TF_VAR_DNS_1: "10.220.220.220"
-          #           TF_VAR_DNS_2: "10.220.220.221"
-          #           TF_VAR_IP_ADDR_LAN: "192.168.100.2"
-          #           TF_VAR_IP_ADDR_WAN: "dhcp"
-          #           TF_VAR_NTP: "ntp.ge.com ntp1.ge.com"
-          #           TF_VAR_SUBNET_LAN: "24"
-          #           TF_VAR_VM_NAME: pfsense-gateway-vm
-          #         name: variable-pfsense-gateway-vm-config
-          #         storageResourceType: Secret
-          #       -
-          #         data:
-          #           registries: |
-          #               - url: "harbor-ehl.spectrocloud.com"
-          #                 type: docker
-          #                 name: spectro-ehl-harbor
-          #                 username: admin
-          #                 password: "oGBi1Ej1zirN"
-          #               - url: "gcr.io"
-          #                 type: docker
-          #                 name: gcr
-          #                 username: _json_key
-          #                 jsonCred: ewogInR5cGUiOiAic2VydmljZV9hY2NvdW50IiwKICJwcm9qZWN0X2lkIjogInNwZWN0cm8taW1hZ2VzIiwKICJwcml2YXRlX2tleV9pZCI6ICI4NDdjMDkxOTBmY2NmYWM2OGZlOWJhZmI5ZTFmMWViZjE3MWM0ZWJjIiwKICJwcml2YXRlX2tleSI6ICItLS0tLUJFR0lOIFBSSVZBVEUgS0VZLS0tLS1cbk1JSUV2UUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktjd2dnU2pBZ0VBQW9JQkFRQ3F4UzF5YjlTdEx4VXJcbmM5STNtYkpvU3BaTVRuSW5HeGhjZ3dxb0UzTi9ieU9sQ1dINWx1VllEbVNlWWVHZFU4SFhOeXRLS1NsMXpGWkpcbmJROHVianNONDhtK1ZMQ0pjV2RMZXh4RWdFaS9PYld5QTFmdTl2eVRNVE9IOFBFOG5nT2h4Vkkya2RJZ0l6dC9cbk1EWDgrQnRTUGRzb3hMNEVkNHR5dkhTTU5vZlJ5T3BPem1lTndkRU91dDV4RHVPOFMrMnVzdWdQbUx1MUhQRWZcblBCcmU4M25YSFBrenV5dUxvOExnUm1vQUtDdE4zUjg2WUh3U0dxL1dzQzNrWDQ0a2g1YzlDTXVOTEFmZCszQjNcbjhkUW9nS0gxS3N3UVo4T1llcTdaYnFQcnNZdDFvb0p0Y25XaHZ1aHRqVWM3L3pIYWRSYVNQNFdtYmxyQTNoN1JcbmhLT0NBeFNWQWdNQkFBRUNnZ0VBQUs3V01XU3JzOFlDSVpEYlVLdG8vVmt2ME9TQ09QYlFyVG9LSXl1K1dBR2dcbmV5ckp2VGl5a2VsSTB5RzdTQ2l4c2FwWmhLdm8zd25WZDdXQ0RJajg3QkxNY1VDR0RqaERMNWYrV2FYSWZrd1dcbnNBbEVZdy9GbkRpd2M4VUhOc0cvYkN1ejg4VHE3UjFnanFNcGJCemY1K1hMb2VMT3ZvbWhEajNxR3B4QUJRRjFcbkc4MFJnMmFEbWordHR4N1Z1SlpGRzdMSTZ5MWxhcHFTcjMrNFEzblN0dEE4WElaSjIrWWlMdGNDTlhUNXN0aFZcblpJQk85cVltN0VrNmp1KzI0ZXBBSTBMZStsdCs4SEpybEEwL0VVZFdPeUdwbTJSeVpNR25Ga1ZSVkFwZUo1cDhcbktOQ0NiR0UzbHNFSkg5VWo3bHQwQ0hNcjdaOS9SVm9Kc3lzRjFrK0w0UUtCZ1FEd0V3MTdHWUZLeHpTYzNGdmFcbk1hditZb0hkTTdSenl1WUtyVjFoeUpXdlZnblFLOWtjWW95QXBOeHRXMkdIRDZxOXlacWVmS21za1F5YVRNOFVcbldoQmFFNlp1Sloybmhpczk3VzRMMnlMOXAzTWdzSUcwTkNQU1Q1cWlnalBIa2VqU0s5cEQ3Zzh3dCtObWx3NXNcbnBKbkxSRWlYRkVpS0RhVjh6T01hRmFjLzVRS0JnUUMyR1RNdngrNUlBQ1RwWWlkVEtsUU1QVm9sWFgwbEM3bjhcbnZkcW9TcnRmQjFOMEZRVWp5QnYyODlRREJxak1Fc3g0cHhQd3hPVXNRZUI3SERyK1pzNnp1WXBmVklrYTlDRUxcbnNkcE5OZEtMNnBZSVRpclYzQXB3WkZFNUIxV0hYRS94L1l3THQ3L0VQV2VVTXBtdWpYdjVwYXVNemtvT3hhdzZcbkZxMmtwQ1ZXOFFLQmdEbVQrRG03NWp4dkJubFFpRjhPWnJlK0hITlhBVUo4T1N2NlpGa2RhSGtDNDV1ZnlKUjhcbk5rSnNSOG1hand0N2dISEFObXNvYnZGS1lJRnBSb2tWQ0xMeDM0cXZUdDVzMlZZaTZhL0NRT1FoRXdXV0Q2V09cbms4RFBBc0ZUQk9RcVpISnp2Z2Rvd3cvbUtvM2lVTDFSeE9qeFdZK1NkOHRVZG9vMkFZbXlBOGpaQW9HQVVCSGFcbm1RcnZjb2RsczUxdUx6cHdoSVZCcXlabGpiR1BVVnZsMXBRdHVZWk9Jci9QWjhGbzBuaTZZNjQ4OEtiZmM3bjdcbm9hWGlJMGpBUFVIWGl0K0h5aTB1YythRzl1d2J6N21maE0zQ3k3VVZ6WWNaZkxucGVTd1RMdUZUc1ZaYzdNb1JcbkYySHZsNGxzanhTRTBPVHplMzFtWmw2YTM4MzVnZjFRMHhFK1BmRUNnWUVBdjd2ZkJLMS8yUEpvNFNlMkd4ZmFcbjM0SGNEWHFnVXNYWUV3dmdBWE8vcXpYQmlkRGtLK25wUjVKelhoTDREY0VSOUxIak9TdlRiTllubm42ZmVXc0JcbjJ5dW1tdS8zbmQ5eVh6bHhUNURRVlVoWHNtUmYwWVdCMU9nQTZFYjJybWYydzZ4SFVlQ3dWdlRLM2tvdndteWpcbnErK2pUY1RwVnI4L3BCMnVhU1BlTlQwPVxuLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLVxuIiwKICJjbGllbnRfZW1haWwiOiAic3BlY3Ryby1pbWFnZXMtdmlld2VyQHNwZWN0cm8taW1hZ2VzLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwKICJjbGllbnRfaWQiOiAiMTE1ODMwNTM0MzcyOTU2MzQwNDUzIiwKICJhdXRoX3VyaSI6ICJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20vby9vYXV0aDIvYXV0aCIsCiAidG9rZW5fdXJpIjogImh0dHBzOi8vb2F1dGgyLmdvb2dsZWFwaXMuY29tL3Rva2VuIiwKICJhdXRoX3Byb3ZpZGVyX3g1MDlfY2VydF91cmwiOiAiaHR0cHM6Ly93d3cuZ29vZ2xlYXBpcy5jb20vb2F1dGgyL3YxL2NlcnRzIiwKICJjbGllbnRfeDUwOV9jZXJ0X3VybCI6ICJodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9yb2JvdC92MS9tZXRhZGF0YS94NTA5L3NwZWN0cm8taW1hZ2VzLXZpZXdlciU0MHNwZWN0cm8taW1hZ2VzLmlhbS5nc2VydmljZWFjY291bnQuY29tIgp9
-          #         name: content-sync-identity
-          #         storageResourceType: Secret
-          #   edgePropertiesSpec:
-          #     properties:
-          #       cert.base64: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURvekNDQW91Z0F3SUJBZ0lRZU84WGxxQU1MaHh2dENhcDM1eWt0ekFOQmdrcWhraUc5dzBCQVFzRkFEQlMKTVFzd0NRWURWUVFHRXdKVlV6RWhNQjhHQTFVRUNoTVlSMlZ1WlhKaGJDQkZiR1ZqZEhKcFl5QkRiMjF3WVc1NQpNU0F3SGdZRFZRUURFeGRIUlNCRmVIUmxjbTVoYkNCU2IyOTBJRU5CSURJdU1UQWVGdzB4TlRBek1EVXdNREF3Ck1EQmFGdzB6TlRBek1EUXlNelU1TlRsYU1GSXhDekFKQmdOVkJBWVRBbFZUTVNFd0h3WURWUVFLRXhoSFpXNWwKY21Gc0lFVnNaV04wY21saklFTnZiWEJoYm5reElEQWVCZ05WQkFNVEYwZEZJRVY0ZEdWeWJtRnNJRkp2YjNRZwpRMEVnTWk0eE1JSUJJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBekN6VDR3TlJadHIyClhUem9UTWpwcGp1bFpmRzM1L25PdDQ0cTJ6ZzQ3c3h3Z1o4bzRxamNyd3pJaHNudG9GclJRc3NqWFNGNXFYZEMKenNtMUc3ZjA0cUVCaW11T0gvWCtDaWRXWCtzdWRDUzhWeVJqWGk5Y3l2VVc0L21ZS0NMWHY1TTZIaEVvSUhDRApYZG82eVVyNW1TcmYxOHFSUjN5VUZ6MEhZWG9wYTJMczNRNmxCdkVVTzJYdzA0dnFWdm1nMWg3UzVqWXVab3ZDCm9JYmQyKzRRR2RvU1pQZ3RTTnBDeFNSK053dFBwellacG1xaVV1REdmVnBPM0hVNDJBUEIwYzYwRDkxY0pobzYKdFpwWFlIRHNSL1J4WUdtMDJLL2lNR2VmRDVGNFlNcnRvS29IYnNrdHk2K3U1RlVPclVnR0FUSkpHdHhsZWc1WApLb3RRWXU4UDF3SURBUUFCbzNVd2N6QVNCZ05WSFJNQkFmOEVDREFHQVFIL0FnRUNNQTRHQTFVZER3RUIvd1FFCkF3SUJCakF1QmdOVkhSRUVKekFscENNd0lURWZNQjBHQTFVRUF4TVdSMFV0VW05dmRDMURUMDB0VWxOQkxUSXcKTkRndE1UQWRCZ05WSFE0RUZnUVUzTjJtVUNKQkNMWWd0cFp5eEJlQk1Kd05adW93RFFZSktvWklodmNOQVFFTApCUUFEZ2dFQkFDRjRac2YyTm0wRnBWTmVBRFVIK3NsOG1GZ3dMN2RmTDcrNm43aE9nSDFaWGN2NnBEa29OdFZFCjBKL1pQZEhKVzZudGVkS0VadWl6RzVCQ2NsVUgzSXlZSzQvNEd4TnBGWHVnbVduS0d5MmZlWXdWYWU3UHV5ZDcKL2lLT0ZFR0NZeDRDNkUya3EzYUZqSnFpcTF2YmdTUy9CMGFndDFEM3JIM2kvK2RYVnh4OFpqaHlaTXVOK2NnUwpwWkw0Z25oblNYRkFHaXNzeEpoS3NOa1lndktkT0VUUk5uNWxFZ2ZnVnlQMmlPVnFFZ3VIazJHdTBnSFNvdUx1CjVhZC9xeU4rWmdiang4dkVXbHl3bWhYYjc4R2FmL0F3U0dBd1FQdG1RMDMxMGE0RHVsR3hvL2tjdVM3OHZGSDEKbXdKbUhtOUFJRm9xQmk4WHB1aEdtUTBudnltdXJFaz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ==
-          #       device.id: pftest-hospital-bm-3
-          #       device.ip: "192.168.100.12"
-          #       device.type: libvirt
-          #       http.proxy: "http://10.195.54.53:80"
-          #       https.proxy: "http://10.195.54.53:80"
-          #       hubble.port: ""
-          #       hubble.url: api.dev.spectrocloud.com
-          #       installation.mode: offline
-          #       libvirt.sock: /var/run/libvirt/libvirt-sock
-          #       libvirt.sshkey: libvirt.key
-          #       libvirt.sshuser: root
-          #       no.proxy: "localhost,127.0.0.1,3.70.0.0/16,192.168.0.0/16,10.0.0.0/8,.ge.com,192.168.100.1,11.0.0.0/22"
-          #       pod.subnet: 172.10.0.0/16
-          #       registry: harbor
-          #       service.subnet: 11.0.0.0/22
-          
-          ---
           apiVersion: v1
           data:
             user-data.tmpl: |
               #cloud-config
               write_files:
               - encoding: base64
-                content: $${CONFIG_XML}
-                owner: root:root
+                content: ${CONFIG_XML}
+                owner: root:wheel
                 path: /cf/conf/config.xml
                 permissions: '0644'
             config-xml.tmpl: |
@@ -123,7 +70,7 @@ packs:
                       </user>
                       <nextuid>2000</nextuid>
                       <nextgid>2000</nextgid>
-                      <timeservers>$${NTP}</timeservers>
+                      <timeservers>${NTP}</timeservers>
                       <webgui>
                           <protocol>http</protocol>
                           <loginautocomplete></loginautocomplete>
@@ -162,47 +109,29 @@ packs:
                       <language>en_US</language>
                       <disablechecksumoffloading></disablechecksumoffloading>
                       <hn_altq_enable></hn_altq_enable>
-                      <dnsserver>$${DNS_1}</dnsserver>
-                      <dnsserver>$${DNS_2}</dnsserver>
+                      <dnsserver>${DNS_1}</dnsserver>
+                      <dnsserver>${DNS_2}</dnsserver>
                       <dnsallowoverride></dnsallowoverride>
                   </system>
-                    <interfaces>
-                        <wan>
-                            <enable></enable>
-                            <if>vtnet1</if>
-                            <descr><![CDATA[WAN]]></descr>
-                            <ipaddr>$${IP_ADDR_WAN}</ipaddr>
-                            <dhcphostname></dhcphostname>
-                            <alias-address></alias-address>
-                            <alias-subnet>32</alias-subnet>
-                            <dhcprejectfrom></dhcprejectfrom>
-                            <adv_dhcp_pt_timeout></adv_dhcp_pt_timeout>
-                            <adv_dhcp_pt_retry></adv_dhcp_pt_retry>
-                            <adv_dhcp_pt_select_timeout></adv_dhcp_pt_select_timeout>
-                            <adv_dhcp_pt_reboot></adv_dhcp_pt_reboot>
-                            <adv_dhcp_pt_backoff_cutoff></adv_dhcp_pt_backoff_cutoff>
-                            <adv_dhcp_pt_initial_interval></adv_dhcp_pt_initial_interval>
-                            <adv_dhcp_pt_values>SavedCfg</adv_dhcp_pt_values>
-                            <adv_dhcp_send_options></adv_dhcp_send_options>
-                            <adv_dhcp_request_options></adv_dhcp_request_options>
-                            <adv_dhcp_required_options></adv_dhcp_required_options>
-                            <adv_dhcp_option_modifiers></adv_dhcp_option_modifiers>
-                            <adv_dhcp_config_advanced></adv_dhcp_config_advanced>
-                            <adv_dhcp_config_file_override></adv_dhcp_config_file_override>
-                            <adv_dhcp_config_file_override_path></adv_dhcp_config_file_override_path>
-                            <ipaddrv6>dhcp6</ipaddrv6>
-                            <dhcp6-duid></dhcp6-duid>
-                            <dhcp6-ia-pd-len>0</dhcp6-ia-pd-len>
-                            <adv_dhcp6_prefix_selected_interface>wan</adv_dhcp6_prefix_selected_interface>
-                            <spoofmac></spoofmac>
-                        </wan>
+                  <interfaces>
+                      <wan>
+                          <enable></enable>
+                          <if>vmx1</if>
+                          <descr><![CDATA[WAN]]></descr>
+                          <spoofmac></spoofmac>
+                          <alias-address></alias-address>
+                          <alias-subnet>32</alias-subnet>
+                          <ipaddr>${IP_ADDR_WAN}</ipaddr>
+                          <subnet>${SUBNET_WAN}</subnet>
+                          <gateway>WANGW</gateway>
+                      </wan>
                       <lan>
                           <enable></enable>
-                          <if>vtnet0</if>
+                          <if>vmx0</if>
                           <descr><![CDATA[LAN]]></descr>
                           <spoofmac></spoofmac>
-                          <ipaddr>$${IP_ADDR_LAN}</ipaddr>
-                          <subnet>$${SUBNET_LAN}</subnet>
+                          <ipaddr>${IP_ADDR_LAN}</ipaddr>
+                          <subnet>${SUBNET_LAN}</subnet>
                       </lan>
                   </interfaces>
                   <staticroutes>
@@ -210,8 +139,8 @@ packs:
                   <dhcpd>
                       <lan>
                           <range>
-                              <from>$${DHCP_RANGE_START}</from>
-                              <to>$${DHCP_RANGE_END}</to>
+                              <from>${DHCP_RANGE_START}</from>
+                              <to>${DHCP_RANGE_END}</to>
                           </range>
                           <enable></enable>
                           <failover_peerip></failover_peerip>
@@ -490,7 +419,17 @@ packs:
                       </menu>
                   </installedpackages>
                   <ppps></ppps>
-                  <gateways></gateways>
+                  <gateways>
+                      <defaultgw4>WANGW</defaultgw4>
+                      <gateway_item>
+                          <interface>wan</interface>
+                          <gateway>${IP_GATEWAY_WAN}</gateway>
+                          <name>WANGW</name>
+                          <weight></weight>
+                          <ipprotocol>inet</ipprotocol>
+                          <descr></descr>
+                      </gateway_item>
+                  </gateways>
                   <ntpd>
                       <orphan>5</orphan>
                       <enable>enabled</enable>
@@ -518,36 +457,39 @@ packs:
           kind: ConfigMap
           metadata:
             name: pfsense-vm-files
+
           ---
           apiVersion: v1
           data:
-            credentials: VVJJX1RFTVBMQVRFOiAicWVtdStzc2g6Ly8lc0Alcy9zeXN0ZW0/a2V5ZmlsZT0lcyZzb2NrZXQ9JXMma25vd25faG9zdHNfdmVyaWZ5PWlnbm9yZSI=
+            credentials: Q1JFRFM6IEZST01fU0VDUkVUX1JFRg==
           kind: Secret
           metadata:
-            name: libvirt-account-creds
+            name: account-creds
           type: Opaque
           ---
           apiVersion: terraform.core.oam.dev/v1beta1
           kind: Provider
           metadata:
-            name: libvirt
+            name: vsphere-custom
           spec:
             provider: custom
             credentials:
               source: Secret
               secretRef:
-                name: libvirt-account-creds
+                name: account-creds
                 key: credentials
           ---
           apiVersion: terraform.core.oam.dev/v1beta1
           kind: Configuration
           metadata:
             name: pfsense-gateway-vm-config
+            namespace: jet-system
           spec:
+            providerRef:
+              name: vsphere-custom
+              namespace: jet-system
             volumeSpec:
               volumeMounts:
-                - name: libvirt
-                  mountPath: /var/run/libvirt/libvirt-sock
                 - name: spectro-directory
                   mountPath: /opt/spectrocloud
                 - mountPath: "/var/files"
@@ -556,101 +498,159 @@ packs:
                 - name: files-vol
                   configMap:
                     name: pfsense-vm-files
-                - name: libvirt
-                  hostPath:
-                    path: /var/run/libvirt/libvirt-sock
-                    type: Socket
                 - name: spectro-directory
                   hostPath:
                     path: /opt/spectrocloud
                     type: Directory
             deleteResource: true
+            variableRef:
+              - name: TF_VAR_VSPHERE_HOST
+                valueFrom:
+                  secretKeyRef:
+                    key: vcenterServer
+                    name: vsphere-cloud-account
+              - name: TF_VAR_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    key: username
+                    name: vsphere-cloud-account
+              - name: TF_VAR_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    key: password
+                    name: vsphere-cloud-account
+              - name: TF_VAR_INSECURE
+                valueFrom:
+                  secretKeyRef:
+                    key: insecure
+                    name: vsphere-cloud-account
             variable:
               VM_NAME: "pfsense-gateway-vm"
               NTP: FROM_SECRET_REF
               DNS_1: FROM_SECRET_REF
               DNS_2: FROM_SECRET_REF
               IP_ADDR_WAN: FROM_SECRET_REF
+              IP_GATEWAY_WAN: FROM_SECRET_REF
+              SUBNET_WAN: FROM_SECRET_REF
               IP_ADDR_LAN: FROM_SECRET_REF
               SUBNET_LAN: FROM_SECRET_REF
               DHCP_RANGE_START: FROM_SECRET_REF
               DHCP_RANGE_END: FROM_SECRET_REF
-            providerRef:
-              name: libvirt
+              DATACENTER: FROM_SECRET_REF
+              DATASTORE: FROM_SECRET_REF
+              RESOURCE_POOL: FROM_SECRET_REF
+              WAN_NETWORK: FROM_SECRET_REF
+              LAN_NETWORK: FROM_SECRET_REF
+              VM_TEMPLATE_NAME: FROM_SECRET_REF
+              FOLDER: FROM_SECRET_REF
             hcl: |
-              terraform {
-                required_version = ">= 0.13"
-                required_providers {
-                  libvirt = {
-                    source  = "dmacvicar/libvirt"
-                    version = "0.6.14"
-                  }
-                }
+              provider "vsphere" {
+                user           = var.USERNAME
+                password       = var.PASSWORD
+                vsphere_server = var.VSPHERE_HOST
+
+                allow_unverified_ssl = tobool(var.INSECURE)
               }
-          
-              ##### VARIABLES #####
-              variable "URI_TEMPLATE" {
+
+              variable "USERNAME" {
                 type = string
-                default = "qemu+ssh://%s@%s/system?keyfile=%s&socket=%s&known_hosts_verify=ignore"
               }
-          
+
+              variable "PASSWORD" {
+                type = string
+              }
+
+              variable "VSPHERE_HOST" {
+                type = string
+              }
+
+              variable "INSECURE" {
+                type    = string
+                default = "true"
+              }
+
               variable "NTP" {
                 type = string
               }
-          
+
               variable "DNS_1" {
                 type = string
               }
-          
+
               variable "DNS_2" {
                 type = string
               }
-          
+
               variable "IP_ADDR_WAN" {
                 type = string
               }
-          
+
+              variable "SUBNET_WAN" {
+                type = string
+              }
+
+              variable "IP_GATEWAY_WAN" {
+                type = string
+              }
+
               variable "IP_ADDR_LAN" {
                 type = string
               }
-          
+
               variable "SUBNET_LAN" {
                 type = string
               }
-          
+
               variable "DHCP_RANGE_START" {
                 type = string
               }
-          
+
               variable "DHCP_RANGE_END" {
                 type = string
               }
-          
-              variable "LIBVIRT_SOCKET" {
+
+              variable "DATACENTER" {
                 type = string
-                default = "/var/run/libvirt/libvirt-sock"
               }
-          
+
+              variable "DATASTORE" {
+                type = string
+              }
+
+              variable "RESOURCE_POOL" {
+                type = string
+              }
+
+              variable "WAN_NETWORK" {
+                type = string
+              }
+
+              variable "LAN_NETWORK" {
+                type = string
+              }
+
+              variable "VM_TEMPLATE_NAME" {
+                type = string
+              }
+
               variable "VM_NAME" {
                 type = string
-                default = "pfsense-terraform"
               }
-          
+
+              variable "FOLDER" {
+                type = string
+              }
+
               ##### OUTPUT #####
               output "config_value" {
                 value = data.template_file.config.rendered
               }
-          
+
               output "user_data_value" {
                 value = data.template_file.user_data.rendered
               }
-          
+
               ##### PROVIDER #####
-              provider "libvirt" {
-                uri = "qemu:///system"
-                #uri = format(var.URI_TEMPLATE, var.SSH_USER, var.HOST_IP, var.SSH_KEY, var.LIBVIRT_SOCKET)
-              }
-          
               data "template_file" "config" {
                 template = file("/var/files/config-xml.tmpl")
                 vars = {
@@ -658,68 +658,94 @@ packs:
                   DNS_1 = var.DNS_1
                   DNS_2 = var.DNS_2
                   IP_ADDR_WAN = var.IP_ADDR_WAN
+                  SUBNET_WAN = var.SUBNET_WAN
+                  IP_GATEWAY_WAN = var.IP_GATEWAY_WAN
                   IP_ADDR_LAN = var.IP_ADDR_LAN
                   SUBNET_LAN = var.SUBNET_LAN
                   DHCP_RANGE_START = var.DHCP_RANGE_START
                   DHCP_RANGE_END = var.DHCP_RANGE_END
                 }
               }
-          
+
               data "template_file" "user_data" {
                 template = file("/var/files/user-data.tmpl")
                 vars = {
                   CONFIG_XML = base64encode(data.template_file.config.rendered)
                 }
               }
-          
-              resource "libvirt_pool" "ubuntu" {
-                name = "ubuntuop"
-                type = "dir"
-                path = "/var/lib/libvirt/terraform-provider-libvirt-pool-ubuntuoperator"
+
+              data "vsphere_datacenter" "dc" {
+                name = var.DATACENTER
               }
-          
-              resource "libvirt_volume" "ubuntu-qcow2" {
-                name   = "ubuntu-qcow2"
-                pool   = libvirt_pool.ubuntu.name
-                source = "/opt/spectrocloud/vm-operator/pfsense-cloudinit-base-gehc-2.5.1-SC.qcow2"
-                format = "qcow2"
+
+              data "vsphere_datastore" "datastore" {
+                name          = var.DATASTORE
+                datacenter_id = data.vsphere_datacenter.dc.id
               }
-          
-              resource "libvirt_cloudinit_disk" "commoninit" {
-                name           = "commoninit.iso"
-                user_data      = data.template_file.user_data.rendered
-                pool           = libvirt_pool.ubuntu.name
+
+              data "vsphere_resource_pool" "pool" {
+                name          = var.RESOURCE_POOL
+                datacenter_id = data.vsphere_datacenter.dc.id
               }
-          
-              resource "libvirt_domain" "domain-ubuntu" {
-                name   = var.VM_NAME
-                memory = "2048"
-                vcpu   = 1
-          
-                cloudinit = libvirt_cloudinit_disk.commoninit.id
-          
+
+              data "vsphere_network" "wan_network" {
+                name          = var.WAN_NETWORK
+                datacenter_id = data.vsphere_datacenter.dc.id
+              }
+
+              data "vsphere_network" "lan_network" {
+                name          = var.LAN_NETWORK
+                datacenter_id = data.vsphere_datacenter.dc.id
+              }
+
+              data "vsphere_virtual_machine" "template" {
+                name = var.VM_TEMPLATE_NAME
+                datacenter_id = data.vsphere_datacenter.dc.id
+              }
+
+              resource "vsphere_virtual_machine" "vm" {
+                name             = var.VM_NAME
+                resource_pool_id = data.vsphere_resource_pool.pool.id
+                datastore_id     = data.vsphere_datastore.datastore.id
+                folder          = var.FOLDER
+
+                wait_for_guest_net_timeout = 0
+
+                num_cpus = 2
+                memory   = 4096
+                guest_id = "freebsd12_64Guest"
+                scsi_type = "lsilogic"
+
                 network_interface {
-                   bridge = "br0"
+                  network_id = data.vsphere_network.lan_network.id
                 }
-          
+
                 network_interface {
-                  bridge = "br1"
+                  network_id = data.vsphere_network.wan_network.id
                 }
-          
-                console {
-                  type        = "pty"
-                  target_port = "0"
-                  target_type = "serial"
+
+                cdrom {
+                  client_device = true
                 }
-          
+
                 disk {
-                  volume_id = libvirt_volume.ubuntu-qcow2.id
+                  label            = var.VM_TEMPLATE_NAME
+                  size             = data.vsphere_virtual_machine.template.disks.0.size
+                  eagerly_scrub    = data.vsphere_virtual_machine.template.disks.0.eagerly_scrub
+                  thin_provisioned = data.vsphere_virtual_machine.template.disks.0.thin_provisioned
                 }
-          
-                graphics {
-                  type        = "vnc"
-                  listen_type = "address"
-                  listen_address = "0.0.0.0"
-                  autoport    = true
+
+                clone {
+                  template_uuid = data.vsphere_virtual_machine.template.id
+                }
+
+                extra_config = {
+                  "guestinfo.userdata"          = base64encode(data.template_file.user_data.rendered)
+                  "guestinfo.userdata.encoding" = "base64"
+                  "guestinfo.metadata"          = <<-EOT
+                       {
+                         "instance-id": ${var.VM_NAME}
+                       }
+                    EOT
                 }
               }
