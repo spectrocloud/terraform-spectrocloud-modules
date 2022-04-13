@@ -156,4 +156,9 @@ resource "spectrocloud_cluster_eks" "this" {
       conformance_scan_schedule   = scan_policy.value.conformance_scan_schedule
     }
   }
+
+  timeouts {
+    create = try(each.value.timeouts.create, "60m")
+    delete = try(each.value.timeouts.delete, "60m")
+  }
 }
