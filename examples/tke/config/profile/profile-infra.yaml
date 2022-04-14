@@ -4,310 +4,52 @@ cloudType: tke
 type: cluster
 defaultRepoURL: "${REPO_URL}"
 packs:
-  - name: "amazon-linux-eks"
+  - name: "ubuntu-tke"
     registry: Public Repo
     type: "spectro"
     layer: "os"
     server: "${SPECTRO_REPO_URL}"
-    version: "1.0.0"
-    values: "# AMI will be selected automatically based on the kubernetes version, region chosen"
-  - name: "kubernetes-eks"
+    version: "18.04"
+    values: |
+      pack:
+        # Defaults to TKE image for Ubuntu Server 18.04.1 LTS 64bit
+        # To use other images supported by TKE, execute `tccli tke DescribeImages` and provide a valid OsName value below
+        tencentManagedOSName: "ubuntu18.04.1x86_64"
+  - name: "kubernetes-tke"
     registry: Public Repo
     type: "spectro"
     layer: "k8s"
     server: "${SPECTRO_REPO_URL}"
-    version: "1.20"
+    version: "1.20.6"
     values: |
-      ## EKS settings
-      managedControlPlane:
-
-        ## Controlplane Logging
-        logging:
-
-          # Setting to toggle Kubernetes API Server logging (kube-apiserver)
-          apiServer: false
-
-          # Setting to toggle the Kubernetes API audit logging
-          audit: false
-
-          # Setting to toggle the cluster authentication logging
-          authenticator: false
-
-          # Setting to toggle the controller manager (kube-controller-manager) logging
-          controllerManager: false
-
-          # Setting to toggle the Kubernetes scheduler (kube-scheduler) logging
-          scheduler: false
-
-        # OIDC related config
-        oidcIdentityProvider:
-          identityProviderConfigName: '%OIDC_IDENTITY_PROVIDER_NAME%'       # The name of the OIDC provider configuration
-          issuerUrl: '%OIDC_ISSUER_URL%'       # The URL of the OpenID identity provider
-          clientId: '%OIDC_CLAIM_NAME%'           # The ID for the client application that makes authentication requests to the OpenID identity provider
-          usernameClaim: "email"                     # The JSON Web Token (JWT) claim to use as the username
-          usernamePrefix: "-"                        # The prefix that is prepended to username claims to prevent clashes with existing names
-          groupsClaim: "groups"                      # The JWT claim that the provider uses to return your groups
-          groupsPrefix: "-"                          # The prefix that is prepended to group claims to prevent clashes with existing names
-          requiredClaims:                            # The key value pairs that describe required claims in the identity token
-
-        ## A list of additional policies to attach to the control plane role
-        #roleAdditionalPolicies:
-        #- {{ arn for the policy1 | format "${string}" }}
-        #- {{ arn for the policy2 | format "${string}" }}
-
-        ## Custom EKS node roleName for all the node groups
-        ## This self-managed IAM role(https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html) should include the required
-        ## policies - 'AmazonEKSWorkerNodePolicy','AmazonEC2ContainerRegistryReadOnly', 'AmazonSSMManagedInstanceCore' and 'AmazonEKS_CNI_Policy'
-        ## NOTE: The roleName cannot have the prefix 'ng-role_' since this is reserved for spectro-generated roles
-        managedMachinePool:
-          roleName: "%MACHINE_POOL_ROLE_NAME%"
-
-        ## A list of additional policies to attach to the node group role
-        #roleAdditionalPolicies:
-        #- {{ arn for the policy1 | format "${string}" }}
-        #- {{ arn for the policy2 | format "${string}" }}
-
-      ## Client configuration to add OIDC based authentication flags in kubeconfig
-      clientConfig:
-        oidc-issuer-url: "{{ .spectro.pack.kubernetes-eks.managedControlPlane.oidcIdentityProvider.issuerUrl }}"
-        oidc-client-id: "{{ .spectro.pack.kubernetes-eks.managedControlPlane.oidcIdentityProvider.clientId }}"
-        oidc-client-secret: 1gsranjjmdgahm10j8r6m47ejokm9kafvcbhi3d48jlc3rfpprhv
-        oidc-extra-scope: profile,email
-  - name: "cni-aws-vpc-eks"
+      ## TKE kubernetes values
+  - name: "cni-tke-global-router"
     registry: Public Repo
     layer: "cni"
     server: "${SPECTRO_REPO_URL}"
     type: "spectro"
-    values: "# AWS VPC CNI will be auto-installed"
+    values: "# TKE Global Router CNI will be auto-installed"
     version: "1.0"
-
-  - name: "csi-aws"
+  - name: "csi-tke"
     registry: Public Repo
     layer: "csi"
     server: "${SPECTRO_REPO_URL}"
     type: "spectro"
-    version: "1.0.0"
+    version: "1.0"
     values: |
       manifests:
-      aws_ebs:
+        storageclass:
+          #Supported binding modes are Immediate, WaitForFirstConsumer
+          #Set this to WaitForFirstConsumer, so that the volumes gets created in the same AZ as that of the pods
+          volumeBindingMode: "WaitForFirstConsumer"
 
-      #Storage type should be one of io1, gp2, sc1, st1 types
-      #Check https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html for more details
-      storageType: \"gp2\"
+          #Flag to denote if this should be the default storage class for dynamic provisioning
+          isDefaultClass: "true"
 
-      #Allowed reclaim policies are Delete, Retain
-      reclaimPolicy: \"Delete\"
+          allowVolumeExpansion: true
 
-      #Toggle for Volume expansion
-      allowVolumeExpansion: \"true\"
-
-      #Toggle for Default class
-      isDefaultClass: \"true\"
-
-      #Supported binding modes are Immediate, WaitForFirstConsumer
-      #Setting this to WaitForFirstConsumer for AWS, so that the volumes gets created in the same AZ as that of the pods
-      volumeBindingMode: \"WaitForFirstConsumer\"
-  - name: "aws-ssm-agent"
-    registry: Public Repo
-    layer: "addon"
-    server: "${SPECTRO_REPO_URL}"
-    type: "spectro"
-    version: "1.0.0"
-    values: |
-      pack:
-        spectrocloud.com/install-priority: "0"
-      manifests:
-        # Amazon Linux 2 doesn't have a provision to install ssm agent by default and will be fixed in future ami's
-        # https://github.com/aws/containers-roadmap/issues/593#issuecomment-823768607
-        # Meanwhile, this Daemonset will help install aws ssm agent into all nodes
-        aws-ssm-agent:
-          contents: >
-            apiVersion: apps/v1
-
-            kind: DaemonSet
-
-            metadata:
-              name: eks-host-config
-              namespace: kube-system
-            spec:
-              selector:
-                matchLabels:
-                  app: eks-host-config
-              template:
-                metadata:
-                  name: eks-host-config
-                  labels:
-                    app: eks-host-config
-                spec:
-                  initContainers:
-                    - name: ssm-install-unit
-                      image: debian:buster
-                      command:
-                        - sh
-                        - -c
-                        - |
-                          set -x
-
-                          # Add unit file to install the SSM agent
-                          cat >/etc/systemd/system/install-ssm.service <<EOF
-                          [Unit]
-                          Description=Install the SSM agent
-
-                          [Service]
-                          Type=oneshot
-                          ExecStart=/bin/sh -c "yum install -y amazon-ssm-agent; systemctl enable amazon-ssm-agent; systemctl start amazon-ssm-agent"
-
-                          [Install]
-                          WantedBy=multi-user.target
-                          EOF
-
-                          systemctl daemon-reload
-                          systemctl enable install-ssm.service
-                          systemctl start install-ssm.service
-
-                          # Check and print SSM agent status
-                          systemctl status amazon-ssm-agent
-
-                      volumeMounts:
-                        - name: etc-systemd
-                          mountPath: /etc/systemd/system
-                        - name: bin-systemctl
-                          mountPath: /bin/systemctl
-                        - name: libgcrypt
-                          mountPath: /usr/lib/x86_64-linux-gnu/libgcrypt.so.11
-                        - name: run-systemd
-                          mountPath: /run/systemd
-                      resources:
-                        limits:
-                          cpu: 100m
-                          memory: 256Mi
-                        requests:
-                          cpu: 100m
-                          memory: 256Mi
-                  containers:
-                    - name: pause
-                      image: gcr.io/google_containers/pause
-                  volumes:
-                    # To write install-ssm.service file
-                    - name: etc-systemd
-                      hostPath:
-                        path: /etc/systemd/system
-                        type: Directory
-                    # systemctl command
-                    - name: bin-systemctl
-                      hostPath:
-                        path: /bin/systemctl
-                        type: File
-                    # Required lib for systemctl
-                    - name: libgcrypt
-                      hostPath:
-                        path: /lib64/libgcrypt.so.11
-                        type: File
-                    # systemd's runtime socket
-                    - name: run-systemd
-                      hostPath:
-                        path: /run/systemd
-                        type: Directory
-  - name: "spectro-rbac"
-    registry: Public Repo
-    layer: "addon"
-    server: "${SPECTRO_REPO_URL}"
-    type: "spectro"
-    version: "1.0.0"
-    values: |
-      pack:
-        spectrocloud.com/install-priority: "0"
-      charts:
-        spectro-rbac:
-          # Specify one or more ClusterRoleBinding
-          # Note that the _name_ attribute is optional
-          clusterRoleBindings:
-            - role: admin
-              name: special-override-name
-              subjects:
-                - type: User
-                  name: user5
-                - type: Group
-                  name: group5
-            - role: view
-              subjects:
-                - type: User
-                  name: user6
-                - type: Group
-                  name: group6
-                - type: ServiceAccount
-                  name: group6
-                  namespace: foo
-          namespaces:
-            # Specify one or more RoleBindings
-            # Note that the _name_ attribute in the subjects is optional
-            - namespace: team1
-              createNamespace: true
-              roleBindings:
-                - role: admin
-                  name: special-override-name-role
-                  kind: ClusterRole
-                  subjects:
-                    - type: User
-                      name: user3
-                    - type: Group
-                      name: group3
-                - role: view
-                  kind: ClusterRole
-                  subjects:
-                    - type: User
-                      name: user4
-                    - type: Group
-                      name: group4
-            - namespace: team2
-              createNamespace: true
-              roleBindings:
-                - role: admin
-                  name: special
-                  kind: ClusterRole
-                  subjects:
-                    - type: User
-                      name: user1
-                    - type: Group
-                      name: group1
-  - name: "spectro-byo-manifest"
-    registry: Public Repo
-    layer: "addon"
-    server: "${SPECTRO_REPO_URL}"
-    type: "spectro"
-    version: "1.0.0"
-    values: |
-      pack:
-        spectrocloud.com/install-priority: "0"
-      manifests:
-        byo-manifest:
-          contents: |
-            # Value will be overriden at cluster level
-  - name: spectro-proxy
-    registry: Public Repo
-    layer: addon
-    server: "${SPECTRO_REPO_URL}"
-    type: spectro
-    version: "1.0.0"
-    values: |
-      pack:
-        spectrocloud.com/install-priority: "0"
-      manifests:
-        spectro-proxy:
-          namespace: cluster-{{ .spectro.system.cluster.uid }}
-          server: "{{ .spectro.system.reverseproxy.server }}"
-          clusterUid: "{{ .spectro.system.cluster.uid }}"
-          subdomain: cluster-{{ .spectro.system.cluster.uid }}
-  - name: install-application
-    type: manifest
-    registry: Public Repo
-    manifests:
-      - name: install-app-crd
-        content: |
-          apiVersion: ehl.ees/v1
-          kind: ProfileInstallation
-          metadata:
-            name: "%PROFILE_NAME%"
-          spec:
-            name: "%PROFILE_SPEC_NAME%"
-          ---
+          parameters:
+            diskType: CLOUD_BASIC
+            diskChargeType: PREPAID
+            diskChargeTypePrepaidPeriod: "2"
+            diskChargePrepaidRenewFlag: NOTIFY_AND_AUTO_RENEW
