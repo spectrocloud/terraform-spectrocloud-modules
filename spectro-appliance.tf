@@ -9,9 +9,6 @@ locals {
   all_appliance_uids = setsubtract(local.cluster_appliance_uids, [""])
 }
 
-output "cluster_appliance_uids" {
-  value = local.all_appliance_uids
-}
 
 data "spectrocloud_appliance" "this" {
   for_each = local.all_appliance_uids

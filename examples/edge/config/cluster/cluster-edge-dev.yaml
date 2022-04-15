@@ -6,18 +6,65 @@ profiles:
     name: withoutcreds-full
 cloud_config:
   ssh_key: spectro2022
+
+cluster_rbac_binding:
+  - type: "ClusterRoleBinding"
+    role:
+      kind: "ClusterRole"
+      name: "testRole3"
+    subjects:
+      - type: "User"
+        name: "testRoleUser3"
+      - type: "Group"
+        name: "testRoleGroup3"
+      - type: "ServiceAccount"
+        name: "testrolesubject3"
+        namespace: "testrolenamespace"
+  - type: "RoleBinding"
+    namespace: "test5ns"
+    role:
+      kind: "Role"
+      name: "testRoleFromNS3"
+    subjects:
+      - type: "User"
+        name: "testUserRoleFromNS3"
+      - type: "Group"
+        name: "testGroupFromNS3"
+      - type: "ServiceAccount"
+        name: "testrolesubject3"
+        namespace: "testrolenamespace"
+
+namespaces:
+  - name: "test5ns"
+    resource_allocation:
+      cpu_cores: "2"
+      memory_MiB: "2048"
+
 node_groups:
   - name: master-pool
     control_plane: true
     control_plane_as_worker: true
     count: 1
     placements:
-      - appliance: "edge-mar-6"
+      - appliance: "edge-apr-5"
 
   - name: worker-pool
     count: 1
     placements:
-      - appliance: "edge-mar-6"
+      - appliance: "edge-apr-5"
+
+    additional_labels:
+      #name: "worker"
+      addlabel: "addlabelval1"
+
+
+    taints:
+      - key: "taintkey1"
+        value: "taintvalue1"
+        effect: "PreferNoSchedule"
+      - key: "taintkey2"
+        value: "taintvalue2"
+        effect: "NoSchedule"
 
 scan_policy:
   configuration_scan_schedule: "0 0 * * SUN"
