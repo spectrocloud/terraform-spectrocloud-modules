@@ -11,6 +11,7 @@ resource "spectrocloud_cluster_tke" "this" {
       content {
         name   = pack.value.name
         tag    = try(pack.value.version, "")
+        registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
         type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
         values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)] : local.infra-pack-template-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)])
 
@@ -36,6 +37,7 @@ resource "spectrocloud_cluster_tke" "this" {
         content {
           name   = pack.value.name
           tag    = try(pack.value.version, "")
+          registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
           type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
           values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", cluster_profile.value.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.addon_pack_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)] : local.addon_pack_template_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)])
 
@@ -101,6 +103,8 @@ resource "spectrocloud_cluster_tke" "this" {
     content {
       name          = machine_pool.value.name
       count         = machine_pool.value.count
+      min           = try(machine_pool.value.min, "")
+      max           = try(machine_pool.value.max, "")
       instance_type = machine_pool.value.instance_type
       az_subnets    = machine_pool.value.worker_subnets
       disk_size_gb  = machine_pool.value.disk_size_gb

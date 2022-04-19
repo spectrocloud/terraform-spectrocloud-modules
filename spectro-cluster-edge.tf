@@ -50,6 +50,7 @@ resource "spectrocloud_cluster_edge" "this" {
       content {
         name   = pack.value.name
         tag    = try(pack.value.version, "")
+        registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
         type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
         values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)] : local.infra-pack-template-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)])
 
@@ -75,6 +76,7 @@ resource "spectrocloud_cluster_edge" "this" {
         content {
           name   = pack.value.name
           tag    = try(pack.value.version, "")
+          registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
           type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
           values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.system.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.system.name, pack.value.name)] : local.infra-pack-template-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.system.name, pack.value.name)])
 
@@ -103,6 +105,7 @@ resource "spectrocloud_cluster_edge" "this" {
         content {
           name   = pack.value.name
           tag    = try(pack.value.version, "")
+          registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
           type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
           values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", cluster_profile.value.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.addon_pack_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)] : local.addon_pack_template_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)])
 

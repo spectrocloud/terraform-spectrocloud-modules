@@ -158,10 +158,10 @@ packs:
       pack:
         content:
           images:
-            - gcr.io/spectro-images-public/calico/kube-controllers:v3.19.0
-            - gcr.io/spectro-images-public/calico/node:v3.19.0
-            - gcr.io/spectro-images-public/calico/cni:v3.19.0
-            - gcr.io/spectro-images-public/calico/pod2daemon-flexvol:v3.19.0
+            - image: gcr.io/spectro-images-public/calico/kube-controllers:v3.19.0
+            - image: gcr.io/spectro-images-public/calico/node:v3.19.0
+            - image: gcr.io/spectro-images-public/calico/cni:v3.19.0
+            - image: gcr.io/spectro-images-public/calico/pod2daemon-flexvol:v3.19.0
 
       manifests:
         calico:
