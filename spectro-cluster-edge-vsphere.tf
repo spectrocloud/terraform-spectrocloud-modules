@@ -17,6 +17,7 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
     for_each = try(each.value.cluster_rbac_binding, [])
     content {
       type = cluster_rbac_binding.value.type
+      namespace  = try(cluster_rbac_binding.value.namespace, "")
 
       role = {
         kind = cluster_rbac_binding.value.role.kind
