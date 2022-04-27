@@ -164,11 +164,16 @@ resource "spectrocloud_cluster_libvirt" "this" {
         cpu                    = machine_pool.value.cpu
         cpus_sets              = try(machine_pool.value.cpus_sets, "")
         cache_passthrough      = try(machine_pool.value.cache_passthrough, false)
-        gpu_config {
-          device_model = try(machine_pool.value.gpu_config.device_model, "")
-          vendor = try(machine_pool.value.gpu_config.vendor, "")
-          num_gpus = try(machine_pool.value.gpu_config.num_gpus, 0)
+
+        dynamic "gpu_config" {
+          for_each = try(machine_pool.value.gpu_config, [])
+          content {
+            device_model = try(gpu_config.value.device_model, "")
+            vendor       = try(gpu_config.value.vendor, "")
+            num_gpus     = try(gpu_config.value.num_gpus, 0)
+          }
         }
+
         dynamic "attached_disks" {
           for_each = try(machine_pool.value.attached_disks, [])
           content {
