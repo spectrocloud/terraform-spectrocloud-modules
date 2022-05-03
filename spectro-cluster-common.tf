@@ -38,11 +38,11 @@ locals {
   infra-pack-params-replaced = { for v in flatten([
     for k, v in local.cluster_infra_profiles_map : [
       for p in try(v.packs, []) : {
-        name = format("%s-%s-%s", k, v.name, p.name)
+        name = format("%s%%%s-%s-%s", k, v.name, try(v.version, "1.0.0"), p.name)
         value = join("\n", [
           for line in split("\n", try(p.is_manifest_pack, false) ?
-            element([for x in local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
-          local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].values) :
+            element([for x in local.cluster-profile-pack-map[format("%s%%%s-%s", v.name, try(v.version, "1.0.0"), p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
+          local.cluster-profile-pack-map[format("%s%%%s-%s", v.name, try(v.version, "1.0.0"), p.name)].values) :
           format(
             replace(line, "/%(${join("|", keys(p.params))})%/", "%s"),
             [
@@ -112,8 +112,8 @@ locals {
         value = join("\n", flatten([for l in p.params : [
           join("\n", [
             for line in split("\n", try(p.is_manifest_pack, false) ?
-              element([for x in local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
-            local.cluster-profile-pack-map[format("%s-%s", v.name, p.name)].values) :
+              element([for x in local.cluster-profile-pack-map[format("%s%%%s-%s", v.name, try(v.version, "1.0.0"), p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
+            local.cluster-profile-pack-map[format("%s%%%s-%s", v.name, try(v.version, "1.0.0"), p.name)].values) :
             format(
               replace(line, "/%(${join("|", keys(l))})%/", "%s"),
               [
@@ -134,8 +134,8 @@ locals {
           name = format("%s-%s-%s", k, e.name, p.name)
           value = join("\n", [
             for line in split("\n", try(p.is_manifest_pack, false) ?
-              element([for x in local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
-            local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].values) :
+              element([for x in local.cluster-profile-pack-map[format("%s%%%s-%s", e.name, try(e.version, "1.0.0"), p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
+            local.cluster-profile-pack-map[format("%s%%%s-%s", e.name, try(e.version, "1.0.0"), p.name)].values) :
             format(
               replace(line, "/%(${join("|", keys(p.params))})%/", "%s"),
               [
@@ -157,8 +157,8 @@ locals {
           value = join("\n", flatten([for l in p.params : [
             join("\n", [
               for line in split("\n", try(p.is_manifest_pack, false) ?
-                element([for x in local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
-              local.cluster-profile-pack-map[format("%s-%s", e.name, p.name)].values) :
+                element([for x in local.cluster-profile-pack-map[format("%s%%%s-%s", e.name, try(e.version, "1.0.0"), p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
+              local.cluster-profile-pack-map[format("%s%%%s-%s", e.name, try(e.version, "1.0.0"), p.name)].values) :
               format(
                 replace(line, "/%(${join("|", keys(l))})%/", "%s"),
                 [
