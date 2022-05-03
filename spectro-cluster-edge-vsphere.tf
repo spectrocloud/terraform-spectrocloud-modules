@@ -1,7 +1,7 @@
 resource "spectrocloud_cluster_edge_vsphere" "this" {
   for_each      = { for x in local.edge_vsphere_clusters : x.name => x }
   name          = each.value.name
-  tags     = try(each.value.tags, [])
+  tags          = try(each.value.tags, [])
   edge_host_uid = each.value.edge_host_uid
 
   cloud_config {
@@ -16,8 +16,8 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
   dynamic "cluster_rbac_binding" {
     for_each = try(each.value.cluster_rbac_binding, [])
     content {
-      type = cluster_rbac_binding.value.type
-      namespace  = try(cluster_rbac_binding.value.namespace, "")
+      type      = cluster_rbac_binding.value.type
+      namespace = try(cluster_rbac_binding.value.namespace, "")
 
       role = {
         kind = cluster_rbac_binding.value.role.kind
@@ -28,9 +28,9 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
         for_each = try(cluster_rbac_binding.value.subjects, [])
 
         content {
-          type = subjects.value.type
-          name = subjects.value.name
-          namespace  = try(subjects.value.namespace, "")
+          type      = subjects.value.type
+          name      = subjects.value.name
+          namespace = try(subjects.value.namespace, "")
         }
       }
     }
@@ -55,11 +55,11 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
     dynamic "pack" {
       for_each = try(each.value.profiles.infra.packs, [])
       content {
-        name   = pack.value.name
-        tag    = try(pack.value.version, "")
+        name         = pack.value.name
+        tag          = try(pack.value.version, "")
         registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
-        type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
-        values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)] : local.infra-pack-template-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)])
+        type         = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
+        values       = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.infra.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)] : local.infra-pack-template-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)])
 
         dynamic "manifest" {
           for_each = try([local.infra_pack_manifests[format("%s-%s-%s", each.value.name, each.value.profiles.infra.name, pack.value.name)]], [])
@@ -81,11 +81,11 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
       dynamic "pack" {
         for_each = try(each.value.profiles.system.packs, [])
         content {
-          name   = pack.value.name
-          tag    = try(pack.value.version, "")
+          name         = pack.value.name
+          tag          = try(pack.value.version, "")
           registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
-          type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
-          values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.system.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.system.name, pack.value.name)] : local.infra-pack-template-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.system.name, pack.value.name)])
+          type         = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
+          values       = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", each.value.profiles.system.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.infra-pack-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.system.name, pack.value.name)] : local.infra-pack-template-params-replaced[format("%s-%s-%s", each.value.name, each.value.profiles.system.name, pack.value.name)])
 
           dynamic "manifest" {
             for_each = try([
@@ -110,11 +110,11 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
       dynamic "pack" {
         for_each = try(cluster_profile.value.packs, [])
         content {
-          name   = pack.value.name
-          tag    = try(pack.value.version, "")
+          name         = pack.value.name
+          tag          = try(pack.value.version, "")
           registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
-          type   = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
-          values = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", cluster_profile.value.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.addon_pack_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)] : local.addon_pack_template_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)])
+          type         = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
+          values       = (try(pack.value.is_manifest_pack, false)) ? local.cluster-profile-pack-map[format("%s-%s", cluster_profile.value.name, pack.value.name)].values : (pack.value.override_type == "values") ? pack.value.values : (pack.value.override_type == "params" ? local.addon_pack_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)] : local.addon_pack_template_params_replaced[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)])
 
           dynamic "manifest" {
             for_each = try(local.addon_pack_manifests[format("%s-%s-%s", each.value.name, cluster_profile.value.name, pack.value.name)], [])
