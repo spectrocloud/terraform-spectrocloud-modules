@@ -17,7 +17,7 @@ locals {
 
   profile_map = { //profiles is map of profile name and complete cluster profile object
     for x in flatten([
-      for k, p in data.spectrocloud_cluster_profile.this : { name = format("%s%%%s", p.name, coalesce(p.version, "1.0.0")), profile = p }
+      for k, p in data.spectrocloud_cluster_profile.this : { name = format("%s%%%s", p.name, try(p.version, "1.0.0")), profile = p }
     ]) :
     x.name => x.profile
   }
@@ -25,7 +25,7 @@ locals {
   cluster-profile-pack-map = {
     for x in flatten([
       for k, v in data.spectrocloud_cluster_profile.this : [
-        for p in v.pack : { name = format("%s%%%s-%s", v.name, coalesce(v.version, "1.0.0"), p.name), pack = p }
+        for p in v.pack : { name = format("%s%%%s-%s", v.name, try(v.version, "1.0.0"), p.name), pack = p }
     ]]) :
     x.name => x.pack
   }
