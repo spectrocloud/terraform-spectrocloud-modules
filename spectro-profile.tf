@@ -12,6 +12,16 @@ locals {
 
   profile_names = toset(concat(concat(local.infra_profile_names, local.addon_profile_names), local.system_profile_names))
 
+  profile_names_map = {
+    for x in flatten([
+      for key in local.profile_names : {
+        name  = split("%", key)[0]
+        version = split("%", key)[1]
+      }
+    ]) :
+    x.name => x.version
+  }
+
   profile_map = { //profiles is map of profile name and complete cluster profile object
     for x in flatten([
       for k, p in data.spectrocloud_cluster_profile.this : { name = format("%s%%%s", p.name, try(p.version, "1.0.0")), profile = p }
@@ -76,10 +86,10 @@ data "spectrocloud_pack" "data_packs" {
 }
 
 data "spectrocloud_cluster_profile" "this" {
-  for_each = local.profile_names
+  for_each = local.profile_names_map
 
-  name    = split("%", each.value)[0]
-  version = split("%", each.value)[1]
+  name    = each.key
+  version = each.value
 }
 
 data "spectrocloud_registry" "all_registries" {
