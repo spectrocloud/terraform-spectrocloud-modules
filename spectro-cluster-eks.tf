@@ -120,6 +120,7 @@ resource "spectrocloud_cluster_eks" "this" {
     for_each = each.value.node_groups
     content {
       name          = machine_pool.value.name
+      update_strategy = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
       count         = machine_pool.value.count
       min           = try(machine_pool.value.min, "")
       max           = try(machine_pool.value.max, "")
