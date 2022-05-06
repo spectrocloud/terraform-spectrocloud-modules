@@ -1,7 +1,7 @@
 locals {
   infra_profile_names = [for v in var.clusters : format("%s%%%s", v.profiles.infra.name, try(v.profiles.infra.version, "1.0.0"))]
 
-  system_profile_names = [for v in var.clusters : format("%s%%%s", v.profiles.system.name, try(v.profiles.system.version, "1.0.0"))]
+  system_profile_names = [for v in local.all_edge_clusters : format("%s%%%s", v.profiles.system.name, try(v.profiles.system.version, "1.0.0"))]
 
   addon_profile_names = flatten([
     for v in var.clusters : "${[

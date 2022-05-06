@@ -13,6 +13,8 @@ resource "spectrocloud_cluster_eks" "this" {
     endpoint_access     = each.value.cloud_config.endpoint_access
   }
 
+  os_patch_schedule = can(each.value.os_patch_schedule) ? each.value.os_patch_schedule : null
+
   dynamic "cluster_rbac_binding" {
     for_each = try(each.value.cluster_rbac_binding, [])
     content {
