@@ -219,9 +219,10 @@ locals {
   edge_vsphere_clusters = [for key in local.edge_vsphere_keys : lookup(local.cluster_map, key)]
   edge_keys             = compact([for i, cluster in local.cluster_map : cluster.cloudType == "edge" ? i : ""])
   edge_clusters         = [for key in local.edge_keys : lookup(local.cluster_map, key)]
-  // all edge clusters
+  // all edge clusters (this is for appliance list)
   all_edge_clusters = setunion(local.libvirt_clusters)
-  #edge
-  #vsphere-edge
+
+  // all edge clusters with system profiles (this is for system profile list)
+  all_system_profile_clusters = setunion(local.libvirt_clusters, local.edge_vsphere_clusters, local.edge_clusters)
 
 }

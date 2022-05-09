@@ -13,6 +13,8 @@ resource "spectrocloud_cluster_eks" "this" {
     endpoint_access     = each.value.cloud_config.endpoint_access
   }
 
+  os_patch_schedule = can(each.value.os_patch_schedule) ? each.value.os_patch_schedule : null
+
   dynamic "cluster_rbac_binding" {
     for_each = try(each.value.cluster_rbac_binding, [])
     content {
@@ -118,6 +120,7 @@ resource "spectrocloud_cluster_eks" "this" {
     for_each = each.value.node_groups
     content {
       name          = machine_pool.value.name
+      update_strategy = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
       count         = machine_pool.value.count
       min           = try(machine_pool.value.min, "")
       max           = try(machine_pool.value.max, "")
