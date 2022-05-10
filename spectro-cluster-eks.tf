@@ -11,6 +11,7 @@ resource "spectrocloud_cluster_eks" "this" {
     azs                 = []
     public_access_cidrs = []
     endpoint_access     = each.value.cloud_config.endpoint_access
+    encryption_config_arn = can(each.value.cloud_config.encryption_config_arn) ? each.value.cloud_config.encryption_config_arn : null
   }
 
   os_patch_schedule = can(each.value.os_patch_schedule) ? each.value.os_patch_schedule : null
