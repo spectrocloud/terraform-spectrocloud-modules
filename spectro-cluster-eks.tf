@@ -104,7 +104,7 @@ resource "spectrocloud_cluster_eks" "this" {
           }"
 
           dynamic "manifest" {
-            for_each = try(local.addon_pack_manifests[format("%s%%%s-%s-%s", each.value.name, cluster_profile.value.name, try(cluster_profile.value.version, "1.0.0"), pack.value.name)], [])
+            for_each = try(local.addon_pack_manifests[format("%s-%s%%%s-%s", each.value.name, cluster_profile.value.name, try(cluster_profile.value.version, "1.0.0"), pack.value.name)], [])
             content {
               name    = manifest.value.name
               content = manifest.value.content
