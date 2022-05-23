@@ -123,8 +123,8 @@ resource "spectrocloud_cluster_eks" "this" {
       name          = machine_pool.value.name
       update_strategy = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
       count         = machine_pool.value.count
-      min           = try(machine_pool.value.min, "")
-      max           = try(machine_pool.value.max, "")
+      min           = try(machine_pool.value.min, machine_pool.value.count) # It is possible for the chosen max to be lesser than the min, or for the count to be out of bounds of min or max. Handle these conditions in the provider for this module or as input validation prior to using this module.
+      max           = try(machine_pool.value.max, machine_pool.value.count)
       instance_type = machine_pool.value.instance_type
       az_subnets    = machine_pool.value.worker_subnets
       disk_size_gb  = machine_pool.value.disk_size_gb
