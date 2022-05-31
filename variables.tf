@@ -36,3 +36,7 @@ variable "clusters" {
   default = {}
 }
 
+variable "macros" {
+  type    = map(any)
+  default = {}
+}
