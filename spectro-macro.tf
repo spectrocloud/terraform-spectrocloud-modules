@@ -1,5 +1,5 @@
 locals {
-  macros = flatten([
+  macros = toset(flatten([
   for v in var.macros : [
   for m in v.macros : {
     name  = format("%s%%%s", m.name, v.project)
@@ -10,7 +10,7 @@ locals {
     }
   }
   ]
-  ])
+  ]))
 
   macros_iterable = { for macro in local.macros: macro.name => macro.value }
 }
