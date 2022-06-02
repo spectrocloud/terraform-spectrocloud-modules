@@ -207,7 +207,7 @@ locals {
   }
 
 
-  cluster_map  = { for i, cluster in var.clusters : tostring(i) => cluster }
+  cluster_map  = { for key, cluster in var.clusters : cluster.name => cluster }
   eks_keys     = compact([for i, cluster in local.cluster_map : cluster.cloudType == "eks" ? i : ""])
   eks_clusters = [for key in local.eks_keys : lookup(local.cluster_map, key)]
   tke_keys     = compact([for i, cluster in local.cluster_map : cluster.cloudType == "tke" ? i : ""])
@@ -225,4 +225,14 @@ locals {
   // all edge clusters with system profiles (this is for system profile list)
   all_system_profile_clusters = setunion(local.libvirt_clusters, local.edge_vsphere_clusters, local.edge_clusters)
 
+}
+
+data "spectrocloud_cluster" clusters {
+  for_each = local.cluster_map
+
+  name = each.value.name
+}
+
+output "clusters" {
+  value = data.spectrocloud_cluster.clusters
 }

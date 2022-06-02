@@ -74,6 +74,9 @@ locals {
     for k, v in data.spectrocloud_registry.all_registries :
     v.name => v.id...
   }
+
+  profiles_iterable = { for key, profile in var.profiles : profile.name => profile }
+
 }
 
 data "spectrocloud_pack" "data_packs" {
@@ -99,7 +102,7 @@ data "spectrocloud_registry" "all_registries" {
 }
 
 resource "spectrocloud_cluster_profile" "profile_resource" {
-  for_each    = var.profiles
+  for_each    = local.profiles_iterable
   name        = each.value.name
   version     = try(each.value.version, "")
   description = each.value.description
@@ -128,4 +131,14 @@ resource "spectrocloud_cluster_profile" "profile_resource" {
       }
     }
   }
+}
+
+data "spectrocloud_cluster_profile" "all_profiles" {
+  for_each = local.profiles_iterable
+
+  name = each.value.name
+}
+
+output "profiles" {
+  value = { for key, profile in data.spectrocloud_cluster_profile.all_profiles : profile.name => {id = profile.id, name = profile.name}}
 }
