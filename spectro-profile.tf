@@ -133,12 +133,6 @@ resource "spectrocloud_cluster_profile" "profile_resource" {
   }
 }
 
-data "spectrocloud_cluster_profile" "all_profiles" {
-  for_each = local.profiles_iterable
-
-  name = each.value.name
-}
-
 output "profiles" {
-  value = { for key, profile in data.spectrocloud_cluster_profile.all_profiles : profile.name => {id = profile.id, name = profile.name}}
+  value = { for key, profile in spectrocloud_cluster_profile.profile_resource : profile.name => {id = profile.id, name = profile.name}}
 }
