@@ -89,6 +89,7 @@ data "spectrocloud_pack" "data_packs" {
 }
 
 data "spectrocloud_cluster_profile" "this" {
+  depends_on = [spectrocloud_cluster_profile.profile_resource] // need to be able to create all profiles before using datasource
   for_each = local.profile_names_map
 
   name    = each.key
