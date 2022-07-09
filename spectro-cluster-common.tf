@@ -137,7 +137,7 @@ locals {
               element([for x in local.cluster-profile-pack-map[format("%s%%%s-%s", e.name, try(e.version, "1.0.0"), p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
             local.cluster-profile-pack-map[format("%s%%%s-%s", e.name, try(e.version, "1.0.0"), p.name)].values) :
             format(
-              replace(line, "/%(${join("|", keys(p.params))})%/", "%s"),
+              replace(line, "/'%(${join("|", keys(p.params))})%'/", "%v"),
               [
                 for value in flatten(regexall("%(${join("|", keys(p.params))})%", line)) :
                 lookup(p.params, value)

@@ -75,7 +75,7 @@ locals {
     v.name => v.id...
   }
 
-  profiles_iterable = { for key, profile in var.profiles : profile.name => profile }
+  profiles_iterable = { for key, profile in var.profiles : join("", [profile.name, "-", try(profile.version, "1.0.0")]) => profile }
 
 }
 
@@ -135,5 +135,5 @@ resource "spectrocloud_cluster_profile" "profile_resource" {
 }
 
 output "profiles" {
-  value = { for key, profile in spectrocloud_cluster_profile.profile_resource : profile.name => {id = profile.id, name = profile.name}}
+  value = { for key, profile in spectrocloud_cluster_profile.profile_resource : join("", [profile.name, "-", try(profile.version, "1.0.0")]) => {id = profile.id, name = profile.name}}
 }
