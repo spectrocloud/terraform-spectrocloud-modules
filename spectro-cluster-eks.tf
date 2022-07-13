@@ -7,6 +7,7 @@ resource "spectrocloud_cluster_eks" "this" {
   cloud_config {
     region              = each.value.cloud_config.aws_region
     vpc_id              = each.value.cloud_config.aws_vpc_id
+    ssh_key_name        = try(each.value.ssh_key_name, null)
     az_subnets          = each.value.cloud_config.eks_subnets
     azs                 = []
     public_access_cidrs = []
@@ -52,7 +53,7 @@ resource "spectrocloud_cluster_eks" "this" {
   }
 
   cluster_profile {
-    id = local.profile_map[format("%s%%%s", each.value.profiles.infra.name, try(each.value.profiles.infra.version, "1.0.0"))].id
+    id = data.spectrocloud_cluster_profile.this[each.value.profiles.infra.name].id
 
     dynamic "pack" {
       for_each = try(each.value.profiles.infra.packs, [])
@@ -115,7 +116,7 @@ resource "spectrocloud_cluster_eks" "this" {
     }
   }
 
-  cloud_account_id = local.cloud_account_map[each.value.cloud_account]
+  cloud_account_id = data.spectrocloud_cloudaccount_aws.this[each.value.cloud_account].id
 
   dynamic "machine_pool" {
     for_each = each.value.node_groups

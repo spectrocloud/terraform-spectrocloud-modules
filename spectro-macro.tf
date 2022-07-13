@@ -15,10 +15,6 @@ locals {
   macros_iterable = { for macro in local.macros: macro.name => macro.value }
 }
 
-output "macros" {
-  value = spectrocloud_macro.macro
-}
-
 resource "spectrocloud_macro" "macro" {
   for_each = local.macros_iterable
 

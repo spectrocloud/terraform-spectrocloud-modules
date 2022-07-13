@@ -62,7 +62,7 @@ locals {
 
   pack_versions       = [for v in local.packs : v.version]
   pack_types          = [for v in local.packs : v.type]
-  pack_all_registries = [for v in local.packs : v.registry]
+  pack_all_registries = [for v in local.packs : try(v.registry, "")]
 
 
   pack_uids = [for index, v in local.packs : data.spectrocloud_pack.data_packs[index].id]
@@ -72,7 +72,7 @@ locals {
   )
   all_registry_map = {
     for k, v in data.spectrocloud_registry.all_registries :
-    v.name => v.id...
+    v.name => v.id... if v.name != null
   }
 
   profiles_iterable = { for key, profile in var.profiles : join("", [profile.name, "-", try(profile.version, "1.0.0")]) => profile }
@@ -109,7 +109,7 @@ resource "spectrocloud_cluster_profile" "profile_resource" {
   description = each.value.description
   cloud       = try(each.value.cloudType, "")
   type        = each.value.type
-  tags        = try(each.value.tags, [])
+  tags        = try(each.value.tags, null)
 
   dynamic "pack" {
     for_each = each.value.packs
@@ -132,8 +132,4 @@ resource "spectrocloud_cluster_profile" "profile_resource" {
       }
     }
   }
-}
-
-output "profiles" {
-  value = { for key, profile in spectrocloud_cluster_profile.profile_resource : join("", [profile.name, "-", try(profile.version, "1.0.0")]) => {id = profile.id, name = profile.name}}
 }

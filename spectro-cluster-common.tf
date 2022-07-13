@@ -232,7 +232,3 @@ data "spectrocloud_cluster" clusters {
 
   name = each.value.name
 }
-
-output "clusters" {
-  value = data.spectrocloud_cluster.clusters
-}
