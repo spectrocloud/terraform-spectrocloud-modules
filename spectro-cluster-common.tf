@@ -234,9 +234,17 @@ data "spectrocloud_cluster" clusters {
 }
 
 output "debug" {
-  value = local.infra-pack-params-replaced
+  value = local.addon_pack_manifests
 }
 
 output "debug1" {
-  value = local.cluster-profile-pack-map
+  value = local.cluster_addon_profiles_map
+}
+
+output "debug2" {
+  value = local.addon_pack_params_replaced
+}
+
+output "debug3" {
+  value = local.profiles_iterable
 }

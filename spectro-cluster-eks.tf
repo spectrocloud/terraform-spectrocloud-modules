@@ -6,9 +6,9 @@ resource "spectrocloud_cluster_eks" "this" {
 
   cloud_config {
     region              = each.value.cloud_config.aws_region
-    vpc_id              = each.value.cloud_config.aws_vpc_id
+    vpc_id              = can(each.value.cloud_config.aws_vpc_id) ? each.value.cloud_config.aws_vpc_id : null
     ssh_key_name        = try(each.value.ssh_key_name, null)
-    az_subnets          = each.value.cloud_config.eks_subnets
+    az_subnets          = can(each.value.cloud_config.eks_subnets) ? each.value.cloud_config.eks_subnets : null
     azs                 = []
     public_access_cidrs = []
     endpoint_access     = each.value.cloud_config.endpoint_access
@@ -133,7 +133,7 @@ resource "spectrocloud_cluster_eks" "this" {
       min           = try(machine_pool.value.min, machine_pool.value.count) # It is possible for the chosen max to be lesser than the min, or for the count to be out of bounds of min or max. Handle these conditions in the provider for this module or as input validation prior to using this module.
       max           = try(machine_pool.value.max, machine_pool.value.count)
       instance_type = machine_pool.value.instance_type
-      az_subnets    = machine_pool.value.worker_subnets
+      az_subnets    = can(machine_pool.value.worker_subnets) ? machine_pool.value.worker_subnets : null
       disk_size_gb  = machine_pool.value.disk_size_gb
       azs           = []
 
@@ -155,7 +155,7 @@ resource "spectrocloud_cluster_eks" "this" {
     for_each = try(each.value.fargate_profiles, [])
     content {
       name            = fargate_profile.value.name
-      subnets         = fargate_profile.value.subnets
+      subnets         = can(fargate_profile.value.subnets) ? fargate_profile.value.subnets : null
       additional_tags = fargate_profile.value.additional_tags
       dynamic "selector" {
         for_each = fargate_profile.value.selectors

@@ -24,7 +24,7 @@ locals {
         context = split("%", key)[2]
       }
     ]) :
-    x.name => format("%s%%%s", x.version, x.context)
+    format("%s%%%s%%%s", x.name, x.version, x.context) => format("%s%%%s%%%s", x.name, x.version, x.context)
   }
 
   profile_map = { //profiles is map of profile name and complete cluster profile object
@@ -55,7 +55,7 @@ locals {
   cluster_profile_pack_manifests = { for v in flatten([
     for v in var.profiles : [
       for p in v.packs : {
-        name  = format("%s-%s", v.name, p.name)
+        name  = format("%s%%%s%%%s%%%s", v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name)
         value = try(p.manifests, [])
       }
     ]
@@ -80,7 +80,7 @@ locals {
     v.name => v.id... if v.name != null
   }
 
-  profiles_iterable = { for key, profile in var.profiles : join("", [profile.name, "-", try(profile.version, "1.0.0"), try(profile.context, "project")]) => profile }
+  profiles_iterable = { for key, profile in var.profiles : join("", [profile.name, "%", try(profile.version, "1.0.0"), "%", try(profile.context, "project")]) => profile }
 
 }
 
@@ -97,9 +97,9 @@ data "spectrocloud_cluster_profile" "this" {
   depends_on = [spectrocloud_cluster_profile.profile_resource] // need to be able to create all profiles before using datasource
   for_each = local.profile_names_map
 
-  name  = each.key
-  version = split("%", each.value)[0]
-  context = split("%", each.value)[1]
+  name  = split("%", each.value)[0]
+  version = split("%", each.value)[1]
+  context = split("%", each.value)[2]
 }
 
 data "spectrocloud_registry" "all_registries" {
@@ -111,7 +111,7 @@ data "spectrocloud_registry" "all_registries" {
 resource "spectrocloud_cluster_profile" "profile_resource" {
   for_each    = local.profiles_iterable
   name        = each.value.name
-  version     = try(each.value.version, "")
+  version     = try(each.value.version, "1.0.0")
   context     = try(each.value.context, "project")
   description = each.value.description
   cloud       = try(each.value.cloudType, "")
@@ -131,8 +131,8 @@ resource "spectrocloud_cluster_profile" "profile_resource" {
       values = try(pack.value.values, "")
 
       dynamic "manifest" {
-        for_each = toset(try(local.cluster_profile_pack_manifests[format("%s-%s", each.value.name, pack.value.name)][0], []))
-        content {
+        for_each = toset(try(local.cluster_profile_pack_manifests[format("%s%%%s%%%s%%%s", each.value.name, try(each.value.version, "1.0.0"), try(each.value.context, "project"), pack.value.name)][0], []))
+content {
           name    = manifest.value.name
           content = manifest.value.content
         }
