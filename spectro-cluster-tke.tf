@@ -7,6 +7,7 @@ resource "spectrocloud_cluster_tke" "this" {
   cloud_config {
     region              = each.value.cloud_config.tke_region
     vpc_id              = each.value.cloud_config.tke_vpc_id
+    ssh_key_name        = try(each.value.ssh_key_name, null)
     az_subnets          = each.value.cloud_config.tke_subnets
     azs                 = []
     public_access_cidrs = try(each.value.public_access_cidrs, [])
