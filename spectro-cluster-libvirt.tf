@@ -84,7 +84,7 @@ resource "spectrocloud_cluster_libvirt" "this" {
     id = (local.profile_map[format("%s%%%s%%%s",
     each.value.profiles.system.name,
     try(each.value.profiles.system.version, "1.0.0"),
-    try(each.value.profiles.system.context))].id)
+    try(each.value.profiles.system.context, "project"))].id)
 
     dynamic "pack" {
       for_each = try(each.value.profiles.system.packs, [])
