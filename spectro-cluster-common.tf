@@ -221,10 +221,6 @@ locals {
   edge_clusters         = [for key in local.edge_keys : lookup(local.cluster_map, key)]
   // all edge clusters (this is for appliance list)
   all_edge_clusters = setunion(local.libvirt_clusters)
-
-  // all edge clusters with system profiles (this is for system profile list)
-  all_system_profile_clusters = setunion(local.libvirt_clusters, local.edge_vsphere_clusters, local.edge_clusters)
-
 }
 
 data "spectrocloud_cluster" clusters {
@@ -234,15 +230,15 @@ data "spectrocloud_cluster" clusters {
 }
 
 output "debug" {
-  value = local.addon_pack_manifests
+  value = local.infra_pack_manifests
 }
 
 output "debug1" {
-  value = local.cluster_addon_profiles_map
+  value = local.cluster_infra_profiles_map
 }
 
 output "debug2" {
-  value = local.addon_pack_params_replaced
+  value = local.infra-pack-params-replaced
 }
 
 output "debug3" {

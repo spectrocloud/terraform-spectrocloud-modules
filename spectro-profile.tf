@@ -3,9 +3,15 @@ locals {
         format("%s%%%s%%%s", v.profiles.infra.name, try(v.profiles.infra.version, "1.0.0"), try(v.profiles.infra.context, "project"))
         ]}"
 
-  system_profile_names = "${[for v in local.all_system_profile_clusters :
+  system_profile_names = "${setunion(flatten([for v in local.libvirt_clusters :
         format("%s%%%s%%%s", v.profiles.system.name, try(v.profiles.system.version, "1.0.0"), try(v.profiles.system.context, "project"))
-        ]}"
+        ]),
+        flatten([for v in local.edge_vsphere_clusters :
+        format("%s%%%s%%%s", v.profiles.system.name, try(v.profiles.system.version, "1.0.0"), try(v.profiles.system.context, "project"))
+        ]),
+        flatten([for v in local.edge_clusters :
+        format("%s%%%s%%%s", v.profiles.system.name, try(v.profiles.system.version, "1.0.0"), try(v.profiles.system.context, "project"))
+        ]),)}"
 
   addon_profile_names = flatten([
     for v in var.clusters : "${[
@@ -14,7 +20,7 @@ locals {
     }"
   ])
 
-  profile_names = toset(concat(concat(local.infra_profile_names, local.addon_profile_names), local.system_profile_names))
+  profile_names = toset(concat(concat(local.infra_profile_names, local.addon_profile_names), tolist(local.system_profile_names)))
 
   profile_names_map = {
     for x in flatten([
