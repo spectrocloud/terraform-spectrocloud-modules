@@ -178,6 +178,7 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
         cluster       = machine_pool.value.placement.cluster
         resource_pool = machine_pool.value.placement.resource_pool
         datastore     = machine_pool.value.placement.datastore
+        image_template_folder = can(machine_pool.value.placement.image_template_folder) ? machine_pool.value.placement.image_template_folder : null
         network       = machine_pool.value.placement.network
       }
 
