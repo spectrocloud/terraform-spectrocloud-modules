@@ -11,6 +11,7 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
     vip          = each.value.cloud_config.vip
     datacenter   = each.value.cloud_config.datacenter
     folder       = each.value.cloud_config.folder
+    image_template_folder = can(each.value.cloud_config.image_template_folder) ? each.value.cloud_config.image_template_folder : null
   }
 
   dynamic "cluster_rbac_binding" {
@@ -178,7 +179,6 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
         cluster       = machine_pool.value.placement.cluster
         resource_pool = machine_pool.value.placement.resource_pool
         datastore     = machine_pool.value.placement.datastore
-        image_template_folder = can(machine_pool.value.placement.image_template_folder) ? machine_pool.value.placement.image_template_folder : null
         network       = machine_pool.value.placement.network
       }
 
