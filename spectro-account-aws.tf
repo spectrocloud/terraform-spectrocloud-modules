@@ -1,10 +1,5 @@
 locals {
   eks_cloud_account_names = toset([for v in local.eks_clusters : v.cloud_account])
-
-  cloud_account_map = {
-    for k, v in data.spectrocloud_cloudaccount_aws.this :
-    v.name => v.id
-  }
 }
 
 
