@@ -122,9 +122,9 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
 
     content {
       id = (local.profile_map[format("%s%%%s%%%s",
-      each.value.profiles.addons.name,
-      try(each.value.profiles.addons.version, "1.0.0"),
-      try(each.value.profiles.addons.context, "project"))].id)
+      cluster_profile.value.name,
+      try(cluster_profile.value.version, "1.0.0"),
+      try(cluster_profile.value.context, "project"))].id)
 
       dynamic "pack" {
         for_each = try(cluster_profile.value.packs, [])
