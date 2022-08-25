@@ -212,6 +212,8 @@ locals {
   eks_clusters = [for key in local.eks_keys : lookup(local.cluster_map, key)]
   tke_keys     = compact([for i, cluster in local.cluster_map : cluster.cloudType == "tke" ? i : ""])
   tke_clusters = [for key in local.tke_keys : lookup(local.cluster_map, key)]
+  vsphere_keys     = compact([for i, cluster in local.cluster_map : cluster.cloudType == "vsphere" ? i : ""])
+  vsphere_clusters = [for key in local.vsphere_keys : lookup(local.cluster_map, key)]
 
   libvirt_keys          = compact([for i, cluster in local.cluster_map : cluster.cloudType == "libvirt" ? i : ""])
   libvirt_clusters      = [for key in local.libvirt_keys : lookup(local.cluster_map, key)]
