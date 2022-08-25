@@ -145,6 +145,7 @@ resource "spectrocloud_cluster_vsphere" "this" {
         resource_pool = machine_pool.value.placement.resource_pool
         datastore     = machine_pool.value.placement.datastore
         network       = machine_pool.value.placement.network
+        static_ip_pool_id = machine_pool.value.placement.static_ip_pool_id
       }
 
       instance_type {
