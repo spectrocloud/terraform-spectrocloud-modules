@@ -12,8 +12,10 @@ data "spectrocloud_cloudaccount_aws" "this" {
 resource "spectrocloud_cloudaccount_aws" "account" {
   for_each = { for x in local.eks_accounts : x.name => x }
 
-  type        = "sts"
   name        = each.value.name
-  arn         = each.value.arn
-  external_id = each.value.external_id
+  type        = try(each.value.type, "sts")
+  aws_access_key = try(each.value.aws_access_key, nil)
+  aws_secret_key = try(each.value.aws_secret_key, nil)
+  arn         = try(each.value.arn, nil)
+  external_id = try(each.value.external_id, nil)
 }
