@@ -14,8 +14,8 @@ resource "spectrocloud_cloudaccount_aws" "account" {
 
   name        = each.value.name
   type        = try(each.value.type, "sts")
-  aws_access_key = try(each.value.aws_access_key, nil)
-  aws_secret_key = try(each.value.aws_secret_key, nil)
-  arn         = try(each.value.arn, nil)
-  external_id = try(each.value.external_id, nil)
+  aws_access_key = can(each.value.aws_access_key) ? each.value.aws_access_key : null
+  aws_secret_key = can(each.value.aws_secret_key) ? each.value.aws_secret_key : null
+  arn         = can(each.value.arn) ? each.value.arn : null
+  external_id = can(each.value.external_id) ? each.value.external_id : null
 }
