@@ -198,6 +198,7 @@ resource "spectrocloud_cluster_libvirt" "this" {
             device_model = try(gpu_config.value.device_model, "")
             vendor       = try(gpu_config.value.vendor, "")
             num_gpus     = try(gpu_config.value.num_gpus, 0)
+            addresses    = try(gpu_config.value.addresses, tomap({}))
           }
         }
 

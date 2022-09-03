@@ -1,14 +1,13 @@
-resource "spectrocloud_cluster_edge_vsphere" "this" {
-  for_each      = { for x in local.edge_vsphere_clusters : x.name => x }
+resource "spectrocloud_cluster_vsphere" "this" {
+  for_each      = { for x in local.vsphere_clusters : x.name => x }
   name          = each.value.name
   tags          = try(each.value.tags, [])
-  edge_host_uid = each.value.edge_host_uid
+  cloud_account_id = data.spectrocloud_cloudaccount_vsphere.this[each.value.cloud_account].id
 
   cloud_config {
     ssh_key      = each.value.cloud_config.ssh_key
     static_ip    = each.value.cloud_config.static_ip
     network_type = each.value.cloud_config.network_type
-    vip          = each.value.cloud_config.vip
     datacenter   = each.value.cloud_config.datacenter
     folder       = each.value.cloud_config.folder
     image_template_folder = can(each.value.cloud_config.image_template_folder) ? each.value.cloud_config.image_template_folder : null
@@ -83,40 +82,6 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
     }
   }
 
-  #system profile
-  cluster_profile {
-    id = (local.profile_map[format("%s%%%s%%%s",
-    each.value.profiles.system.name,
-    try(each.value.profiles.system.version, "1.0.0"),
-    try(each.value.profiles.system.context, "project"))].id)
-
-    dynamic "pack" {
-      for_each = try(each.value.profiles.system.packs, [])
-      content {
-        name         = pack.value.name
-        tag          = try(pack.value.version, "")
-        registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
-        type         = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
-        values       = "${(try(pack.value.is_manifest_pack, false)) ?
-        local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", each.value.profiles.system.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)].values :
-        (pack.value.override_type == "values") ?
-        pack.value.values :
-        (pack.value.override_type == "params" ?
-          local.addon_pack_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)] :
-        local.addon_pack_template_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)])
-        }"
-
-        dynamic "manifest" {
-          for_each = try([local.infra_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, each.value.profiles.system.name, try(each.value.profiles.system.version, try(each.value.profiles.system.context, "project"), "1.0.0"), pack.value.name)]], [])
-          content {
-            name    = manifest.value.name
-            content = manifest.value.content
-          }
-        }
-      }
-    }
-  }
-
   dynamic "cluster_profile" {
     for_each = try(each.value.profiles.addons, [])
 
@@ -180,6 +145,7 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
         resource_pool = machine_pool.value.placement.resource_pool
         datastore     = machine_pool.value.placement.datastore
         network       = machine_pool.value.placement.network
+        static_ip_pool_id = machine_pool.value.placement.static_ip_pool_id
       }
 
       instance_type {

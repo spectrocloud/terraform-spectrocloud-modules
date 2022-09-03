@@ -7,7 +7,7 @@ resource "spectrocloud_cluster_eks" "this" {
   cloud_config {
     region              = each.value.cloud_config.aws_region
     vpc_id              = can(each.value.cloud_config.aws_vpc_id) ? each.value.cloud_config.aws_vpc_id : null
-    ssh_key_name        = try(each.value.ssh_key_name, null)
+    ssh_key_name        = try(each.value.cloud_config.ssh_key_name, null)
     az_subnets          = can(each.value.cloud_config.eks_subnets) ? each.value.cloud_config.eks_subnets : null
     azs                 = []
     public_access_cidrs = []
