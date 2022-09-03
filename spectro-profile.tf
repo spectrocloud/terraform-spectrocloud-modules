@@ -15,7 +15,7 @@ locals {
 
   addon_profile_names = flatten([
     for v in var.clusters : "${[
-      for k in try(v.profiles.addons, []) : format("%s%%%s%%%s", k.name, try(k.version, "1.0.0"), try(k.context, "project"))
+      for k in can(v.profiles.addons) ? v.profiles.addons : try(v.profiles.addon_deployments, []) : format("%s%%%s%%%s", k.name, try(k.version, "1.0.0"), try(k.context, "project"))
       ]
     }"
   ])
@@ -53,9 +53,27 @@ locals {
     v.name => v.profiles.infra
   }
 
+  cluster_addon_deployments_map = {
+    for x in flatten([
+      for k, v in var.clusters : [
+        for p in try(v.profiles.addon_deployments, []) : {
+          addon_deployment_name = format("%s%%%s", v.name, p.name),
+          value = {
+                addon_deployment_name = format("%s%%%s", v.name, p.name),
+                value = {
+                  cluster_uid = data.spectrocloud_cluster.clusters[v.name].id
+                  cluster_name = v.name
+                  profile = p
+                }
+              }
+            }
+          ]]) :
+          x.addon_deployment_name => x.value
+  }
+
   cluster_addon_profiles_map = {
     for v in var.clusters :
-    v.name => try(v.profiles.addons, [])
+    v.name => can(v.profiles.addons) ? v.profiles.addons : try(v.profiles.addon_deployments, [])
   }
 
   cluster_profile_pack_manifests = { for v in flatten([

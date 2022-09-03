@@ -232,7 +232,7 @@ data "spectrocloud_cluster" clusters {
 }
 
 output "debug" {
-  value = local.infra_pack_manifests
+  value = local.cluster_addon_deployments_map
 }
 
 output "debug1" {
