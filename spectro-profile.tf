@@ -78,7 +78,7 @@ locals {
 
   cluster_profile_pack_manifests = { for v in flatten([
     for v in var.profiles : [
-      for p in try(v.packs, []) :
+      for p in try(v.packs, []) : {
         name  = format("%s%%%s%%%s%%%s", v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name)
         value = try(p.manifests, [])
       }
