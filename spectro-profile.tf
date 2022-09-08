@@ -13,12 +13,18 @@ locals {
         format("%s%%%s%%%s", v.profiles.system.name, try(v.profiles.system.version, "1.0.0"), try(v.profiles.system.context, "project"))
         ]),)}"
 
-  addon_profile_names = flatten([
+  addon_profile_names = "${concat(flatten([
     for v in var.clusters : "${[
-      for k in can(v.profiles.addons) ? v.profiles.addons : try(v.profiles.addon_deployments, []) : format("%s%%%s%%%s", k.name, try(k.version, "1.0.0"), try(k.context, "project"))
+      for k in try(v.profiles.addons, []) : format("%s%%%s%%%s", k.name, try(k.version, "1.0.0"), try(k.context, "project"))
       ]
     }"
-  ])
+  ]),
+       flatten([
+    for v in var.clusters : "${[
+      for k in try(v.profiles.addon_deployments, []) : format("%s%%%s%%%s", k.name, try(k.version, "1.0.0"), try(k.context, "project"))
+      ]
+    }"
+  ]),)}"
 
   profile_names = toset(concat(concat(local.infra_profile_names, local.addon_profile_names), tolist(local.system_profile_names)))
 
@@ -73,7 +79,7 @@ locals {
 
   cluster_addon_profiles_map = {
     for v in var.clusters :
-    v.name => can(v.profiles.addons) ? v.profiles.addons : try(v.profiles.addon_deployments, [])
+    v.name => concat(try(v.profiles.addons, []), try(v.profiles.addon_deployments, []))
   }
 
   cluster_profile_pack_manifests = { for v in flatten([
