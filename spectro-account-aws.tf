@@ -4,6 +4,7 @@ locals {
 
 
 data "spectrocloud_cloudaccount_aws" "this" {
+  depends_on = [spectrocloud_cloudaccount_aws.account]
   for_each = local.eks_cloud_account_names
 
   name = each.value

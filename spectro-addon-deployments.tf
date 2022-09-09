@@ -1,6 +1,6 @@
 resource "spectrocloud_addon_deployment" "this" {
   for_each    = { for x in local.cluster_addon_deployments_map : x.addon_deployment_name => x.value }
-  cluster_uid = try(each.value.cluster_uid, "cluster_uid") #data.spectrocloud_cluster.clusters[split("%", each.key)[0]].id
+  cluster_uid = each.value.cluster_uid != null ? each.value.cluster_uid : "cluster_uid" #data.spectrocloud_cluster.clusters[split("%", each.key)[0]].id
 
   cluster_profile {
 
