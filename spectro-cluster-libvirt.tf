@@ -117,6 +117,7 @@ resource "spectrocloud_cluster_libvirt" "this" {
     }
   }
 
+  # addon profiles
   dynamic "cluster_profile" {
     for_each = try(each.value.profiles.addons, [])
 
