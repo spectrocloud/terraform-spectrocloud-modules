@@ -2,7 +2,7 @@ locals {
 
   cluster_system_profiles_map = {
     for v in var.clusters :
-    v.name => v.profiles.system
+    v.name => try(v.profiles.system, {})
   }
 
   // local.cluster_system_profiles_map should contain information provided by user in cluster.yaml file
