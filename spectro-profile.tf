@@ -1,37 +1,44 @@
 locals {
-  infra_profile_names = "${[for v in var.clusters :
-        format("%s%%%s%%%s", v.profiles.infra.name, try(v.profiles.infra.version, "1.0.0"), try(v.profiles.infra.context, "project"))
-        ]}"
+  infra_profile_names = ([for v in var.clusters :
+    format("%s%%%s%%%s", v.profiles.infra.name, try(v.profiles.infra.version, "1.0.0"), try(v.profiles.infra.context, "project"))
+  ])
 
-  system_profile_names = "${setunion(flatten([for v in local.libvirt_clusters :
-        format("%s%%%s%%%s", v.profiles.system.name, try(v.profiles.system.version, "1.0.0"), try(v.profiles.system.context, "project"))
-        ]),
-        flatten([for v in local.edge_vsphere_clusters :
-        format("%s%%%s%%%s", v.profiles.system.name, try(v.profiles.system.version, "1.0.0"), try(v.profiles.system.context, "project"))
-        ]),
-        flatten([for v in local.edge_clusters :
-        format("%s%%%s%%%s", v.profiles.system.name, try(v.profiles.system.version, "1.0.0"), try(v.profiles.system.context, "project"))
-        ]),)}"
+  system_profile_names = (setunion(flatten([for v in local.libvirt_clusters :
+    format("%s%%%s%%%s", v.profiles.system.name, try(v.profiles.system.version, "1.0.0"), try(v.profiles.system.context, "project"))
+    ]),
+    flatten([for v in local.edge_vsphere_clusters :
+      format("%s%%%s%%%s", v.profiles.system.name, try(v.profiles.system.version, "1.0.0"), try(v.profiles.system.context, "project"))
+    ]),
+    flatten([for v in local.edge_clusters :
+      format("%s%%%s%%%s", v.profiles.system.name, try(v.profiles.system.version, "1.0.0"), try(v.profiles.system.context, "project"))
+  ]), ))
 
-  addon_profile_names = "${concat(flatten([
+  addon_profile_names = (concat(flatten([
     for v in var.clusters : "${[
       for k in try(v.profiles.addons, []) : format("%s%%%s%%%s", k.name, try(k.version, "1.0.0"), try(k.context, "project"))
       ]
     }"
-  ]),
-       flatten([
-    for v in var.clusters : "${[
-      for k in try(v.profiles.addon_deployments, []) : format("%s%%%s%%%s", k.name, try(k.version, "1.0.0"), try(k.context, "project"))
-      ]
-    }"
-  ]),)}"
+    ]),
+    flatten([
+      for v in var.clusters : "${[
+        for k in try(v.profiles.addon_deployments, []) : format("%s%%%s%%%s", k.name, try(k.version, "1.0.0"), try(k.context, "project"))
+        ]
+      }"
+  ]), ))
 
-  profile_names = toset(concat(concat(local.infra_profile_names, local.addon_profile_names), tolist(local.system_profile_names)))
+  profile_names = (toset(
+    concat(
+      concat(local.infra_profile_names, local.addon_profile_names),
+      tolist(local.system_profile_names)
+    )
+  ))
+
+
 
   profile_names_map = {
     for x in flatten([
       for key in local.profile_names : {
-        name  = split("%", key)[0]
+        name    = split("%", key)[0]
         version = split("%", key)[1]
         context = split("%", key)[2]
       }
@@ -54,32 +61,22 @@ locals {
     x.name => x.pack
   }
 
-  cluster_infra_profiles_map = {
-    for v in var.clusters :
-    v.name => v.profiles.infra
-  }
-
   cluster_addon_deployments_map = {
     for x in flatten([
       for k, v in var.clusters : [
         for p in try(v.profiles.addon_deployments, []) : {
           addon_deployment_name = format("%s%%%s", v.name, p.name),
           value = {
-                addon_deployment_name = format("%s%%%s", v.name, p.name),
-                value = {
-                  cluster_uid = data.spectrocloud_cluster.clusters[v.name].id
-                  cluster_name = v.name
-                  profile = p
-                }
-              }
+            addon_deployment_name = format("%s%%%s", v.name, p.name),
+            value = {
+              cluster_uid  = data.spectrocloud_cluster.clusters[v.name].id
+              cluster_name = v.name
+              profile      = p
             }
-          ]]) :
-          x.addon_deployment_name => x.value
-  }
-
-  cluster_addon_profiles_map = {
-    for v in var.clusters :
-    v.name => concat(try(v.profiles.addons, []), try(v.profiles.addon_deployments, []))
+          }
+        }
+    ]]) :
+    x.addon_deployment_name => x.value
   }
 
   cluster_profile_pack_manifests = { for v in flatten([
@@ -125,9 +122,9 @@ data "spectrocloud_pack" "data_packs" {
 
 data "spectrocloud_cluster_profile" "this" {
   depends_on = [spectrocloud_cluster_profile.profile_resource] // need to be able to create all profiles before using datasource
-  for_each = local.profile_names_map
+  for_each   = local.profile_names_map
 
-  name  = split("%", each.value)[0]
+  name    = split("%", each.value)[0]
   version = split("%", each.value)[1]
   context = split("%", each.value)[2]
 }
@@ -162,7 +159,7 @@ resource "spectrocloud_cluster_profile" "profile_resource" {
 
       dynamic "manifest" {
         for_each = toset(try(local.cluster_profile_pack_manifests[format("%s%%%s%%%s%%%s", each.value.name, try(each.value.version, "1.0.0"), try(each.value.context, "project"), pack.value.name)][0], []))
-content {
+        content {
           name    = manifest.value.name
           content = manifest.value.content
         }

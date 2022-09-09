@@ -1,15 +1,15 @@
 resource "spectrocloud_addon_deployment" "this" {
-  for_each      = { for x in local.cluster_addon_deployments_map : x.addon_deployment_name => x.value }
+  for_each    = { for x in local.cluster_addon_deployments_map : x.addon_deployment_name => x.value }
   cluster_uid = each.value.cluster_uid #data.spectrocloud_cluster.clusters[split("%", each.key)[0]].id
 
   cluster_profile {
 
-      id = (local.profile_map[format("%s%%%s%%%s",
+    id = (local.profile_map[format("%s%%%s%%%s",
       each.value.profile.name,
       try(each.value.profile.version, "1.0.0"),
-      try(each.value.profile.context, "project"))].id)
+    try(each.value.profile.context, "project"))].id)
 
-      dynamic "pack" {
+    dynamic "pack" {
       for_each = try(each.value.profile.packs, [])
       content {
         name         = pack.value.name
