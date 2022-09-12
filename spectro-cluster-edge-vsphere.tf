@@ -143,8 +143,8 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
           (pack.value.override_type == "values") ?
           pack.value.values :
           (pack.value.override_type == "params" ?
-            local.addon_pack_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, cluster_profile.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)] :
-          local.addon_pack_template_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, cluster_profile.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)])
+            local.addon_pack_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)] :
+          local.addon_pack_template_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)])
           }"
 
           dynamic "manifest" {
