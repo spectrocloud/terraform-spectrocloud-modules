@@ -84,37 +84,35 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
   }
 
   #system profile
-  dynamic "cluster_profile" {
-    for_each = try(tolist(each.value.profiles.system), [])
+  cluster_profile {
+    id = (local.profile_map[format("%s%%%s%%%s",
+    each.value.profiles.system.name,
+    try(each.value.profiles.system.version, "1.0.0"),
+    try(each.value.profiles.system.context, "project"))].id)
 
-    content {
-      id = (local.profile_map[format("%s%%%s%%%s",
-      cluster_profile.value.name,
-      try(cluster_profile.value.version, "1.0.0"),
-      try(cluster_profile.value.context, "project"))].id)
-
-      dynamic "pack" {
-        for_each = try(cluster_profile.value.packs, [])
-        content {
-          name         = pack.value.name
-          tag          = try(pack.value.version, "")
-          registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
-          type         = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
-          values       = "${(try(pack.value.is_manifest_pack, false)) ?
-          local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", cluster_profile.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)].values :
+    dynamic "pack" {
+      for_each = try(each.value.profiles.system.packs, [])
+      content {
+        name         = pack.value.name
+        tag          = try(pack.value.version, "")
+        registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
+        type         = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
+        values       = "${can(pack.value.override_type) ? (
+          (try(pack.value.is_manifest_pack, false)) ?
+          local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", each.value.profiles.system.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)].values :
           (pack.value.override_type == "values") ?
           pack.value.values :
           (pack.value.override_type == "params" ?
-            local.system-pack-params-replaced[format("%s$%s%%%s%%%s$%s", each.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)] :
-          local.system-pack-template-params-replaced[format("%s$%s%%%s%%%s$%s", each.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)])
+             local.system-pack-params-replaced[format("%s$%s%%%s%%%s$%s", each.value.name, each.value.profiles.system.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)] :
+          local.system-pack-template-params-replaced[format("%s$%s%%%s%%%s$%s", each.value.name, each.value.profiles.system.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)])) :
+          (pack.value.values)
           }"
 
-          dynamic "manifest" {
-            for_each = try(local.system_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)], [])
-            content {
-              name    = manifest.value.name
-              content = manifest.value.content
-            }
+        dynamic "manifest" {
+          for_each = try(local.system_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)], [])
+          content {
+            name    = manifest.value.name
+            content = manifest.value.content
           }
         }
       }
@@ -143,8 +141,8 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
           (pack.value.override_type == "values") ?
           pack.value.values :
           (pack.value.override_type == "params" ?
-            local.addon_pack_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)] :
-          local.addon_pack_template_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)])
+             local.addon_pack_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, cluster_profile.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)] :
+          local.addon_pack_template_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, cluster_profile.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)])
           }"
 
           dynamic "manifest" {
