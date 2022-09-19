@@ -105,10 +105,17 @@ resource "spectrocloud_cluster_libvirt" "this" {
           }"
 
        dynamic "manifest" {
-         for_each = try(local.system_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)], [])
+         for_each = "${can(local.system_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)]) ?
+         local.system_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)] :
+         (can(pack.value.manifests) ? pack.value.manifests : [])
+         }"
+
          content {
            name    = manifest.value.name
-           content = manifest.value.content
+           content = "${can(pack.value.override_type) ? (
+           (pack.value.override_type == "values") ? manifest.value.content : "diff override type"
+           ) : manifest.value.content
+           }"
          }
        }
      }

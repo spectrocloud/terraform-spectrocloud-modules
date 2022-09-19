@@ -70,8 +70,8 @@ locals {
 
 }
 
-output "debug3" {
-  value = local.cluster_addon_profiles_map
+output "debug_addon_pack_manifests" {
+  value = local.addon_pack_manifests
 }
 
 

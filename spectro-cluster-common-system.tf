@@ -66,6 +66,10 @@ locals {
 
 }
 
-output "debug2" {
+output "debug_cluster_system_profiles_map" {
   value = local.cluster_system_profiles_map
+}
+
+output "debug_system_pack_manifests" {
+  value = local.system_pack_manifests
 }
