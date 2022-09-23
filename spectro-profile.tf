@@ -33,8 +33,6 @@ locals {
     )
   ))
 
-
-
   profile_names_map = {
     for x in flatten([
       for key in local.profile_names : {
