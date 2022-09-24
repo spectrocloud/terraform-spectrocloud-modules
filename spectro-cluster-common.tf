@@ -1,217 +1,13 @@
 locals {
 
-  /*
-  infra-pack-params-replaced is a map of key (<cluster_name>-<cluster_profile_name>-<pack_name>) and
-  replaced value with given parameters in input cluster parameter.
-
-  Input:
-
-    infra: //code snippet from yaml file
-      name: EKS-Base-CP-with-percentage
-      packs:
-        - name: sapp-hipster
-          version: "2.0.0"
-          override_type: params #[values, params, template]
-          params:
-            HIPSTER_NAMESPACE: "hipster-cluster"
-
-  Eg:
-  {
-    "eks-dev-cluster-EKS-Base-CP-sapp-hipster" = <<-EOT
-      pack:
-        spectrocloud.com/install-priority: "10"
-      manifests:
-        hipster:
-          # Liveness probe default itmeout
-          timeout: 60
-
-          # Disable Tracing
-          disableTracing: true
-
-          # The namespace to create the app in
-          namespace: "hipster-cluster"
-      EOT
-  }
-  */
-
-  // local.cluster_infra_profiles_map should contain information provided by user in cluster.yaml file
-  infra-pack-params-replaced = { for v in flatten([
-    for k, v in local.cluster_infra_profiles_map : [
-      for p in try(v.packs, []) : {
-        name = format("%s$%s%%%s%%%s$%s", k, v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name)
-        value = join("\n", [
-          for line in split("\n", try(p.is_manifest_pack, false) ?
-            element([for x in local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
-          local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name)].values) :
-          format(
-            replace(line, "/'%(${join("|", keys(p.params))})%'/", "%v"),
-            [
-              for value in flatten(regexall("%(${join("|", keys(p.params))})%", line)) :
-              lookup(p.params, value)
-            ]...
-          )
-        ])
-      } if p.override_type == "params"
-    ]]) : v.name => v.value
-  }
 
 
-  /*
-  infra-pack-template-params-replaced is a map of key (<cluster_name>-<cluster_profile_name>-<pack_name>) and
-  replaced value with given map of parameters in input cluster parameter. Template will come from cluster profile pack
-  and template would be iterated as many times as it present in param map
 
-    Input:
-
-    infra: //code snippet from yaml file
-      name: EKS-Base-CP-with-percentage
-      packs:
-        - name: profile-installation
-          is_manifest_pack: true
-          manifest_name: profile-install-crd
-          override_type: template
-          params:
-            - NAMESPACE_NAME: namespace-cluster-1
-              NAMESPACE_LABEL_KEY: app
-              NAMESPACE_LABEL_VALUE: cluster1
-            - NAMESPACE_NAME: namespace-cluster-2
-              NAMESPACE_LABEL_KEY: app
-              NAMESPACE_LABEL_VALUE: cluster2
-
-      Manifest content in manifest pack:
-      apiVersion: v1
-      kind: Namespace
-      metadata:
-        name: "%NAMESPACE_NAME%"
-        labels:
-          "%NAMESPACE_LABEL_KEY%": "%NAMESPACE_LABEL_VALUE%"
-      ---
-
-      Value after replacement:
-
-      apiVersion: v1
-      kind: Namespace
-      metadata:
-        name: "namespace-cluster-1"
-        labels:
-          "app": "cluster1"
-      ---
-
-      apiVersion: v1
-      kind: Namespace
-      metadata:
-        name: "namespace-cluster-2"
-        labels:
-          "app": "cluster2"
-      ---
-  */
-  infra-pack-template-params-replaced = { for v in flatten([
-    for k, v in local.cluster_infra_profiles_map : [
-      for p in try(v.packs, []) : {
-        name = format("%s$%s%%%s%%%s$%s", k, v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name)
-        value = join("\n", flatten([for l in p.params : [
-          join("\n", [
-            for line in split("\n", try(p.is_manifest_pack, false) ?
-              element([for x in local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
-            local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name)].values) :
-            format(
-              replace(line, "/%(${join("|", keys(l))})%/", "%s"),
-              [
-                for value in flatten(regexall("%(${join("|", keys(l))})%", line)) :
-                lookup(l, value)
-              ]...
-            )
-          ])
-        ]]))
-      } if p.override_type == "template"
-    ]]) : v.name => v.value
-  }
-
-  addon_pack_params_replaced = { for v in flatten([
-    for k, v in local.cluster_addon_profiles_map : [
-      for e in v : [
-        for p in try(e.packs, []) : {
-          name = format("%s$%s%%%s%%%s$%s", k, e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name)
-          value = join("\n", [
-            for line in split("\n", try(p.is_manifest_pack, false) ?
-              element([for x in local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
-            local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name)].values) :
-            format(
-              replace(line, "/'%(${join("|", keys(p.params))})%'/", "%v"),
-              [
-                for value in flatten(regexall("%(${join("|", keys(p.params))})%", line)) :
-                lookup(p.params, value)
-              ]...
-            )
-          ])
-        } if p.override_type == "params"
-      ]
-    ]]) : v.name => v.value
-  }
-
-  addon_pack_template_params_replaced = { for v in flatten([
-    for k, v in local.cluster_addon_profiles_map : [
-      for e in v : [
-        for p in try(e.packs, []) : {
-          name = format("%s-%s-%s", k, e.name, p.name)
-          value = join("\n", flatten([for l in p.params : [
-            join("\n", [
-              for line in split("\n", try(p.is_manifest_pack, false) ?
-                element([for x in local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
-              local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name)].values) :
-              format(
-                replace(line, "/%(${join("|", keys(l))})%/", "%s"),
-                [
-                  for value in flatten(regexall("%(${join("|", keys(l))})%", line)) :
-                  lookup(l, value)
-                ]...
-              )
-            ])
-          ]]))
-      } if p.override_type == "template"]
-    ]
-    ]) : v.name => v.value
-  }
-
-  infra_pack_manifests = { for v in flatten([
-    for k, v in local.cluster_infra_profiles_map : [
-      for p in try(v.packs, []) : {
-        name = format("%s$%s%%%s%%%s$%s", k, v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name)
-        value = {
-          #identifier = format("%s-%s-%s-%s", k, v.name, p.name, p.manifest_name)
-          name       = p.manifest_name
-          content = lookup(local.infra-pack-params-replaced, format("%s$%s%%%s%%%s$%s", k, v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name),
-            lookup(local.infra-pack-template-params-replaced, format("%s$%s%%%s%%%s$%s", k, v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name), "")
-          )
-        }
-      } if try(p.is_manifest_pack, false)
-    ]
-    ]) : v.name => v.value
-  }
-
-  addon_pack_manifests = { for v in flatten([
-    for k, v in local.cluster_addon_profiles_map : [
-      for e in v : [
-        for p in try(e.packs, []) : {
-          name = format("%s$%s%%%s%%%s$%s", k, e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name)
-          value = [{
-            #identifier = format("%s-%s%%%s%%%s-%s-%s", k, e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name, p.manifest_name)
-            name       = p.manifest_name
-            content = lookup(local.addon_pack_params_replaced, format("%s$%s%%%s%%%s$%s", k, e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name),
-              lookup(local.addon_pack_template_params_replaced, format("%s$%s%%%s%%%s$%s", k, e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name), "")
-            )
-          }]
-      } if try(p.is_manifest_pack, false)]
-    ]
-    ]) : v.name => v.value
-  }
-
-
-  cluster_map  = { for key, cluster in var.clusters : cluster.name => cluster }
-  eks_keys     = compact([for i, cluster in local.cluster_map : cluster.cloudType == "eks" ? i : ""])
-  eks_clusters = [for key in local.eks_keys : lookup(local.cluster_map, key)]
-  tke_keys     = compact([for i, cluster in local.cluster_map : cluster.cloudType == "tke" ? i : ""])
-  tke_clusters = [for key in local.tke_keys : lookup(local.cluster_map, key)]
+  cluster_map      = { for key, cluster in var.clusters : cluster.name => cluster }
+  eks_keys         = compact([for i, cluster in local.cluster_map : cluster.cloudType == "eks" ? i : ""])
+  eks_clusters     = [for key in local.eks_keys : lookup(local.cluster_map, key)]
+  tke_keys         = compact([for i, cluster in local.cluster_map : cluster.cloudType == "tke" ? i : ""])
+  tke_clusters     = [for key in local.tke_keys : lookup(local.cluster_map, key)]
   vsphere_keys     = compact([for i, cluster in local.cluster_map : cluster.cloudType == "vsphere" ? i : ""])
   vsphere_clusters = [for key in local.vsphere_keys : lookup(local.cluster_map, key)]
 
@@ -225,7 +21,9 @@ locals {
   all_edge_clusters = setunion(local.libvirt_clusters)
 }
 
-data "spectrocloud_cluster" clusters {
+data "spectrocloud_cluster" "clusters" {
+  depends_on = [spectrocloud_cluster_tke.this, spectrocloud_cluster_edge.this, spectrocloud_cluster_edge_vsphere.this,
+    spectrocloud_cluster_eks.this, spectrocloud_cluster_libvirt.this]
   for_each = local.cluster_map
 
   name = each.value.name
@@ -235,14 +33,4 @@ output "debug" {
   value = local.cluster_addon_deployments_map
 }
 
-output "debug1" {
-  value = local.cluster_infra_profiles_map
-}
 
-output "debug2" {
-  value = local.infra-pack-params-replaced
-}
-
-output "debug3" {
-  value = local.profiles_iterable
-}

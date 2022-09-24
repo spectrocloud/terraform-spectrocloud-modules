@@ -11,6 +11,7 @@ locals {
 
 
 data "spectrocloud_appliance" "this" {
+  depends_on = [spectrocloud_appliance.appliance]
   for_each = local.all_appliance_uids
 
   name = each.value

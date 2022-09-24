@@ -4,6 +4,7 @@ locals {
 
 
 data "spectrocloud_cloudaccount_vsphere" "this" {
+  // TODO: Add depends on the resource once implemented.
   for_each = local.vsphere_cloud_account_names
 
   name = each.value

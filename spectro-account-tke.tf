@@ -9,6 +9,7 @@ locals {
 
 
 data "spectrocloud_cloudaccount_tencent" "this" {
+  depends_on = [spectrocloud_cloudaccount_tencent.account]
   for_each = local.tke_cloud_account_names
 
   name = each.value

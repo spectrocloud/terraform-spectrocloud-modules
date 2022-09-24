@@ -122,7 +122,8 @@ resource "spectrocloud_cluster_eks" "this" {
     }
   }
 
-  cloud_account_id = data.spectrocloud_cloudaccount_aws.this[each.value.cloud_account].id
+  cloud_account_id = lookup(local.aws_cloud_account_names, each.value.cloud_account, null)
+  #cloud_account_id = data.spectrocloud_cloudaccount_aws.this[each.value.cloud_account].id
 
   dynamic "machine_pool" {
     for_each = each.value.node_groups
