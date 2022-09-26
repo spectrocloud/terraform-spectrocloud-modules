@@ -1,6 +1,6 @@
 # Spectrocloud Terraform modules. ####
 
-Spectrocloud modules project is a container for all spectrocloud resources that are used together. 
+Spectrocloud module is a container for all spectrocloud resources that are used together. 
 You can use modules to create lightweight abstractions, using yaml files which are translated into terraform.
 
 # Module structure. ####
