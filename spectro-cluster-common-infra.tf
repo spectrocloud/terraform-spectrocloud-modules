@@ -151,6 +151,6 @@ Eg:
 
 }
 
-output "debug1" {
+output "debug_cluster_infra_profiles_map" {
   value = local.cluster_infra_profiles_map
 }
