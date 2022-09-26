@@ -1,0 +1,49 @@
+name: eks-addon-deployment-2
+cloudType: eks
+
+cloud_account: "dev-cloud-acc"
+profiles:
+  infra:
+    name:  profile_infra-5
+    version: 1.0.1
+
+  addon_deployments: # spectrocloud_addon_deployment
+    - name: test-addon-depl
+      version: 1.0.2
+      context: project
+    - name: addon-profile-eks-4-simyam
+      version: 1.0.3
+      context: tenant
+      packs:
+        - name: kubevious-test
+          is_manifest_pack: true
+          manifest_name: test-manifest
+          override_type: params
+          params:
+            TEST_PARAM_ADDON: "${TEST_PARAM_ADDON_VALUE}"
+            ADDON_MANIFEST_BOOLEAN: "${ADDON_MANIFEST_BOOLEAN_VALUE}"
+
+
+cloud_config:
+  ssh_key_name: spectro2021
+  aws_region: ca-central-1
+  endpoint_access: private_and_public
+
+namespaces:
+  - name: "test5ns"
+    resource_allocation:
+      cpu_cores: "2"
+      memory_MiB: "2048"
+
+timeouts:
+  create: 60m
+  delete: 60m
+
+node_groups:
+  - name: worker-basic
+    min: 2
+    count: 2
+    max: 2
+    disk_size_gb: 35
+    instance_type: t3.large
+
