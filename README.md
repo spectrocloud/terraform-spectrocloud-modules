@@ -1,20 +1,30 @@
-# Spectrocloud Terraform modules. ####
+# Spectrocloud Terraform Modules. ####
 
-Spectrocloud module is a container for all spectrocloud resources that are used together. 
-You can use modules to create lightweight abstractions, using yaml files which are translated into terraform.
+Spectro Cloud module is a container for all Palette resources that are used together. 
+You can use modules to create lightweight abstractions, using yaml files translated into Terraform.
 
 # Module structure. ####
-Create yaml files describing cloud resources and modules configuration ```cluster.yaml```, ```profile.yaml```,
-```main.tf``` and others. Examples could be found here: 
-[see examples](https://github.com/spectrocloud/terraform-spectrocloud-modules/tree/main/examples)
->   !NOTE!: Spectrocloud modules cloud types support list: EKS, AKS, VMware and Edge cloud types.
->
-> Additional Spectrocloud resources supported:
-> cloud accounts for supported cloud types, alerts, cluster profiles, addon deployments, appliances, backup storage locations, registries, projects, teams and macros.
-> 
-> 
+Create yaml files such as: ```cluster.yaml```, ```profile.yaml```, ```main.tf``` and others describing the cloud resources and module configuration. [More examples could be found here](https://github.com/spectrocloud/terraform-spectrocloud-modules/tree/main/examples).
 
-#### 1. You can define and set as many parameters as you want as long as their names are unique. While provision multiple resources from different modules.
+### The list of Spectro Cloud module supported cloud types are:
+* EKS
+* AKS
+* VMware 
+* Edge
+
+### Additional Spectro Cloud resources supported:
+* cloud accounts for supported cloud types
+* alerts
+* cluster profiles
+* addon deployments
+* appliances
+* backup storage locations
+* registries
+* projects
+* teams
+* macros.
+ 
+#### 1. YUsers can provision multiple resources from different modules and define and set as many parameters as required with unique names (duplicate names are not recommended).
 <pre>
 module "SpectroAcc" {
 
