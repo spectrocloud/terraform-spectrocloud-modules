@@ -24,4 +24,5 @@ resource "spectrocloud_appliance" "appliance" {
   labels = can(each.value.name) ? {
     name = each.value.name
   } : {}
+  pairing_key = try(each.value.pairing_key, "")
 }
