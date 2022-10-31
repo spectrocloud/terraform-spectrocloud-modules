@@ -38,7 +38,8 @@ resource "spectrocloud_addon_deployment" "this" {
   }
 
   timeouts {
-    create = try(each.value.timeouts.create, "60m")
-    delete = try(each.value.timeouts.delete, "60m")
+    create = try(each.value.profile.timeouts.create, "60m")
+    update = try(each.value.profile.timeouts.update, "60m")
+    delete = try(each.value.profile.timeouts.delete, "60m")
   }
 }

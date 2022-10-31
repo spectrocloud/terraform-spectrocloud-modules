@@ -1,61 +1,78 @@
-## Requirements
+# Spectrocloud Terraform Modules. ####
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_spectrocloud"></a> [spectrocloud](#requirement\_spectrocloud) | =0.6.10-pre |
+Spectro Cloud module is a container for all Palette resources that are used together. 
+You can use modules to create lightweight abstractions, using yaml files translated into Terraform.
 
-## Providers
+# Module structure. ####
+Create yaml files such as: ```cluster.yaml```, ```profile.yaml```, ```main.tf``` and others describing the cloud resources and module configuration. [More examples could be found here](https://github.com/spectrocloud/terraform-spectrocloud-modules/tree/main/examples).
 
-| Name | Version |
-|------|---------|
-| <a name="provider_spectrocloud"></a> [spectrocloud](#provider\_spectrocloud) | =0.6.10-pre |
+### The list of Spectro Cloud module supported cloud types are:
+* EKS
+* AKS
+* VMware 
+* Edge
 
-## Modules
+### Additional Spectro Cloud resources supported:
+* cloud accounts for supported cloud types
+* alerts
+* cluster profiles
+* addon deployments
+* appliances
+* backup storage locations
+* registries
+* projects
+* teams
+* macros.
+ 
+#### 1. Users can provision multiple resources from different modules and define and set as many parameters as required with unique names (duplicate names are not recommended).
+<pre>
+module "SpectroAcc" {
 
-No modules.
+accounts = {
+for k in fileset("config/account", "account-*.yaml") :
+trimsuffix(k, ".yaml") => yamldecode(templatefile("config/account/${k}", local.accounts_params))
+}
+}
 
-## Resources
+module "SpectroOrg" {
 
-| Name | Type |
-|------|------|
-| [spectrocloud_appliance.appliance](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/appliance) | resource |
-| [spectrocloud_backup_storage_location.bsl](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/backup_storage_location) | resource |
-| [spectrocloud_cloudaccount_aws.account](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/cloudaccount_aws) | resource |
-| [spectrocloud_cloudaccount_tencent.account](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/cloudaccount_tencent) | resource |
-| [spectrocloud_cluster_edge.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/cluster_edge) | resource |
-| [spectrocloud_cluster_edge_vsphere.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/cluster_edge_vsphere) | resource |
-| [spectrocloud_cluster_eks.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/cluster_eks) | resource |
-| [spectrocloud_cluster_libvirt.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/cluster_libvirt) | resource |
-| [spectrocloud_cluster_profile.profile_resource](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/cluster_profile) | resource |
-| [spectrocloud_cluster_tke.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/cluster_tke) | resource |
-| [spectrocloud_project.project](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/project) | resource |
-| [spectrocloud_registry_helm.helm_registry](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/registry_helm) | resource |
-| [spectrocloud_registry_oci.oci_registry](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/registry_oci) | resource |
-| [spectrocloud_team.project_team](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/resources/team) | resource |
-| [spectrocloud_appliance.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/data-sources/appliance) | data source |
-| [spectrocloud_backup_storage_location.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/data-sources/backup_storage_location) | data source |
-| [spectrocloud_cloudaccount_aws.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/data-sources/cloudaccount_aws) | data source |
-| [spectrocloud_cloudaccount_tencent.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/data-sources/cloudaccount_tencent) | data source |
-| [spectrocloud_cluster_profile.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/data-sources/cluster_profile) | data source |
-| [spectrocloud_pack.data_packs](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/data-sources/pack) | data source |
-| [spectrocloud_registry.all_registries](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/data-sources/registry) | data source |
-| [spectrocloud_role.data_roles](https://registry.terraform.io/providers/spectrocloud/spectrocloud/0.6.10-pre/docs/data-sources/role) | data source |
+profiles = {
+for k in fileset("config/profile", "profile-*.yaml") :
+trimsuffix(k, ".yaml") => yamldecode(templatefile("config/profile/${k}", local.profile_params))
+}
+}
 
-## Inputs
+module "SpectroProject" {
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_accounts"></a> [accounts](#input\_accounts) | n/a | `map(any)` | `{}` | no |
-| <a name="input_appliances"></a> [appliances](#input\_appliances) | n/a | `map(any)` | `{}` | no |
-| <a name="input_bsls"></a> [bsls](#input\_bsls) | n/a | `map(any)` | `{}` | no |
-| <a name="input_clusters"></a> [clusters](#input\_clusters) | n/a | `map` | `{}` | no |
-| <a name="input_profiles"></a> [profiles](#input\_profiles) | n/a | `map` | `{}` | no |
-| <a name="input_projects"></a> [projects](#input\_projects) | n/a | `map(any)` | `{}` | no |
-| <a name="input_registries"></a> [registries](#input\_registries) | n/a | `map(any)` | `{}` | no |
-| <a name="input_teams"></a> [teams](#input\_teams) | n/a | `map(any)` | `{}` | no |
+clusters = {
+for k in fileset("config/cluster", "cluster-*.yaml") :
+trimsuffix(k, ".yaml") => yamldecode(templatefile("config/cluster/${k}", local.project_params))
+}
+</pre>
 
-## Outputs
+<pre>
+1. Provision cloud accounts:<br>
+   terraform apply -target module.SpectroAcc.spectrocloud_cloudaccount_aws.account
 
-| Name | Description |
-|------|-------------|
-| <a name="output_cluster_appliance_uids"></a> [cluster\_appliance\_uids](#output\_cluster\_appliance\_uids) | n/a |
+2. Provision profiles:<br>
+   terraform apply -target module.SpectroOrg.spectrocloud_cluster_profile.profile_resource
+
+3. Provision clusters:<br>
+   terraform apply -target module.SpectroProject.spectrocloud_cluster_eks.this
+
+4. Provision addon deployments:<br>
+   terraform apply -target module.SpectroProject.spectrocloud_addon_deployment.this
+</pre>
+
+#### 2. Use reverse commands order to de-provision resources:
+<pre>
+1. terraform destroy -target module.SpectroProject.spectrocloud_addon_deployment.this
+2. terraform destroy -target module.SpectroProject.spectrocloud_cluster_eks.this
+3. terraform destroy -target module.SpectroOrg.spectrocloud_cluster_profile.profile_resource
+4. terraform destroy -target module.SpectroAcc.spectrocloud_cloudaccount_aws.account
+</pre>
+
+
+
+
+
