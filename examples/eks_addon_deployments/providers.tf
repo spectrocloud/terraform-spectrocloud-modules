@@ -6,11 +6,6 @@ terraform {
     }
   }
 
-  backend "http" {
-      address = "https://gitlab.com/api/v4/projects/36258605/terraform/state/old-state-name"
-      username = "nikolay@spectrocloud.com"
-      password = "glpat-haTJ97tu6DyQUCikby3p"
-  }
 }
 
 variable "sc_host" {
