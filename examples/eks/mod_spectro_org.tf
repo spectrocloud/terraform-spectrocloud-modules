@@ -18,15 +18,20 @@ locals {
 module "SpectroOrg" {
   source = "../../"
 
+  alerts = {
+  for k in fileset("config/alerts", "alert-*.yaml") :
+  trimsuffix(k, ".yaml") => yamldecode(templatefile("config/alerts/${k}", local.profile_params))
+  }
+
   accounts = {
     for k in fileset("config/account", "account-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/account/${k}", local.accounts_params))
   }
 
-  /*appliances = {
+  appliances = {
     for k in fileset("config/appliance", "appliance-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/appliance/${k}", local.appliances_params))
-  }*/
+  }
 
   bsls = {
     for k in fileset("config/bsl", "bsl-*.yaml") :
@@ -38,7 +43,7 @@ module "SpectroOrg" {
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/profile/${k}", local.profile_params))
   }
 
-  /*projects = {
+  projects = {
     for k in fileset("config/project", "project-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/project/${k}", local.projects_params))
   }
@@ -46,17 +51,17 @@ module "SpectroOrg" {
   teams = {
     for k in fileset("config/project", "team-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/project/${k}", {}))
-  }*/
+  }
 
-  /*registries = {
+  registries = {
     for k in fileset("config/registry", "registry-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/registry/${k}", {}))
-  }*/
+  }
 
 }
 
 output "debug" {
-  value = module.SpectroProject.libvirt-cluster
+  value = module.SpectroProject
 }
 
 module "SpectroProject" {

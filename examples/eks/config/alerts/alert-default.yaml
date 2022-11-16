@@ -1,0 +1,15 @@
+project: Default
+is_active: true
+component: ClusterHealth
+email:
+  alert_all_users: true
+  identifiers:
+    - abc@sc.com
+    - cba@sc.com
+http:
+  - method: PUT
+    url: 'https://openhook.com/put/dev0'
+    body: '{ "text": "{{message}}" }'
+    headers:
+      tag: CHealth
+      source: spectro
