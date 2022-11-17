@@ -1,7 +1,7 @@
 locals {
   alerts = toset(flatten([
-  for v in var.alerts: {
-    name = format("%s-%s", try(v.alerts[0].type,"http"), v.project)
+  for i, v in var.alerts: {
+    name = format("%s-%s", i, v.project)#try(v.alerts[0].type,"http")
     value = {
       is_active = try(v.is_active, true)
       component = try(v.component, "ClusterHealth")
@@ -9,8 +9,8 @@ locals {
       email = try(v.email, [])
       http = try(tolist(
         [
-          for hook in v.http:{
-          name = format("%s%%%s", "http", hook.method)
+          for index,hook in v.http:{
+          name = format("%s-%s", tostring(index), hook.method)
           value = {
             method = hook.method
             url=hook.url
