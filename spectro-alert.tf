@@ -1,7 +1,7 @@
 locals {
   alerts = toset(flatten([
   for i, v in var.alerts: {
-    name = format("%s-%s", i, v.project)#try(v.alerts[0].type,"http")
+    name = format("%s-%s", i, v.project)
     value = {
       is_active = try(v.is_active, true)
       component = try(v.component, "ClusterHealth")
