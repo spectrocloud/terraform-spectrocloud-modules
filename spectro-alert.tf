@@ -6,11 +6,13 @@ locals {
       is_active = try(v.is_active, true)
       component = try(v.component, "ClusterHealth")
       project = try(v.project, "Default")
-      email = try(v.email, [])
+      type = try(v.type)
+      alert_all_users = try(v.alert_all_users, false)
+      identifiers = try(v.identifiers, [])
       http = try(tolist(
         [
-          for index,hook in v.http:{
-          name = format("%s-%s", tostring(index), hook.method)
+        for index,hook in v.http:{
+          name = format("%s-%s", tostring(i), hook.method)
           value = {
             method = hook.method
             url=hook.url
@@ -21,6 +23,7 @@ locals {
         ]
       ), [])
     }
+
   }]))
 
   alert_iterable = { for alert in local.alerts: alert.name => alert.value }
@@ -33,7 +36,9 @@ resource "spectrocloud_alert" "cluster_health_alerts" {
   project = each.value.project
   is_active = each.value.is_active
   component = each.value.component
-
+  type = each.value.type
+  alert_all_users = try(each.value.alert_all_users, false)
+  identifiers = try(each.value.identifiers, [])
   dynamic "http" {
     for_each = { for http_alert in each.value.http: http_alert.name => http_alert.value }
     content {
@@ -41,13 +46,6 @@ resource "spectrocloud_alert" "cluster_health_alerts" {
       url = http.value.url
       body = http.value.body
       headers = http.value.headers
-    }
-  }
-  dynamic "email" {
-    for_each = length(try(each.value.email,[])) > 0 ? [1] : []
-    content {
-      alert_all_users = try(each.value.email.alert_all_users, false)
-      identifiers = try(each.value.email.identifiers, [])
     }
   }
 }

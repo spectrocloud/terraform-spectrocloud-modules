@@ -1,11 +1,10 @@
-project: dev1
+project: Local-minikube
 is_active: true
 component: ClusterHealth
-email:
-  alert_all_users: true
-  identifiers:
-    - abc@sc.com
-    - cba@sc.com
+alert_all_users : false
+type: http
+identifiers:
+  - sivaa@spectro.com
 http:
   - method: POST
     url: 'https://openhook.com/put/dev0'
