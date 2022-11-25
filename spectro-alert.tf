@@ -37,7 +37,7 @@ resource "spectrocloud_alert" "cluster_health_alerts" {
   is_active = each.value.is_active
   component = each.value.component
   type = each.value.type
-  alert_all_users = try(each.value.alert_all_users, false)
+  alert_all_users = each.value.alert_all_users
   identifiers = try(each.value.identifiers, [])
   dynamic "http" {
     for_each = { for http_alert in each.value.http: http_alert.name => http_alert.value }
