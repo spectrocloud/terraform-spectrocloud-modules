@@ -41,6 +41,11 @@ variable "macros" {
   default = {}
 }
 
+variable "application_profiles" {
+  type    = map(any)
+  default = {}
+}
+
 variable "alerts" {
   type    = map(any)
   default = {}
