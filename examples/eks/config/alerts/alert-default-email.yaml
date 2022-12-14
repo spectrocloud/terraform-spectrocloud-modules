@@ -1,4 +1,4 @@
-project: Local-minikube
+project: Default
 is_active: true
 component: ClusterHealth
 alert_all_users: true
@@ -6,9 +6,3 @@ type: email
 identifiers:
   - abc@sc.com
   - cba@sc.com
-http:
-  - method: POST
-    url: 'https://openhook.com/put/dev0'
-    body: '{ "text": "{{message}}" }'
-    headers:
-      src: spectro

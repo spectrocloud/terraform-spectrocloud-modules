@@ -1,10 +1,8 @@
-project: Local-minikube
+project: Default
 is_active: true
 component: ClusterHealth
 alert_all_users : false
 type: http
-identifiers:
-  - sivaa@spectro.com
 http:
   - method: POST
     url: 'https://openhook.com/put/dev0'

@@ -42,6 +42,6 @@ variable "macros" {
 }
 
 variable "alerts" {
-  type    = map(any)
+  type    = any
   default = {}
 }
