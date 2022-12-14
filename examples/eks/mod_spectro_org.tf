@@ -20,7 +20,7 @@ module "SpectroOrg" {
 
   alerts = {
   for k in fileset("config/alerts", "alert-*.yaml") :
-  trimsuffix(k, ".yaml") => yamldecode(templatefile("config/alerts/${k}", local.profile_params))
+  trimsuffix(k, ".yaml") => yamldecode(file("config/alerts/${k}"))
   }
 
   accounts = {
