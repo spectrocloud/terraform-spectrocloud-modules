@@ -42,7 +42,7 @@ variable "macros" {
 }
 
 variable "application_profiles" {
-  type    = map(any)
+  type    = any
   default = {}
 }
 
