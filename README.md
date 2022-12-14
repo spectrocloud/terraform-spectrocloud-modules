@@ -22,7 +22,8 @@ Create yaml files such as: ```cluster.yaml```, ```profile.yaml```, ```main.tf```
 * registries
 * projects
 * teams
-* macros.
+* macros
+* application profiles
  
 #### 1. Users can provision multiple resources from different modules and define and set as many parameters as required with unique names (duplicate names are not recommended).
 <pre>
