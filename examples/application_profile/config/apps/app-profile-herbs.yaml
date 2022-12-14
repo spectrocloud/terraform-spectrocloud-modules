@@ -1,36 +1,36 @@
 app-profile:
-  - name: "app-tf-minio"
-    version: "1.0.0"
-    context: "project"
-    description: "created from tf-modules"
-    cloud: "all"
+  - name: app-tf-minio
+    version: 1.0.0
+    context: project
+    description: created from tf-modules
+    cloud: all
     pack:
-      - name: "minio-operator-stage"
-        type: "${type_operator_instance}"
-        registry_uid: "${db_registry_uid}"
-        source_app_tier: "${minio_source_uid}"
+      - name: minio-operator-stage
+        type: ${type_operator_instance}
+        registry_uid: ${db_registry_uid}
+        source_app_tier: ${minio_source_uid}
         properties:
-            "minioUsername"     : "miniostaging"
-            "minioUserPassword" : "${base64_encode_password}"
-            "volumeSize"        : "10"
-  - name: "app-tf-mysql-redis"
-    version: "1.0.0"
-    context: "project"
-    description: "created from tf-modules"
-    cloud: "all"
+            minioUsername     : miniostaging
+            minioUserPassword : ${base64_encode_password}
+            volumeSize        : 10
+  - name: app-tf-mysql-redis
+    version: 1.0.0
+    context: project
+    description: created from tf-modules
+    cloud: all
     pack:
-      - name: "mysql-3-stage"
-        type: "${type_operator_instance}"
-        registry_uid: "${db_registry_uid}"
-        source_app_tier: "${mysql_source_uid}"
+      - name: mysql-3-stage
+        type: ${type_operator_instance}
+        registry_uid: ${db_registry_uid}
+        source_app_tier: ${mysql_source_uid}
         properties:
-          "dbRootPassword" : "${base64_encode_password}"
-          "dbVolumeSize"   : "20"
-          "version"        : "5.7"
-      - name: "redis-4-stage"
-        type: "${type_operator_instance}"
-        registry_uid: "${common_registry_uid}"
-        source_app_tier : "${redis_source_uid}"
+          dbRootPassword : ${base64_encode_password}
+          dbVolumeSize   : 20
+          version        : 5.7
+      - name: redis-4-stage
+        type: ${type_operator_instance}
+        registry_uid: ${common_registry_uid}
+        source_app_tier : ${redis_source_uid}
         properties:
-          "databaseName"       : "redsitstaging"
-          "databaseVolumeSize" : "10"
+          databaseName       : redsitstaging
+          databaseVolumeSize : 10
