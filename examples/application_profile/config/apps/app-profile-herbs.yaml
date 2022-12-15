@@ -1,0 +1,17 @@
+app_profile:
+  - name: app-tf-minio-test
+    version: 1.0.0
+    context: project
+    description: created from tf-modules
+    cloud: all
+    pack:
+      - name: minio-operator-stage
+        type: operator-instance
+        source_app_tier:
+          name: minio-operator
+          version: 4.5.4
+          registry_name: svtest
+        properties:
+            minioUsername     : miniostaging
+            minioUserPassword : ${base64_encode_password}
+            volumeSize        : 10

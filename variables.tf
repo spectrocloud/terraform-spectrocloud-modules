@@ -41,6 +41,11 @@ variable "macros" {
   default = {}
 }
 
+variable "application_profiles" {
+  type    = any
+  default = {}
+}
+
 variable "alerts" {
   type    = any
   default = {}
