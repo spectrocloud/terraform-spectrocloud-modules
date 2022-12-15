@@ -1,38 +1,5 @@
-locals {
-  application_profiles = [for v in local.all_app_profiles : {
-          name  = format("%s%%%s", v.name, v.context)
-          value = {
-            name    = v.name
-            version = v.version
-            context = v.context
-            tags    = try(v.tags, [])
-            description = try(v.description, "")
-            cloud = try(v.cloud, "all")
-            pack = try(tolist(
-              [
-                for index,pack in v.pack:{
-                name = format("%s%%%s",pack.name, tostring(index))
-                value = {
-                  name = pack.name
-                  type = pack.type
-                  source_app_tier = try(pack.source_app_tier, {} )
-                  values = try(pack.values, "")
-                  manifest = try(tolist([
-                    for i,mf in pack.manifest:{
-                    name = format("%s%%%s",mf.name, tostring(i))
-                    value = {
-                      name = pack.manifest[i].name
-                      content = pack.manifest[i].content
-                    }
-                  }]),[])
-                  properties = try(pack.properties, {})
-                }
-              }]))
-          } } ]
-  application_profiles_iterable = { for app in toset(local.application_profiles): app.name => app.value }
-}
 
-resource "spectrocloud_application_profile" "app" {
+resource "spectrocloud_application_profile" "app_profile" {
   for_each = local.application_profiles_iterable
   name    = each.value.name
   version = each.value.version
@@ -45,8 +12,8 @@ resource "spectrocloud_application_profile" "app" {
     content {
       name = pack.value.name
       type = try(pack.value.type, "")
-      registry_uid = try(local.registry_key_map[pack.value.source_app_tier.registry_name][0], "")
-      source_app_tier = try(local.source_tier_map[pack.value.source_app_tier.name][0], "")
+      registry_uid = try(local.app_registry_name_to_id_map[pack.value.source_app_tier.registry_name][0], "")
+      source_app_tier = try(local.app_source_tier_map[pack.value.source_app_tier.name][0], "")
       values = pack.value.values
       properties = pack.value.properties
       dynamic "manifest" {
