@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     spectrocloud = {
-      version = ">= 0.5.11"
+      version = ">= 0.10.10"
       source  = "spectrocloud/spectrocloud"
     }
   }
@@ -31,5 +31,4 @@ provider "spectrocloud" {
   username     = var.sc_username
   password     = var.sc_password
   project_name = var.sc_project_name
-  trace        = true
 }
