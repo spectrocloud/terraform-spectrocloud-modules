@@ -21,7 +21,7 @@ resource "spectrocloud_appliance" "appliance" {
   for_each = var.appliances
 
   uid = each.value.id
-  labels = can(each.value.name) ? {
+  tags = can(each.value.name) ? {
     name = each.value.name
   } : {}
   pairing_key = try(each.value.pairing_key, "")

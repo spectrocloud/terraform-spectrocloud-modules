@@ -16,6 +16,7 @@ resource "spectrocloud_cloudaccount_aws" "account" {
   for_each = { for x in local.eks_accounts : x.name => x }
 
   name        = each.value.name
+  context = try(each.value.context, "project")
   type        = try(each.value.type, "sts")
   aws_access_key = can(each.value.aws_access_key) ? each.value.aws_access_key : null
   aws_secret_key = can(each.value.aws_secret_key) ? each.value.aws_secret_key : null
