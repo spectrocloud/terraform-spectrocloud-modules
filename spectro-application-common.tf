@@ -20,8 +20,8 @@ locals{
   v.name => v.id... if v.name != null
   }
 
-  application_deployments = [for i, v in local.app_deployments :{
-    name = format("%s%%%s",v.name, tostring(i))
+  application_deployments = [for v in local.app_deployments :{
+    name = format("%s",v.name)
     value = {
       name = v.name
       application_name = try(v.application_name, "")
