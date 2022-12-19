@@ -67,6 +67,7 @@ node_groups:
     count: 3
     disk_size_gb: 61
     instance_type: t3.large
+    capacity_type: spot
     worker_subnets:
       us-east-1a: subnet-0dac5b9c4d0d5c
       us-east-1b: subnet-0d710ba055568b
