@@ -1,0 +1,17 @@
+app_deployments:
+  - name: app-dep-herb-up-tf
+    tags: ["owner:sivaa"]
+    application_name: profile-herbs
+    config:
+      cluster_name: virtual-cluster-herbs
+      cluster_group_name: vanilla-ingress
+      limits:
+        cpu: 4
+        memory: 4096
+        storage: 4
+  - name:  app-dep-hiphop-up-tf
+    tags: ["owner:sivaa"]
+    application_name: profile-marvel-inrgess
+    config:
+      cluster_name: virtual-cluster-dimmer
+      cluster_group_name: vanilla-ingress

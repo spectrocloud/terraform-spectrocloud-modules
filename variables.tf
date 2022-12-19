@@ -46,6 +46,11 @@ variable "application_profiles" {
   default = {}
 }
 
+variable "application_deployments" {
+  type    = any
+  default = {}
+}
+
 variable "alerts" {
   type    = any
   default = {}
