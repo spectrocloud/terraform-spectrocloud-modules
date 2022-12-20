@@ -51,6 +51,11 @@ variable "application_deployments" {
   default = {}
 }
 
+variable "virtual_clusters" {
+  type    = any
+  default = {}
+}
+
 variable "alerts" {
   type    = any
   default = {}
