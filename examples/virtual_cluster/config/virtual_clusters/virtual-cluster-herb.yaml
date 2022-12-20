@@ -1,8 +1,7 @@
-virtual_clusters:
-  - name: virtual-cluster-module-demo1
-    host_cluster_name: a6-oprke2
-    resources:
-      max_cpu: 6
-      max_mem_in_mb: 6000
-      min_cpu: 2
-      min_mem_in_mb: 3000
+name: virtual-cluster-module-demo1
+host_cluster_name: gcpimport
+resources:
+  max_cpu: 6
+  max_mem_in_mb: 6000
+  min_cpu: 2
+  min_mem_in_mb: 3000

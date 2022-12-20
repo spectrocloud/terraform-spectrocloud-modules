@@ -1,5 +1,6 @@
 locals{
-  vir_clusters = flatten([for files in var.virtual_clusters: [for cluster in files.virtual_clusters: cluster if can(cluster)]])
+#  vir_clusters = flatten([for files in var.virtual_clusters: [for cluster in files.virtual_clusters: cluster if can(cluster)]])
+  vir_clusters = flatten([for config in var.virtual_clusters:  config if can(config)])
   host_clusters_name = flatten([for cluster in local.vir_clusters: cluster.host_cluster_name if can(cluster.host_cluster_name)])
   vir_cluster_groups_name = flatten([for cluster in local.vir_clusters: cluster.cluster_group_name if can(cluster.cluster_group_name)])
 
