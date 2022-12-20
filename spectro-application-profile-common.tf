@@ -1,6 +1,6 @@
 locals{
   # Collection of multiple yaml with app_profile
-  all_app_profiles = flatten([for files in var.application_profiles: [for app in files.app_profile : app]])
+  all_app_profiles = flatten([for app in var.application_profiles:  app if can(app)])
 
   # All packs inside app_profile
   app_packs = flatten([for app in local.all_app_profiles : [for pac in app.pack : pac if can(pac.name)]])
