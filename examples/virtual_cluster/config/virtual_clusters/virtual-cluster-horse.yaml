@@ -1,0 +1,7 @@
+name: virtual-cluster-module-demo2
+cluster_group_name: vanilla-ingress
+resources:
+  max_cpu: 3
+  max_mem_in_mb: 3000
+  min_cpu: 1
+  min_mem_in_mb: 1000

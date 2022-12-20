@@ -1,32 +1,16 @@
-app_profile:
-  - name: app-tf-mysql
-    version: 2.0.0
-    context: project
-    description: created from tf-modules
-    cloud: all
-    pack:
-      - name: mysql-3-prod
-        type: operator-instance
-        source_app_tier:
-          name: mysql-operator
-          version: 0.6.2
-          registry_name: svtest
-        properties:
-          dbRootPassword: ${base64_encode_password}
-          dbVolumeSize: 20
-          version: 5.7
-  - name: app-tf-redis
-    version: 2.0.0
-    context: project
-    description: created from tf-modules
-    cloud: all
-    pack:
-      - name: redis-4-prod
-        type: operator-instance
-        source_app_tier:
-          name: redis-operator
-          version: 6.2.12-1
-          registry_name: Public Repo
-        properties:
-          databaseName: redsitstaging
-          databaseVolumeSize: 10
+name: app-tf-mysql
+version: 2.0.0
+context: project
+description: created from tf-modules
+cloud: all
+pack:
+  - name: mysql-3-prod
+    type: operator-instance
+    source_app_tier:
+      name: mysql-operator
+      version: 0.6.2
+      registry_name: svtest
+    properties:
+      dbRootPassword: ${base64_encode_password}
+      dbVolumeSize: 20
+      version: 5.7

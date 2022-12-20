@@ -1,5 +1,5 @@
 locals{
-  app_deployments = flatten([for files in var.application_deployments: [for app_deploy in files.app_deployments: app_deploy]])
+  app_deployments = flatten([for app_dep in var.application_deployments: app_dep if can(app_dep)])
   app_profiles_name = flatten([for dep in local.app_deployments: dep.application_name if can(dep.application_name)])
 
   clusters_name = flatten([for a in local.app_deployments: a.config.cluster_name])
