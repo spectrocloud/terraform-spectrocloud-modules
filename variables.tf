@@ -56,6 +56,10 @@ variable "virtual_clusters" {
   default = {}
 }
 
+variable "cluster_groups" {
+  type = any
+  default = {}
+}
 variable "alerts" {
   type    = any
   default = {}

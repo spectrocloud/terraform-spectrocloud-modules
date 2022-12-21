@@ -1,0 +1,363 @@
+name : cluster-group-demo1
+tags : ["owner:siva"]
+clusters:
+  - cluster_name: ar-eks-stage-1
+    host: "*.spectrotest.com"
+  - cluster_name: aws-sumit-ingress-test
+    host: "*.test.spsctrotext.com"
+config:
+  host_endpoint_type: LoadBalancer
+  cpu_millicore: 6000
+  memory_in_mb: 8192
+  storage_in_gb: 10
+  oversubscription_percent: 120
+  values: |-
+    # DefaultImageRegistry will be prepended to all deployed vcluster images, such as the vcluster pod, coredns etc.. Deployed
+    # images within the vcluster will not be rewritten.
+    defaultImageRegistry: ""
+    
+    # Plugins that should get loaded. Usually you want to apply those via 'vcluster create ... -f https://.../plugin.yaml'
+    plugin: {}
+    # Manually configure a plugin called test
+    # test:
+    #   image: ...
+    #   env: ...
+    #   rbac:
+    #     clusterRole:
+    #       extraRules: ...
+    #     role:
+    #       extraRules: ...
+    
+    # Resource syncers that should be enabled/disabled.
+    # Enabling syncers will impact RBAC Role and ClusterRole permissions.
+    # To disable a syncer set "enabled: false".
+    # See docs for details - https://www.vcluster.com/docs/architecture/synced-resources
+    sync:
+    services:
+      enabled: true
+    configmaps:
+      enabled: true
+    secrets:
+      enabled: true
+    endpoints:
+      enabled: true
+    pods:
+      enabled: true
+      ephemeralContainers: false
+      status: false
+    events:
+      enabled: true
+    persistentvolumeclaims:
+      enabled: true
+    ingresses:
+      enabled: true
+    fake-nodes:
+      enabled: true # will be ignored if nodes.enabled = true
+    fake-persistentvolumes:
+      enabled: true # will be ignored if persistentvolumes.enabled = true
+    nodes:
+      enabled: false
+      # If nodes sync is enabled, and syncAllNodes = true, the virtual cluster
+      # will sync all nodes instead of only the ones where some pods are running.
+      syncAllNodes: false
+      # nodeSelector is used to limit which nodes get synced to the vcluster,
+      # and which nodes are used to run vcluster pods.
+      # A valid string representation of a label selector must be used.
+      nodeSelector: ""
+      # if true, vcluster will run with a scheduler and node changes are possible
+      # from within the virtual cluster. This is useful if you would like to
+      # taint, drain and label nodes from within the virtual cluster
+      enableScheduler: false
+      # DEPRECATED: use enable scheduler instead
+      # syncNodeChanges allows vcluster user edits of the nodes to be synced down to the host nodes.
+      # Write permissions on node resource will be given to the vcluster.
+      syncNodeChanges: false
+    persistentvolumes:
+      enabled: false
+    storageclasses:
+      enabled: false
+    legacy-storageclasses:
+      enabled: false
+    priorityclasses:
+      enabled: false
+    networkpolicies:
+      enabled: false
+    volumesnapshots:
+      enabled: false
+    poddisruptionbudgets:
+      enabled: false
+    serviceaccounts:
+      enabled: false
+    
+    # Map Services between host and virtual cluster
+    mapServices:
+    # Services that should get mapped from the
+    # virtual cluster to the host cluster.
+    # vcluster will make sure to sync the service
+    # ip to the host cluster automatically as soon
+    # as the service exists.
+    # For example:
+    # fromVirtual:
+    #   from: my-namespace/name
+    #   to: host-service
+    fromVirtual: []
+    # Same as from virtual, but instead sync services
+    # from the host cluster into the virtual cluster.
+    # If the namespace does not exist, vcluster will
+    # also create the namespace for the service.
+    fromHost: []
+    
+    # Syncer configuration
+    syncer:
+    # Image to use for the syncer
+    image: gcr.io/spectro-dev-public/vcluster:0.11.1-spectro20220829
+    extraArgs:
+      - --tls-san=vcluster.te.spectrocloud.com
+    env: []
+    livenessProbe:
+      enabled: true
+    readinessProbe:
+      enabled: true
+    volumeMounts:
+      - mountPath: /data
+        name: data
+        readOnly: true
+    resources:
+      limits:
+        cpu: 200m
+        memory: 512Mi
+        ephemeral-storage: 0
+      requests:
+        cpu: 10m
+        memory: 64Mi
+        ephemeral-storage: 0
+    kubeConfigContextName: "my-vcluster"
+    
+    # Virtual Cluster (k3s) configuration
+    vcluster:
+    # Image to use for the virtual cluster
+    image: rancher/k3s:v1.23.3-k3s1
+    command:
+      - /bin/k3s
+    baseArgs:
+      - server
+      - --write-kubeconfig=/data/k3s-config/kube-config.yaml
+      - --data-dir=/data
+      - --disable=traefik,servicelb,metrics-server,local-storage,coredns
+      - --disable-network-policy
+      - --disable-agent
+      - --disable-cloud-controller
+      - --flannel-backend=none
+    # Extra arguments for k3s. Make sure the service-cidr is the exact service cidr of the host cluster.
+    # If this does not match, you won't be able to create services within the vcluster. You can find out
+    # the service cidr of the host cluster by creating a service with a not allowed ClusterIP in the host cluster.
+    # This will yield an error message in the form of:
+    # The Service "faulty-service" is invalid: spec.clusterIP: Invalid value: "1.1.1.1": provided IP is not in the valid range. The range of valid IPs is 10.96.0.0/12
+    extraArgs: []
+    volumeMounts:
+      - mountPath: /data
+        name: data
+    env: []
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+        ephemeral-storage: 1Gi
+      requests:
+        cpu: 200m
+        memory: 256Mi
+        ephemeral-storage: 128Mi
+    
+    # Storage settings for the vcluster
+    storage:
+    # If this is disabled, vcluster will use an emptyDir instead
+    # of a PersistentVolumeClaim
+    persistence: true
+    # Size of the persistent volume claim
+    size: 1Gi
+    # Optional StorageClass used for the pvc
+    # if empty default StorageClass defined in your host cluster will be used
+    #className:
+    
+    # Extra volumes that should be created for the StatefulSet
+    volumes: []
+    
+    # Service account that should be used by the vcluster
+    serviceAccount:
+    create: true
+    # Optional name of the service account to use
+    # name: default
+    # Optional pull secrets
+    # imagePullSecrets:
+    #   - name: my-pull-secret
+    
+    # Roles & ClusterRoles for the vcluster
+    rbac:
+    clusterRole:
+      # Deprecated !
+      # Necessary cluster roles are created based on the enabled syncers (.sync.*.enabled)
+      # Support for this value will be removed in a future version of the vcluster
+      create: false
+    role:
+      # Deprecated !
+      # Support for this value will be removed in a future version of the vcluster
+      # and basic role will always be created
+      create: true
+      # Deprecated !
+      # Necessary extended roles are created based on the enabled syncers (.sync.*.enabled)
+      # Support for this value will be removed in a future version of the vcluster
+      extended: false
+    
+    # The amount of replicas to run the statefulset with
+    replicas: 1
+    
+    # NodeSelector used to schedule the vcluster
+    nodeSelector: {}
+    
+    # Affinity to apply to the vcluster statefulset
+    affinity: {}
+    
+    # PriorityClassName to apply to the vcluster statefulset
+    priorityClassName: ""
+    
+    # Tolerations to apply to the vcluster statefulset
+    tolerations: []
+    
+    # Extra Labels for the stateful set
+    labels: {}
+    
+    # Extra Annotations for the stateful set
+    annotations: {}
+    
+    # Service configurations
+    service:
+    type: ClusterIP
+    # Configuration for LoadBalancer service type
+    externalIPs: []
+    externalTrafficPolicy: ""
+    # CIDR block(s) for the service allowlist; only used when the Service type is LoadBalancer
+    loadBalancerSourceRanges: []
+    
+    # Configure the ingress resource that allows you to access the vcluster
+    ingress:
+    # Enable ingress record generation
+    enabled: false
+    # Ingress path type
+    pathType: ImplementationSpecific
+    apiVersion: networking.k8s.io/v1
+    ingressClassName: ""
+    host: vcluster.te.spectrocloud.com
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+      nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    
+    # Configure SecurityContext of the containers in the VCluster pod
+    fsGroup: 12345
+    securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - all
+    # readOnlyRootFilesystem will be set to true by default at a later release
+    # currently leaving it undefined for backwards compatibility with older vcluster cli versions
+    # readOnlyRootFilesystem: true
+    
+    # To run vcluster pod as non-root uncomment runAsUser and runAsNonRoot values.
+    # Update the runAsUser value if your cluster has limitations on user UIDs.
+    # For installation on OpenShift leave the runAsUser undefined (commented out).
+    runAsGroup: 12345
+    runAsUser: 12345
+    runAsNonRoot: true
+    
+    # Set "enable" to true when running vcluster in an OpenShift host
+    # This will add an extra rule to the deployed role binding in order
+    # to manage service endpoints
+    openshift:
+    enable: false
+    
+    # If enabled will deploy the coredns configmap
+    coredns:
+    enabled: true
+    replicas: 1
+    # image: my-core-dns-image:latest
+    # config: |-
+    #   .:1053 {
+    #      ...
+    # CoreDNS service configurations
+    service:
+      type: ClusterIP
+      # Configuration for LoadBalancer service type
+      externalIPs: []
+      externalTrafficPolicy: ""
+      # Extra Annotations
+      annotations: {}
+    resources: ""
+      # do not specify until vcluster helm chart is upgraded
+      #limits:
+      #  cpu: 50m
+      #  memory: 128Mi
+      #  ephemeral-storage: 0
+      #requests:
+      #  cpu: 10m
+      #  memory: 64Mi
+    #  ephemeral-storage: 0
+    
+    # If enabled will deploy vcluster in an isolated mode with pod security
+    # standards, limit ranges and resource quotas
+    isolation:
+    enabled: true
+    namespace: null
+    
+    podSecurityStandard: baseline
+    
+    resourceQuota:
+      enabled: true
+      quota:
+        requests.cpu: 4
+        requests.memory: 8Gi
+        requests.storage: 2Gi
+        requests.ephemeral-storage: 20Gi
+        limits.cpu: 4
+        limits.memory: 8Gi
+        limits.ephemeral-storage: 20Gi
+        services.nodeports: 5
+        services.loadbalancers: 5
+        count/endpoints: 40
+        count/pods: 20
+        count/services: 20
+        count/secrets: 100
+        count/configmaps: 100
+        count/persistentvolumeclaims: 20
+      scopeSelector:
+        matchExpressions:
+      scopes:
+    
+    limitRange:
+      enabled: true
+      default:
+        ephemeral-storage: 1Gi
+        memory: 128Mi
+        cpu: 50m
+      defaultRequest:
+        ephemeral-storage: 0
+        memory: 64Mi
+        cpu: 10m
+    
+    # The network policy below allows nested workload pods going to Internet except AWS metadata server (169.254.169.254)
+    # and prevents them from accessing the IPs in some well known private network subnets, which could be kubernets's pod/service IPs.
+    # There is another network policy defined in vcluster's helm chart that allows nested cluster pods to access other pods
+    # in the same namespace. Those 2 policies together achieve the goal to preventing the nested cluster workload network traffic
+    # from accessing the host cluster or other nested cluster's pod or services.
+    networkPolicy:
+      enabled: true
+      outgoingConnections:
+        ipBlock:
+          cidr: 0.0.0.0/0
+          except:
+            - 100.64.0.0/10
+            - 127.0.0.0/8
+            - 10.0.0.0/8
+            - 172.16.0.0/12
+            - 192.168.0.0/16
+            - 169.254.169.254/32

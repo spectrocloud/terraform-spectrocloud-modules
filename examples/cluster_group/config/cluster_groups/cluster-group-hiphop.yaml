@@ -1,0 +1,14 @@
+name : cluster-group-demo2
+tags : ["owner:siva"]
+clusters:
+  - cluster_name: sumit-aws-ingress
+    host: "*.spectrotest.com"
+  - cluster_name: mp-hc-azure-nov23
+    host: "*.test.spsctrotext.com"
+config:
+  host_endpoint_type: Ingress
+  cpu_millicore: 6000
+  memory_in_mb: 8192
+  storage_in_gb: 10
+  oversubscription_percent: 120
+
