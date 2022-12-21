@@ -24,6 +24,7 @@ locals{
     name = format("%s",v.name)
     value = {
       name = v.name
+      tags =  try(v.tags, [])
       application_name = try(v.application_name, "")
       config = try({
         cluster_name       = try(v.config.cluster_name, "")
