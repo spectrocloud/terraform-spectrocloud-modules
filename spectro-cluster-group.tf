@@ -7,7 +7,7 @@ resource "spectrocloud_cluster_group" "clustergroup" {
     for_each = {for c in each.value.clusters: c.name => c.value }
     content {
       cluster_uid = try(local.cluster_names_group_map[clusters.value.cluster_name][0], null)
-      host = try(clusters.value.host, "*")
+      host_dns = try(clusters.value.host_dns, null)
     }
   }
   config{

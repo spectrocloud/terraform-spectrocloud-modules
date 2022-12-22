@@ -2,9 +2,7 @@ name : cluster-group-demo1
 tags : ["owner:siva"]
 clusters:
   - cluster_name: ar-eks-stage-1
-    host: "*.spectrotest.com"
   - cluster_name: aws-sumit-ingress-test
-    host: "*.test.spsctrotext.com"
 config:
   host_endpoint_type: LoadBalancer
   cpu_millicore: 6000
