@@ -1,7 +1,11 @@
 locals{
   vir_clusters = flatten([for config in var.virtual_clusters:  config if can(config)])
-  host_clusters_name = flatten([for cluster in local.vir_clusters: cluster.host_cluster_name if can(cluster.host_cluster_name)])
+  host_clusters_name = flatten([for cluster in local.vir_clusters: { name = cluster.host_cluster_name
+    context = cluster.host_cluster_context} if can(cluster.host_cluster_name)])
+  host_cluster_context = flatten([for cluster in local.vir_clusters: cluster.host_cluster_context if can(cluster.host_cluster_context)])
   vir_cluster_groups_name = flatten([for cluster in local.vir_clusters: cluster.cluster_group_name if can(cluster.cluster_group_name)])
+
+
 
   vir_clusters_group_name_map = {
   for k, v in data.spectrocloud_cluster_group.vir_cluster_group :
@@ -36,7 +40,8 @@ locals{
 
 data "spectrocloud_cluster" "host_cluster"{
   count = length(local.host_clusters_name)
-  name = local.host_clusters_name[count.index]
+  name = local.host_clusters_name[count.index].name
+  context = local.host_clusters_name[count.index].context
 }
 
 data "spectrocloud_cluster_group" "vir_cluster_group" {

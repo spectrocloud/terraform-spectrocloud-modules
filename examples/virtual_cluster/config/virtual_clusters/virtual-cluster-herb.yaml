@@ -1,5 +1,6 @@
 name: virtual-cluster-module-demo1
-host_cluster_name: gcpimport
+host_cluster_context: tenant
+host_cluster_name: cpaws
 resources:
   max_cpu: 6
   max_mem_in_mb: 6000
