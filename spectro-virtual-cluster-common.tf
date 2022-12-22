@@ -41,7 +41,6 @@ locals{
 data "spectrocloud_cluster" "host_cluster"{
   count = length(local.host_clusters_name)
   name = local.host_clusters_name[count.index].name
-#  context = "tenant"
   context = local.host_clusters_name[count.index].context
 }
 
