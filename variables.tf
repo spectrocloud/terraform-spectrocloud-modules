@@ -60,6 +60,12 @@ variable "cluster_groups" {
   type = any
   default = {}
 }
+
+variable "cluster_profile_imports" {
+  type = any
+  default = {}
+}
+
 variable "alerts" {
   type    = any
   default = {}

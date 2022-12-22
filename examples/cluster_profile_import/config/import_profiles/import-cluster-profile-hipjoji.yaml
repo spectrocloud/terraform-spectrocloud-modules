@@ -1,0 +1,2 @@
+context: project
+import_file_path: /Users/sivaanandm/spectro/terraform-spectrocloud-modules/examples/cluster_profile_import/config/import_profiles/cluster_profiles/cluster-profile-hipjoji.json
