@@ -1,10 +1,10 @@
 name : cluster-group-demo2
 tags : ["owner:siva"]
 clusters:
-  - cluster_name: sumit-aws-ingress
-    host: "*.spectrotest.com"
-  - cluster_name: mp-hc-azure-nov23
-    host: "*.test.spsctrotext.com"
+  - cluster_name: shruthi-dec21-stage
+    host_dns: "*.spectrotest.com"
+  - cluster_name: shruthi-eks-dec21-stage
+    host_dns: "*.test.spsctrotext.com"
 config:
   host_endpoint_type: Ingress
   cpu_millicore: 6000

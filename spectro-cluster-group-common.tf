@@ -16,7 +16,7 @@ locals {
         name = n.cluster_name
         value = {
           cluster_name = try(n.cluster_name, null)
-          host = try(n.host, null)
+          host_dns = try(n.host_dns, null)
         }
       }]), [])
       config = {
