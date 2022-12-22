@@ -60,6 +60,17 @@ variable "cluster_groups" {
   type = any
   default = {}
 }
+
+variable "cluster_profile_imports" {
+  type = list(string)
+  default = []
+}
+
+variable "cluster_profile_imports_context"{
+  type = string
+  default = "project"
+}
+
 variable "alerts" {
   type    = any
   default = {}
