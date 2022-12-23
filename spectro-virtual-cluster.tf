@@ -3,6 +3,8 @@ resource "spectrocloud_virtual_cluster" "virtual_cluster_demo" {
   for_each = local.virtual_clusters_iterable
 
   name = each.value.name
+  tags = try(each.value.tags, [])
+
   host_cluster_uid = try(local.host_clusters_name_map[each.value.host_cluster_name][0], null)
   cluster_group_uid = try(local.vir_clusters_group_name_map[each.value.cluster_group_name][0], null)
   resources {
