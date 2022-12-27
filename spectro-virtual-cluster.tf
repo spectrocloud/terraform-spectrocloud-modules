@@ -1,5 +1,5 @@
 
-resource "spectrocloud_virtual_cluster" "virtual_cluster_demo" {
+resource "spectrocloud_virtual_cluster" "virtual_cluster" {
   for_each = local.virtual_clusters_iterable
 
   name = each.value.name
