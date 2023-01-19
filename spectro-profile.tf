@@ -152,7 +152,8 @@ resource "spectrocloud_cluster_profile" "profile_resource" {
       registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
       #registry_uid = pack.value.registry_uid
       # uid = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
-      uid    = lookup(local.pack_mapping, join("", [pack.value.name, "-", try(pack.value.version, "")]), "uid")
+      # if type is spectro then pack uid is 'uid' else should be empty.
+      uid = (try(pack.value.type, "spectro") == "spectro") ? lookup(local.pack_mapping, join("", [pack.value.name, "-", try(pack.value.version, "")]), "uid") : lookup(local.pack_mapping, join("", [pack.value.name, "-", try(pack.value.version, "")]), "")
       values = try(pack.value.values, "")
 
       dynamic "manifest" {

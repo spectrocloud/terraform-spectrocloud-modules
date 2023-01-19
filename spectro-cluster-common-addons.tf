@@ -74,4 +74,9 @@ output "debug_addon_pack_manifests" {
   value = local.addon_pack_manifests
 }
 
+# not addon specific
+output "debug_cluster_profile_pack_map" {
+  value = local.cluster-profile-pack-map
+}
+
 
