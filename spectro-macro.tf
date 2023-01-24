@@ -1,8 +1,8 @@
 locals {
   macros = toset(flatten([
   for v in var.macros : [
-  for m in v.macros : {
-    name  = format("%s%%%s", m.name, v.project)
+  for i, m in v.macros : {
+    name  = format("%s%%%s", m.name, try(v.project, "tenant"))
     value = {
       name    = m.name
       value   = m.value

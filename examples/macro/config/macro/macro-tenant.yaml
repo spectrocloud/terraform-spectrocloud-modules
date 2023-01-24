@@ -1,4 +1,4 @@
 macros:
-  - name: macro1-simyam
+  - name: macro1-simyam-tenant
     value: val1-simyam
 project: ""
