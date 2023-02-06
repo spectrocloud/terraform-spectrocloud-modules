@@ -192,11 +192,11 @@ node_groups:
     memory_mb: 8000
     cpu: 2
     placement:
-      cluster: Cluster1
-      resource_pool: RP_Sushil
-      datastore: vsanDatastore
-      network: VM Network
-      static_ip_pool_id: 6327a2c8e52f191e29a8e194
+      - cluster: Cluster1
+        resource_pool: RP_Sushil
+        datastore: vsanDatastore
+        network: VM Network
+        static_ip_pool_id: 6327a2c8e52f191e29a8e194
   - name: worker-pool
     count: 2
     disk_size_gb: 60
@@ -205,9 +205,9 @@ node_groups:
     memory_mb: 8000
     cpu: 2
     placement:
-      cluster: Cluster1
-      resource_pool: RP_Sushil
-      datastore: vsanDatastore
-      network: VM Network
-      static_ip_pool_id: 6327a2c8e52f191e29a8e194
+        - cluster: Cluster1
+          resource_pool: RP_Sushil
+          datastore: vsanDatastore
+          network: VM Network
+          static_ip_pool_id: 6327a2c8e52f191e29a8e194
 

@@ -139,12 +139,15 @@ resource "spectrocloud_cluster_vsphere" "this" {
           effect = taints.value.effect
         }
       }
-      placement {
-        cluster       = machine_pool.value.placement.cluster
-        resource_pool = machine_pool.value.placement.resource_pool
-        datastore     = machine_pool.value.placement.datastore
-        network       = machine_pool.value.placement.network
-        static_ip_pool_id = machine_pool.value.placement.static_ip_pool_id
+      dynamic "placement" {
+        for_each = machine_pool.value.placement
+        content {
+          cluster       = placement.value.cluster
+          resource_pool = placement.value.resource_pool
+          datastore     = placement.value.datastore
+          network       = placement.value.network
+          static_ip_pool_id = placement.value.static_ip_pool_id
+        }
       }
 
       instance_type {
