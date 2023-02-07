@@ -1,0 +1,213 @@
+name: vs23
+cloudType: vsphere
+cloud_account: sushilgw
+profiles:
+  infra:
+    name: vsi23
+    version: 1.2.3
+    context: tenant
+  addons:
+    - name: vsa19
+      version: 2.3.3
+      context: tenant
+      packs:
+        - name: falco
+          registry: Public Repo
+          version: 1.16.3
+          override_type: values
+          values: |
+            charts:
+                falco:
+                    affinity: {}
+                    auditLog:
+                        dynamicBackend:
+                            enabled: false
+                            url: ""
+                        enabled: false
+                    certs:
+                        ca:
+                            crt: ""
+                        existingSecret: ""
+                        server:
+                            crt: ""
+                            key: ""
+                    containerd:
+                        enabled: true
+                        socket: /run/containerd/containerd.sock
+                    customRules: {}
+                    daemonset:
+                        env: {}
+                        podAnnotations: {}
+                        updateStrategy:
+                            type: RollingUpdate
+                    docker:
+                        enabled: true
+                        socket: /var/run/docker.sock
+                    ebpf:
+                        enabled: false
+                        path: null
+                        settings:
+                            hostNetwork: true
+                    extraArgs: []
+                    extraInitContainers: []
+                    extraVolumeMounts: []
+                    extraVolumes: []
+                    fakeEventGenerator:
+                        args:
+                            - run
+                            - --loop
+                            - ^syscall
+                        enabled: false
+                        replicas: 1
+                    falco:
+                        bufferedOutputs: false
+                        fileOutput:
+                            enabled: false
+                            filename: ./events.txt
+                            keepAlive: false
+                        grpc:
+                            certChain: /etc/falco/certs/server.crt
+                            enabled: false
+                            listenPort: 5060
+                            privateKey: /etc/falco/certs/server.key
+                            rootCerts: /etc/falco/certs/ca.crt
+                            threadiness: 0
+                            unixSocketPath: unix:///var/run/falco/falco.sock
+                        grpcOutput:
+                            enabled: false
+                        httpOutput:
+                            enabled: false
+                            url: http://some.url
+                        jsonIncludeOutputProperty: true
+                        jsonIncludeTagsProperty: true
+                        jsonOutput: false
+                        livenessProbe:
+                            initialDelaySeconds: 60
+                            periodSeconds: 15
+                            timeoutSeconds: 5
+                        logLevel: info
+                        logStderr: true
+                        logSyslog: true
+                        metadataDownload:
+                            chunkWaitUs: 1000
+                            maxMb: 100
+                            watchFreqSec: 1
+                        output_timeout: 2000
+                        outputs:
+                            maxBurst: 1000
+                            rate: 1
+                        priority: debug
+                        programOutput:
+                            enabled: false
+                            keepAlive: false
+                            program: mail -s "Falco Notification" someone@example.com
+                        readinessProbe:
+                            initialDelaySeconds: 30
+                            periodSeconds: 15
+                            timeoutSeconds: 5
+                        rulesFile:
+                            - /etc/falco/falco_rules.yaml
+                            - /etc/falco/falco_rules.local.yaml
+                            - /etc/falco/k8s_audit_rules.yaml
+                            - /etc/falco/rules.d
+                        stdoutOutput:
+                            enabled: true
+                        syscallEventDrops:
+                            actions:
+                                - log
+                                - alert
+                            maxBurst: 10
+                            rate: 0.03333
+                        syslogOutput:
+                            enabled: true
+                        timeFormatISO8601: false
+                        webserver:
+                            enabled: true
+                            k8sAuditEndpoint: /k8s-audit
+                            k8sHealthzEndpoint: /healthz
+                            listenPort: 8765
+                            nodePort: false
+                            sslCertificate: /etc/falco/certs/server.pem
+                            sslEnabled: false
+                    falcosidekick:
+                        enabled: false
+                        fullfqdn: false
+                    image:
+                        pullPolicy: IfNotPresent
+                        pullSecrets: []
+                        registry: docker.io
+                        repository: falcosecurity/falco
+                        tag: 0.30.0
+                    kubernetesSupport:
+                        apiAuth: /var/run/secrets/kubernetes.io/serviceaccount/token
+                        apiUrl: https://$(KUBERNETES_SERVICE_HOST)
+                        enableNodeFilter: true
+                        enabled: true
+                    nodeSelector: {}
+                    podLabels: {}
+                    podSecurityPolicy:
+                        create: false
+                    priorityClassName: null
+                    proxy:
+                        httpProxy: null
+                        httpsProxy: null
+                        noProxy: null
+                    rbac:
+                        create: true
+                    resources:
+                        limits:
+                            cpu: 1000m
+                            memory: 1024Mi
+                        requests:
+                            cpu: 100m
+                            memory: 512Mi
+                    scc:
+                        create: true
+                    serviceAccount:
+                        annotations: {}
+                        create: true
+                        name: null
+                    timezone: null
+                    tolerations:
+                        - effect: NoSchedule
+                          key: node-role.kubernetes.io/master
+            pack:
+                namespace: falco
+                spectrocloud.com/install-priority: "0"
+    - name: vsa20
+      version: 4.5.6
+      context: tenant
+cloud_config:
+  ssh_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCr3hE9IS5UUDPqNOiEWVJvVDS0v57QKjb1o9ubvvATQNg2T3x+inckfzfgX3et1H9X1oSp0FqY1+Mmy5nfTtTyIj5Get1cntcC4QqdZV8Op1tmpI01hYMj4lLn55WNaXgDt+35tJ47kWRr5RqTGV05MPNWN3klaVsePsqa+MgCjnLfCBiOz1tpBOgxqPNqtQPXh+/T/Ul6ZDUW/rySr9iNR9uGd04tYzD7wdTdvmZSRgWEre//IipNzMnnZC7El5KJCQn8ksF+DYY9eT9NtNFEMALTZC6hn8BnMc14zqxoJP/GNHftmig8TJC500Uofdr4OKTCRr1JwHS79Cx9LyZdAp/1D8mL6bIMyGOTPVQ8xUpmEYj77m1kdiCHCk22YtLyfUWuQ0SC+2p1soDoNfJUpmxcKboOTZsLq1HDCFrqSyLUWS1PrYZ/MzhsPrsDewB1iHLbYDt87r2odJOpxMO1vNWMOYontODdr5JPKBpCcd/noNyOy/m4Spntytfb/J3kM1oz3dpPfN0xXmC19uR1xHklmbtg1j784IMu7umI2ZCpUwLADAodkbxmbacdkp5I+1NFgrFamvnTjjQAvRexV31m4m9GielKFQ4tCCId2yagMBWRFn5taEhb3SKnRxBcAzaJLopUyErOtqxvSywGvb53v4MEShqBaQSUv4gHfw== spectro2022 \n
+  static_ip: true
+  network_type: DDNS
+  datacenter: Datacenter
+  folder: SC_Sushil
+node_groups:
+  - name: master-pool
+    count: 3
+    disk_size_gb: 60
+    control_plane_as_worker: false
+    control_plane: true
+    memory_mb: 8000
+    cpu: 2
+    placement:
+      - cluster: Cluster1
+        resource_pool: RP_Sushil
+        datastore: vsanDatastore
+        network: VM Network
+        static_ip_pool_id: 6327a2c8e52f191e29a8e194
+  - name: worker-pool
+    count: 2
+    disk_size_gb: 60
+    control_plane_as_worker: false
+    control_plane: false
+    memory_mb: 8000
+    cpu: 2
+    placement:
+        - cluster: Cluster1
+          resource_pool: RP_Sushil
+          datastore: vsanDatastore
+          network: VM Network
+          static_ip_pool_id: 6327a2c8e52f191e29a8e194
+
