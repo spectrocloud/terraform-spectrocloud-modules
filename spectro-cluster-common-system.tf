@@ -2,7 +2,7 @@ locals {
 
   cluster_system_profiles_map = {
     for v in var.clusters :
-    v.name => try(v.profiles.system, {})
+    v.name => concat(try([v.profiles.system], []), [])
   }
 
   // local.cluster_system_profiles_map should contain information provided by user in cluster.yaml file
@@ -49,19 +49,21 @@ locals {
   }
 
   system_pack_manifests = { for v in flatten([
-    for k, v in local.cluster_system_profiles_map : [
-      for p in try(v.packs, []) : {
-        name = format("%s$%s%%%s%%%s$%s", k, v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name)
-        value = {
-          #identifier = format("%s-%s-%s-%s", k, v.name, p.name, p.manifest_name)
-          name = p.manifest_name
-          content = lookup(local.system-pack-params-replaced, format("%s$%s%%%s%%%s$%s", k, v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name),
-            lookup(local.system-pack-template-params-replaced, format("%s$%s%%%s%%%s$%s", k, v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name), "")
-          )
-        }
-      } if try(p.is_manifest_pack, false)
-    ]
-    ]) : v.name => v.value
+  // We have add all addon, system and manifest pack to addon profile maps, hence using global variable local.cluster_addon_profiles_map
+  for k, v in local.cluster_addon_profiles_map : [
+  for e in v : [
+  for p in try(e.packs, []) : {
+    name = format("%s$%s%%%s%%%s$%s", k, e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name)
+    value = [{
+      #identifier = format("%s-%s%%%s%%%s-%s-%s", k, e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name, p.manifest_name)
+      name = p.manifest_name
+      content = lookup(local.addon_pack_params_replaced, format("%s$%s%%%s%%%s$%s", k, e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name),
+        lookup(local.system-pack-template-params-replaced, format("%s$%s%%%s%%%s$%s", k, e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name), "")
+      )
+    }]
+  } if try(p.is_manifest_pack, false)]
+  ]
+  ]) : v.name => v.value
   }
 
 }
