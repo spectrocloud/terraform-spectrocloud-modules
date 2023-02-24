@@ -55,7 +55,6 @@ locals {
   for p in try(e.packs, []) : {
     name = format("%s$%s%%%s%%%s$%s", k, e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name)
     value = [{
-      #identifier = format("%s-%s%%%s%%%s-%s-%s", k, e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name, p.manifest_name)
       name = p.manifest_name
       content = lookup(local.addon_pack_params_replaced, format("%s$%s%%%s%%%s$%s", k, e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name),
         lookup(local.system-pack-template-params-replaced, format("%s$%s%%%s%%%s$%s", k, e.name, try(e.version, "1.0.0"), try(e.context, "project"), p.name), "")
