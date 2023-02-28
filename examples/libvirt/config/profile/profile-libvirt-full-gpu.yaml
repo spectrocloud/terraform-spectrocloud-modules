@@ -199,7 +199,7 @@ packs:
               # The metadata pool spec. Must use replication.
               metadataPool:
                 replicated:
-                  size: 3
+                  size: '%META_REPLICATED_SIZE%'
                   requireSafeReplicaSize: true
                 parameters:
                   # Inline compression mode for the data pool

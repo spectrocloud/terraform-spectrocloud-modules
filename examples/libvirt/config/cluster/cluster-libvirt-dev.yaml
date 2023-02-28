@@ -4,10 +4,43 @@ wait: false
 profiles:
   infra:
     name: libvirt-gpu-full
+    version: 1.0.12
+    # Override infra profile
+    packs:
+        - name: csi-rook-ceph
+          registry: Public Repo
+          version: 1.9.2
+          override_type: params
+          params:
+            META_REPLICATED_SIZE: 2
   system:
     name: system-profile-simyam-libvirt
+    # Override system profile
+    packs:
+      - name: palette-upgrader
+        version: 3.2.9
+        is_manifest_pack: true
+        manifest_name: authenticator-secret
+        override_type: params
+        params:
+          NAME: "tictserrjf="
+      - name: gateway-disk
+        version: 1.0.0
+        is_manifest_pack: true
+        manifest_name: gateway-disk-config
+        override_type: params
+        params:
+          META_NAME: "libvirt-account-disk"
+          DYNAMIC_KEY: "libvert-sys-sam"
   addons:
     - name: addon-profile-simyam-libvirt
+      # Override addon profile
+      packs:
+        - name: nvidia-gpu-operator
+          version: 1.9.1
+          override_type: params
+          params:
+            NS: "gpu-operator"
 cloud_config:
   ssh_key: spectro2022
   vip: 192.168.100.15

@@ -2,7 +2,7 @@ locals {
 
   cluster_addon_profiles_map = {
   for v in var.clusters :
-  v.name => concat(try(tolist(v.profiles.system), []), concat(try(v.profiles.addons, []), try(v.profiles.addon_deployments, [])))
+  v.name => concat(try([v.profiles.system], []), concat(try(v.profiles.addons, []), try(v.profiles.addon_deployments, [])))
   }
 
   addon_pack_params_replaced = { for v in flatten([

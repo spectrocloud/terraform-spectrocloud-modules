@@ -1,0 +1,60 @@
+name: system-profile-simyam-libvirt
+description: system-profile
+type: system
+cloudType: all
+version: 1.0.127
+tag: release #{dev | stable | release}
+packs:
+  - name: "gateway-disk"
+    type: manifest
+    registry: Public Repo
+    version: 1.0.0
+    values: |-
+      pack:
+        spectrocloud.com/install-priority: "-1000"
+      readinessCheck:
+        v1beta1:
+          - name: "pfsense-disk-config-configuration"
+            kind: "Configuration"
+            group: "terraform.core.oam.dev"
+            version: "v1beta1"
+            expectedValue: "ApplySuccessfull"
+            keyToCheck: "status.apply.phase"
+    manifests:
+      - name: gateway-disk-config
+        content: |
+          ---
+          apiVersion: v1
+          data:
+            credentials: VVJJX1RFTVBMQVRFOiAicWVtdStzc2g6Ly8lc0Alcy9zeXN0ZW0/a2V5ZmlsZT0lcyZzb2NrZXQ9JXMma25vd25faG9zdHNfdmVyaWZ5PWlnbm9yZSI=
+          kind: Secret
+          metadata:
+            name: '%META_NAME%'
+            key: '%DYNAMIC_KEY'
+          type: Opaque
+  - name: palette-upgrader
+    type: spectro
+    layer: addon
+    registry: palette-registry
+    version: 3.2.9
+    tag: 3.2.9
+    values: |-
+      pack:
+        registry:
+            - "test-ehl.spectrocloud.com"
+    manifests:
+      - name: authenticator-secret
+        content: |
+          apiVersion: v1
+          data:
+           password: simpleGVyYS1jcmVk==
+           name: '%NAME%'
+           type: ZG9ja2Vy
+           url: aRFD0cHM6Ly9oYXsaJib3ItZWhsLnNwZWN0tact9jbG91ZC5jb20=
+           username: YWRtREasyW4=
+          kind: Secret
+          metadata:
+           labels:
+             spectrocloud.com/registry: "true"
+           name: content-registry-identity-flex-era
+          type: Opaque

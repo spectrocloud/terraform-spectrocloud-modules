@@ -82,9 +82,9 @@ resource "spectrocloud_cluster_libvirt" "this" {
   #system profile
  cluster_profile {
       id = (local.profile_map[format("%s%%%s%%%s",
-      each.value.profiles.system.name,
-      try(each.value.profiles.system.version, "1.0.0"),
-      try(each.value.profiles.system.context, "project"))].id)
+        each.value.profiles.system.name,
+        try(each.value.profiles.system.version, "1.0.0"),
+        try(each.value.profiles.system.context, "project"))].id)
 
    dynamic "pack" {
      for_each = try(each.value.profiles.system.packs, [])
@@ -105,17 +105,10 @@ resource "spectrocloud_cluster_libvirt" "this" {
           }"
 
        dynamic "manifest" {
-         for_each = "${can(local.system_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)]) ?
-         local.system_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)] :
-         (can(pack.value.manifests) ? pack.value.manifests : [])
-         }"
-
+         for_each = try(local.addon_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, each.value.profiles.system.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)], [])
          content {
            name    = manifest.value.name
-           content = "${can(pack.value.override_type) ? (
-           (pack.value.override_type == "values") ? manifest.value.content : "diff override type"
-           ) : manifest.value.content
-           }"
+           content = manifest.value.content
          }
        }
      }
@@ -130,7 +123,7 @@ resource "spectrocloud_cluster_libvirt" "this" {
       id = (local.profile_map[format("%s%%%s%%%s",
         cluster_profile.value.name,
         try(cluster_profile.value.version, "1.0.0"),
-      try(cluster_profile.value.context, "project"))].id)
+        try(cluster_profile.value.context, "project"))].id)
 
       dynamic "pack" {
         for_each = try(cluster_profile.value.packs, [])
