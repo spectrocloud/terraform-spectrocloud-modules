@@ -12,7 +12,7 @@ packs:
     version: "1.9.1"
     values: |
       pack:
-        namespace: "gpu-operator"
+        namespace: '%NS%'
         spectrocloud.com/install-priority: "0"
       charts:
         gpu-operator:
