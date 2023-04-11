@@ -75,3 +75,8 @@ variable "alerts" {
   type    = any
   default = {}
 }
+
+variable "override_values" {
+  type = bool
+  default = true
+}
