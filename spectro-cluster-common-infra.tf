@@ -45,7 +45,8 @@ Eg:
     for k, v in local.cluster_infra_profiles_map : [
       for p in try(v.packs, []) : {
         name = format("%s$%s%%%s%%%s$%s", k, v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name)
-        value = join("\n", [
+        # create a global variable to disable values override (var.override_values)
+        value = "${(try(var.override_values, true) ? join("\n", [
           for line in split("\n", try(p.is_manifest_pack, false) ?
             element([for x in local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name)].manifest : x.content if x.name == p.manifest_name], 0) :
           local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", v.name, try(v.version, "1.0.0"), try(v.context, "project"), p.name)].values) :
@@ -56,7 +57,8 @@ Eg:
               lookup(p.params, value)
             ]...
           )
-        ])
+         ]) :
+        "")}"
       } if p.override_type == "params"
     ]]) : v.name => v.value
   }
@@ -149,8 +151,33 @@ Eg:
     ]) : v.name => v.value
   }
 
+  cluster_profiles = values(data.spectrocloud_cluster_profile.this)
+
+  cluster_profile_packs = [
+    for profile in local.cluster_profiles : {
+      profile_name   = profile.name
+      profile_version = try(profile.version, "1.0.0")
+      profile_context = try(profile.context, "project")
+      packs = {
+        for pack in profile.pack : "${pack.name}%${pack.tag}" => pack
+      }
+    }
+  ]
+
 }
 
 output "debug_cluster_infra_profiles_map" {
   value = local.cluster_infra_profiles_map
+}
+
+output "debug_cluster_infra_profiles_pack_map" {
+  value = local.cluster-profile-pack-map
+}
+
+output "data-profiles" {
+  value = data.spectrocloud_cluster_profile.this
+}
+
+output "cluster_profile_packs" {
+  value = local.cluster_profile_packs
 }
