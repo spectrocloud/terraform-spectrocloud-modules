@@ -2,7 +2,7 @@ locals {
 
   cluster_system_profiles_map = {
     for v in var.clusters :
-    v.name => concat(try([v.profiles.system], []), [])
+    v.name => try(concat(try([v.profiles.system], []), [])[0], {})
   }
 
   // local.cluster_system_profiles_map should contain information provided by user in cluster.yaml file
@@ -67,10 +67,19 @@ locals {
 
 }
 
-output "debug_cluster_system_profiles_map" {
+output "cluster_system_profiles_map" {
   value = local.cluster_system_profiles_map
 }
 
-output "debug_system_pack_manifests" {
-  value = local.system_pack_manifests
+
+#output "debug_system_pack_manifests" {
+#  value = local.system_pack_manifests
+#}
+#
+output "system-pack-params-replaced"{
+  value = local.system-pack-params-replaced
+}
+
+output "cluster-profile-pack-map" {
+  value = local.cluster-profile-pack-map
 }
