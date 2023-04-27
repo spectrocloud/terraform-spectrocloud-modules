@@ -12,6 +12,7 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
     datacenter   = each.value.cloud_config.datacenter
     folder       = each.value.cloud_config.folder
     image_template_folder = can(each.value.cloud_config.image_template_folder) ? each.value.cloud_config.image_template_folder : null
+    network_search_domain = try(each.value.cloud_config.search_domain, "")
   }
 
   dynamic "cluster_rbac_binding" {

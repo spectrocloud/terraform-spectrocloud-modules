@@ -8,6 +8,8 @@ resource "spectrocloud_cluster_libvirt" "this" {
     ssh_key     = try(each.value.cloud_config.ssh_key, "")
     vip         = try(each.value.cloud_config.vip, "")
     ntp_servers = try(each.value.cloud_config.ntp_servers, [])
+    network_search_domain = try(each.value.cloud_config.search_domain, "")
+    network_type = try(each.value.cloud_config.network_type, "VIP")
   }
 
   dynamic "cluster_rbac_binding" {
