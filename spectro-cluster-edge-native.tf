@@ -1,11 +1,14 @@
-resource "spectrocloud_cluster_edge" "this" {
-  for_each      = { for x in local.edge_clusters : x.name => x }
+resource "spectrocloud_cluster_edge_native" "this" {
+  for_each      = { for x in local.edge_native_clusters : x.name => x }
   name          = each.value.name
   apply_setting = try(each.value.apply_setting, "")
   tags          = try(each.value.tags, [])
+  skip_completion = try(each.value.skip_completion, true)
 
   cloud_config {
     ssh_key = try(each.value.cloud_config.ssh_key, "")
+    vip = try(each.value.cloud_config.vip, "")
+    ntp_servers = try(each.value.cloud_config.ntp_servers, [])
   }
 
   dynamic "cluster_rbac_binding" {
@@ -78,42 +81,6 @@ resource "spectrocloud_cluster_edge" "this" {
     }
   }
 
-  #system profile
-  cluster_profile {
-    id = (local.profile_map[format("%s%%%s%%%s",
-    each.value.profiles.system.name,
-    try(each.value.profiles.system.version, "1.0.0"),
-    try(each.value.profiles.system.context, "project"))].id)
-
-    dynamic "pack" {
-      for_each = try(each.value.profiles.system.packs, [])
-      content {
-        name         = pack.value.name
-        tag          = try(pack.value.version, "")
-        registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
-        type         = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
-        values       = "${can(pack.value.override_type) ? (
-          (try(pack.value.is_manifest_pack, false)) ?
-          local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", each.value.profiles.system.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)].values :
-          (pack.value.override_type == "values") ?
-          pack.value.values :
-          (pack.value.override_type == "params" ?
-             local.system-pack-params-replaced[format("%s$%s%%%s%%%s$%s", each.value.name, each.value.profiles.system.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)] :
-          local.system-pack-template-params-replaced[format("%s$%s%%%s%%%s$%s", each.value.name, each.value.profiles.system.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)])) :
-          (pack.value.values)
-          }"
-
-        dynamic "manifest" {
-          for_each = try(local.system_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)], [])
-          content {
-            name    = manifest.value.name
-            content = manifest.value.content
-          }
-        }
-      }
-    }
-  }
-
   dynamic "cluster_profile" {
     for_each = try(each.value.profiles.addons, [])
 
@@ -157,10 +124,10 @@ resource "spectrocloud_cluster_edge" "this" {
       name                    = machine_pool.value.name
       control_plane           = try(machine_pool.value.control_plane, false)
       control_plane_as_worker = try(machine_pool.value.control_plane_as_worker, false)
-      count                   = machine_pool.value.count
       update_strategy         = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
 
       additional_labels = try(machine_pool.value.additional_labels, tomap({}))
+      host_uids = machine_pool.value.host_uids
 
       dynamic "taints" {
         for_each = try(machine_pool.value.taints, [])
@@ -171,15 +138,6 @@ resource "spectrocloud_cluster_edge" "this" {
           effect = taints.value.effect
         }
       }
-
-      dynamic "placements" {
-        for_each = machine_pool.value.placements
-
-        content {
-          appliance_id = placements.value.appliance
-        }
-      }
-
     }
   }
 
