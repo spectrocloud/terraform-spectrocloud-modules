@@ -6,6 +6,7 @@ resource "spectrocloud_cluster_libvirt" "this" {
 
   cloud_config {
     ssh_key     = try(each.value.cloud_config.ssh_key, "")
+    ssh_keys    = try(each.value.cloud_config.ssh_keys, [])
     vip         = try(each.value.cloud_config.vip, "")
     ntp_servers = try(each.value.cloud_config.ntp_servers, [])
     network_search_domain = try(each.value.cloud_config.search_domain, "")

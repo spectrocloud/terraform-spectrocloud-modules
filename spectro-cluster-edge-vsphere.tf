@@ -6,6 +6,7 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
 
   cloud_config {
     ssh_key      = each.value.cloud_config.ssh_key
+    ssh_keys    = try(each.value.cloud_config.ssh_keys, [])
     static_ip    = each.value.cloud_config.static_ip
     network_type = each.value.cloud_config.network_type
     vip          = each.value.cloud_config.vip
