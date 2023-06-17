@@ -86,9 +86,9 @@ resource "spectrocloud_cluster_edge_native" "this" {
 
     content {
       id = (local.profile_map[format("%s%%%s%%%s",
-      each.value.profiles.system.name,
-      try(each.value.profiles.system.version, "1.0.0"),
-      try(each.value.profiles.system.context, "project"))].id)
+        cluster_profile.value.name,
+        try(cluster_profile.value.version, "1.0.0"),
+        try(cluster_profile.value.context, "project"))].id)
 
       dynamic "pack" {
         for_each = try(cluster_profile.value.packs, [])
@@ -102,12 +102,12 @@ resource "spectrocloud_cluster_edge_native" "this" {
           (pack.value.override_type == "values") ?
           pack.value.values :
           (pack.value.override_type == "params" ?
-            local.addon_pack_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)] :
-          local.addon_pack_template_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)])
+             local.addon_pack_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, cluster_profile.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)] :
+          local.addon_pack_template_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, cluster_profile.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)])
           }"
 
           dynamic "manifest" {
-            for_each = try(local.addon_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)], [])
+            for_each = try(local.addon_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, cluster_profile.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)], [])
             content {
               name    = manifest.value.name
               content = manifest.value.content

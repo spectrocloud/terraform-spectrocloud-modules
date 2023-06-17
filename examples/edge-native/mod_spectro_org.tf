@@ -17,6 +17,7 @@ locals {
 
 module "SpectroOrg" {
   source = "../../"
+  //source = "git::https://github.com/spectrocloud/terraform-spectrocloud-modules.git?ref=edge-native-changes"
 
   accounts = {
     for k in fileset("config/account", "account-*.yaml") :
@@ -64,6 +65,7 @@ output "debug" {
 module "SpectroProject" {
   depends_on = [module.SpectroOrg]
   source = "../../"
+  //source = "git::https://github.com/spectrocloud/terraform-spectrocloud-modules.git?ref=edge-native-changes"
 
   clusters = {
     for k in fileset("config/cluster", "cluster-*.yaml") :
