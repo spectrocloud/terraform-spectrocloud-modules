@@ -124,12 +124,12 @@ profiles:
 #    - name: ehs-axone-profile
 #      version: 1.26.13
 cloud_config:
-  ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDmy3u4NozNioNNHbUrOK9RXqFj4L42hEvXkwcEDJzu/YuF1ydbf9LYexdpNRNOHfGRMjWFvgC24IkYGDpxkj2VHi3d6U/EmUviLa17UhKM6tl76fYyrToy/7JQJVJXhgP8uiag/gkIJkyNq6kGFEFqToKIHY19+gDeE+kijqoAMUGk7GxRplXK9fGvBNbYIdBJaygRSgYgPgIVWGgkc0x0rAnGC4UahYxmQZWgU5oTvzjCODtOne24xe7z0/rgnIvQrEWIh02RhGms1DUb2HLp01mKc8w/xCnK5gZ5IXH9Iv2GHCBp5toaxoAaqiVL7nRdeaSNGPmPRbDeCZOxVJUiBA6rIcCaJGlxScWl6Tqw240uAO+M776xQNc5o04HFT9ZBKNDuA0QoxjEpWB7kBCJ+hxAlaX1FbdKOqgzWq2XH5FclnATvDMjTooiK3gcC+iP1oRvGIcifYnOIf6WCqOb+pxnvzWuR6dvp0HHU9kP1Sb/5h/FyN384Oj7pRnvfLs= root@SGH922SNN1"
-  vip: 192.168.100.15
+  ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCr3hE9IS5UUDPqNOiEWVJvVDS0v57QKjb1o9ubvvATQNg2T3x+inckfzfgX3et1H9X1oSp0FqY1+Mmy5nfTtTyIj5Get1cntcC4QqdZV8Op1tmpI01hYMj4lLn55WNaXgDt+35tJ47kWRr5RqTGV05MPNWN3klaVsePsqa+MgCjnLfCBiOz1tpBOgxqPNqtQPXh+/T/Ul6ZDUW/rySr9iNR9uGd04tYzD7wdTdvmZSRgWEre//IipNzMnnZC7El5KJCQn8ksF+DYY9eT9NtNFEMALTZC6hn8BnMc14zqxoJP/GNHftmig8TJC500Uofdr4OKTCRr1JwHS79Cx9LyZdAp/1D8mL6bIMyGOTPVQ8xUpmEYj77m1kdiCHCk22YtLyfUWuQ0SC+2p1soDoNfJUpmxcKboOTZsLq1HDCFrqSyLUWS1PrYZ/MzhsPrsDewB1iHLbYDt87r2odJOpxMO1vNWMOYontODdr5JPKBpCcd/noNyOy/m4Spntytfb/J3kM1oz3dpPfN0xXmC19uR1xHklmbtg1j784IMu7umI2ZCpUwLADAodkbxmbacdkp5I+1NFgrFamvnTjjQAvRexV31m4m9GielKFQ4tCCId2yagMBWRFn5taEhb3SKnRxBcAzaJLopUyErOtqxvSywGvb53v4MEShqBaQSUv4gHfw== spectro2022"
+  vip: 10.184.225.107
   ntp_servers: ["ntp.ge.com"]
 node_groups:
   - name: master-pool
     control_plane: true
     control_plane_as_worker: true
     count: 1
-    host_uids: ["edge-tf-test-1"]
+    host_uids: ["node-103", "node-104", "node-105"]

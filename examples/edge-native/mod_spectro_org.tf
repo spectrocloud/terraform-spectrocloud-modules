@@ -16,8 +16,8 @@ locals {
 }
 
 module "SpectroOrg" {
-  source = "../../"
-  //source = "git::https://github.com/spectrocloud/terraform-spectrocloud-modules.git?ref=edge-native-changes"
+  //source = "../../"
+  source = "git::https://github.com/spectrocloud/terraform-spectrocloud-modules.git?ref=edge-native-changes"
 
   accounts = {
     for k in fileset("config/account", "account-*.yaml") :
@@ -29,43 +29,17 @@ module "SpectroOrg" {
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/appliance/${k}", local.appliances_params))
   }
 
-  /*bsls = {
-    for k in fileset("config/bsl", "bsl-*.yaml") :
-    trimsuffix(k, ".yaml") => yamldecode(templatefile("config/bsl/${k}", local.bsl_params))
-  }*/
-
   profiles = {
     for k in fileset("config/profile", "profile-*.yaml") :
     trimsuffix(k, ".yaml") => yamldecode(templatefile("config/profile/${k}", local.profile_params))
   }
-
-  /*projects = {
-    for k in fileset("config/project", "project-*.yaml") :
-    trimsuffix(k, ".yaml") => yamldecode(templatefile("config/project/${k}", local.projects_params))
-  }
-
-  teams = {
-    for k in fileset("config/project", "team-*.yaml") :
-    trimsuffix(k, ".yaml") => yamldecode(templatefile("config/project/${k}", {}))
-  }*/
-
-  /*registries = {
-    for k in fileset("config/registry", "registry-*.yaml") :
-    trimsuffix(k, ".yaml") => yamldecode(templatefile("config/registry/${k}", {}))
-  }*/
-
 }
 
-/*
-output "debug" {
-  value = module.SpectroProject.libvirt-cluster
-}
-*/
 
 module "SpectroProject" {
   depends_on = [module.SpectroOrg]
-  source = "../../"
-  //source = "git::https://github.com/spectrocloud/terraform-spectrocloud-modules.git?ref=edge-native-changes"
+#  source = "../../"
+  source = "git::https://github.com/spectrocloud/terraform-spectrocloud-modules.git?ref=edge-native-changes"
 
   clusters = {
     for k in fileset("config/cluster", "cluster-*.yaml") :
