@@ -31,105 +31,105 @@ profiles:
       version: 1.0.22
     - name: ehs-aca-crd-stable
       version: 1.0.33
-#    - name: ehs-logging-monitoring-aca-stable
-#      version: 1.0.30
-#    - name: ehs-security-system-gateway-stable
-#      version: 1.0.60
-#    - name: ehs-siteconfig-stable
-#      version: 1.0.111
-#      packs:
-#        - name: ehl-site-config-aca-chart
-#          version: 0.0.0-zd3a4f18
-#          override_type: params
-#          params:
-#            hw_pwd_enabled: true
-#            ilo_enabled: true
-#            dual_wan_enabled: true
-#          registry: helm-blr-ees
-#    - name: ehs-security-certificate-management-stable
-#      version: 1.0.55
-#    - name: ehs-security-device-management-stable
-#      version: 1.0.21
-#    - name: ehs-system-health-stable
-#      version: 1.0.69
-#      packs:
-#        - name: ehl-cpu-webcomponent
-#          version: 0.1.0-z596c17c
-#          override_type: params
-#          params:
-#            toggle_enabled: true
-#          registry: helm-blr-ees
-#        - name: ehl-ram-webcomponent
-#          version: 0.1.0-z8fec9e6
-#          override_type: params
-#          params:
-#            toggle_enabled: true
-#          registry: helm-blr-ees
-#    - name: ehs-security-idam-stable
-#      version: 1.0.106
-#    - name: ehs-admin-console-stable
-#      version: 1.0.89
-#      packs:
-#        - name: eis-admin-console-dynamic-portal
-#          version: 0.0.0-zf499b45
-#          override_type: params
-#          params:
-#            host_pwr_mgt_enabled: true
-#            healthlink_enabled: false
-#          registry: helm-blr-ees
-#    - name: ehs-security-api-gateway-stable
-#      version: 1.0.65
-#    - name: ehs-security-auditing-stable
-#      version: 1.0.30
-#    - name: ehs-imaging-device-manager-stable
-#      version: 1.0.27
-#    - name: ehs-aca-stable
-#      version: 1.0.31
-#      packs:
-#        - name: eis-ilo-aca-crd
-#          version: 0.0.1-z0406cbc
-#          override_type: params
-#          params:
-#            enabled: true
-#          registry: helm-blr-ees
-#    - name: ehs-security-malware-management-stable
-#      version: 1.0.41
-#    - name: ehs-security-logging-monitoring-services-stable
-#      version: 1.0.14
-#    - name: ehs-security-admission-controller-stable
-#      version: 1.0.33
-#    - name: ehs-hardware-monitoring-stable
-#      version: 1.0.11
-#    - name: ehs-network-monitoring-stable
-#      version: 1.0.6
-#    - name: ehs-k8-cert-renewal-stable
-#      version: 1.0.7
-#    - name: ehs-licensingservice-stable
-#      version: 1.0.34
-#    - name: ehs-priority-scheduler-stable
-#      version: 1.0.28
-#    - name: ehs-rabbitmq-service-stable
-#      version: 1.0.20
-#    - name: ehs-backup-service-stable
-#      version: 1.0.76
-#      packs:
-#        - name: ehl-minio
-#          version: 0.0.1-z0ef7f65
-#          override_type: params
-#          params:
-#            mode: standalone
-#          registry: helm-blr-ees
-#    - name: ehs-security-audit-viewer-stable
-#      version: 1.0.21
-#    - name: ehs-axone-profile
-#      version: 1.26.13
+    - name: ehs-logging-monitoring-aca-stable
+      version: 1.0.30
+    - name: ehs-security-system-gateway-stable
+      version: 1.0.60
+    - name: ehs-siteconfig-stable
+      version: 1.0.111
+      packs:
+        - name: ehl-site-config-aca-chart
+          version: 0.0.0-zd3a4f18
+          override_type: params
+          params:
+            hw_pwd_enabled: true
+            ilo_enabled: true
+            dual_wan_enabled: true
+          registry: helm-blr-ees
+    - name: ehs-security-certificate-management-stable
+      version: 1.0.55
+    - name: ehs-security-device-management-stable
+      version: 1.0.21
+    - name: ehs-system-health-stable
+      version: 1.0.69
+      packs:
+        - name: ehl-cpu-webcomponent
+          version: 0.1.0-z596c17c
+          override_type: params
+          params:
+            toggle_enabled: true
+          registry: helm-blr-ees
+        - name: ehl-ram-webcomponent
+          version: 0.1.0-z8fec9e6
+          override_type: params
+          params:
+            toggle_enabled: true
+          registry: helm-blr-ees
+    - name: ehs-security-idam-stable
+      version: 1.0.106
+    - name: ehs-admin-console-stable
+      version: 1.0.89
+      packs:
+        - name: eis-admin-console-dynamic-portal
+          version: 0.0.0-zf499b45
+          override_type: params
+          params:
+            host_pwr_mgt_enabled: true
+            healthlink_enabled: false
+          registry: helm-blr-ees
+    - name: ehs-security-api-gateway-stable
+      version: 1.0.65
+    - name: ehs-security-auditing-stable
+      version: 1.0.30
+    - name: ehs-imaging-device-manager-stable
+      version: 1.0.27
+    - name: ehs-aca-stable
+      version: 1.0.31
+      packs:
+        - name: eis-ilo-aca-crd
+          version: 0.0.1-z0406cbc
+          override_type: params
+          params:
+            enabled: true
+          registry: helm-blr-ees
+    - name: ehs-security-malware-management-stable
+      version: 1.0.41
+    - name: ehs-security-logging-monitoring-services-stable
+      version: 1.0.14
+    - name: ehs-security-admission-controller-stable
+      version: 1.0.33
+    - name: ehs-hardware-monitoring-stable
+      version: 1.0.11
+    - name: ehs-network-monitoring-stable
+      version: 1.0.6
+    - name: ehs-k8-cert-renewal-stable
+      version: 1.0.7
+    - name: ehs-licensingservice-stable
+      version: 1.0.34
+    - name: ehs-priority-scheduler-stable
+      version: 1.0.28
+    - name: ehs-rabbitmq-service-stable
+      version: 1.0.20
+    - name: ehs-backup-service-stable
+      version: 1.0.76
+      packs:
+        - name: ehl-minio
+          version: 0.0.1-z0ef7f65
+          override_type: params
+          params:
+            mode: standalone
+          registry: helm-blr-ees
+    - name: ehs-security-audit-viewer-stable
+      version: 1.0.21
+    - name: ehs-axone-profile
+      version: 1.26.13
 cloud_config:
-  ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDmy3u4NozNioNNHbUrOK9RXqFj4L42hEvXkwcEDJzu/YuF1ydbf9LYexdpNRNOHfGRMjWFvgC24IkYGDpxkj2VHi3d6U/EmUviLa17UhKM6tl76fYyrToy/7JQJVJXhgP8uiag/gkIJkyNq6kGFEFqToKIHY19+gDeE+kijqoAMUGk7GxRplXK9fGvBNbYIdBJaygRSgYgPgIVWGgkc0x0rAnGC4UahYxmQZWgU5oTvzjCODtOne24xe7z0/rgnIvQrEWIh02RhGms1DUb2HLp01mKc8w/xCnK5gZ5IXH9Iv2GHCBp5toaxoAaqiVL7nRdeaSNGPmPRbDeCZOxVJUiBA6rIcCaJGlxScWl6Tqw240uAO+M776xQNc5o04HFT9ZBKNDuA0QoxjEpWB7kBCJ+hxAlaX1FbdKOqgzWq2XH5FclnATvDMjTooiK3gcC+iP1oRvGIcifYnOIf6WCqOb+pxnvzWuR6dvp0HHU9kP1Sb/5h/FyN384Oj7pRnvfLs= root@SGH922SNN1"
-  vip: 192.168.100.15
+  ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCr3hE9IS5UUDPqNOiEWVJvVDS0v57QKjb1o9ubvvATQNg2T3x+inckfzfgX3et1H9X1oSp0FqY1+Mmy5nfTtTyIj5Get1cntcC4QqdZV8Op1tmpI01hYMj4lLn55WNaXgDt+35tJ47kWRr5RqTGV05MPNWN3klaVsePsqa+MgCjnLfCBiOz1tpBOgxqPNqtQPXh+/T/Ul6ZDUW/rySr9iNR9uGd04tYzD7wdTdvmZSRgWEre//IipNzMnnZC7El5KJCQn8ksF+DYY9eT9NtNFEMALTZC6hn8BnMc14zqxoJP/GNHftmig8TJC500Uofdr4OKTCRr1JwHS79Cx9LyZdAp/1D8mL6bIMyGOTPVQ8xUpmEYj77m1kdiCHCk22YtLyfUWuQ0SC+2p1soDoNfJUpmxcKboOTZsLq1HDCFrqSyLUWS1PrYZ/MzhsPrsDewB1iHLbYDt87r2odJOpxMO1vNWMOYontODdr5JPKBpCcd/noNyOy/m4Spntytfb/J3kM1oz3dpPfN0xXmC19uR1xHklmbtg1j784IMu7umI2ZCpUwLADAodkbxmbacdkp5I+1NFgrFamvnTjjQAvRexV31m4m9GielKFQ4tCCId2yagMBWRFn5taEhb3SKnRxBcAzaJLopUyErOtqxvSywGvb53v4MEShqBaQSUv4gHfw== spectro2022"
+  vip: 10.184.225.107
   ntp_servers: ["ntp.ge.com"]
 node_groups:
   - name: master-pool
     control_plane: true
     control_plane_as_worker: true
     count: 1
-    host_uids: ["edge-tf-test-1"]
+    host_uids: ["node-103", "node-104", "node-105"]
