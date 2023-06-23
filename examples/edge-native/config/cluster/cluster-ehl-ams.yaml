@@ -1,0 +1,135 @@
+name: hospital-2
+cloudType: edge-native
+skip_completion: true
+tags:
+  - "skip_completion"
+profiles:
+  infra:
+    name: opensuse-pxke-infra
+    context: tenant
+    version: 1.24.6-os-v15.4
+  addons:
+    - name: org1-bootstrap-stable
+      version: 1.0.110
+    - name: org1-security-services-bootstrap-stable
+      version: 1.0.5
+    - name: org1-aca-bootstrap-stable
+      version: 1.0.13
+    - name: org1-reloader-stable
+      version: 1.0.2
+    - name: org1-iris-stable
+      version: 1.0.9
+    - name: org1-logging-monitoring-services-stable
+      version: 1.0.83
+    - name: org1-storage-monitoring-stable
+      version: 1.0.4
+    - name: org1-metacontroller-stable
+      version: 1.0.8
+    - name: org1-common-postgres-stable
+      version: 1.0.21
+    - name: org1-security-postgres-stable
+      version: 1.0.22
+    - name: org1-aca-crd-stable
+      version: 1.0.33
+    - name: org1-logging-monitoring-aca-stable
+      version: 1.0.30
+    - name: org1-security-system-gateway-stable
+      version: 1.0.60
+    - name: org1-siteconfig-stable
+      version: 1.0.111
+      packs:
+        - name: org2-site-config-aca-chart
+          version: 0.0.0-zd3a4f18
+          override_type: params
+          params:
+            hw_pwd_enabled: true
+            ilo_enabled: true
+            dual_wan_enabled: true
+          registry: helm-blr-ees
+    - name: org1-security-certificate-management-stable
+      version: 1.0.55
+    - name: org1-security-device-management-stable
+      version: 1.0.21
+    - name: org1-system-health-stable
+      version: 1.0.69
+      packs:
+        - name: org2-cpu-webcomponent
+          version: 0.1.0-z596c17c
+          override_type: params
+          params:
+            toggle_enabled: true
+          registry: helm-blr-ees
+        - name: org2-ram-webcomponent
+          version: 0.1.0-z8fec9e6
+          override_type: params
+          params:
+            toggle_enabled: true
+          registry: helm-blr-ees
+    - name: org1-security-idam-stable
+      version: 1.0.106
+    - name: org1-admin-console-stable
+      version: 1.0.89
+      packs:
+        - name: eis-admin-console-dynamic-portal
+          version: 0.0.0-zf499b45
+          override_type: params
+          params:
+            host_pwr_mgt_enabled: true
+            healthlink_enabled: false
+          registry: helm-blr-ees
+    - name: org1-security-api-gateway-stable
+      version: 1.0.65
+    - name: org1-security-auditing-stable
+      version: 1.0.30
+    - name: org1-imaging-device-manager-stable
+      version: 1.0.27
+    - name: org1-aca-stable
+      version: 1.0.31
+      packs:
+        - name: eis-ilo-aca-crd
+          version: 0.0.1-z0406cbc
+          override_type: params
+          params:
+            enabled: true
+          registry: helm-blr-ees
+    - name: org1-security-malware-management-stable
+      version: 1.0.41
+    - name: org1-security-logging-monitoring-services-stable
+      version: 1.0.14
+    - name: org1-security-admission-controller-stable
+      version: 1.0.33
+    - name: org1-hardware-monitoring-stable
+      version: 1.0.11
+    - name: org1-network-monitoring-stable
+      version: 1.0.6
+    - name: org1-k8-cert-renewal-stable
+      version: 1.0.7
+    - name: org1-licensingservice-stable
+      version: 1.0.34
+    - name: org1-priority-scheduler-stable
+      version: 1.0.28
+    - name: org1-rabbitmq-service-stable
+      version: 1.0.20
+    - name: org1-backup-service-stable
+      version: 1.0.76
+      packs:
+        - name: org2-minio
+          version: 0.0.1-z0ef7f65
+          override_type: params
+          params:
+            mode: standalone
+          registry: helm-blr-ees
+    - name: org1-security-audit-viewer-stable
+      version: 1.0.21
+    - name: org1-axone-profile
+      version: 1.26.13
+cloud_config:
+  ssh_key: "ssh-rsa AAqd spectrocloud2022"
+  vip: 10.184.225.107
+  ntp_servers: ["pool.ntp.org"]
+node_groups:
+  - name: master-pool
+    control_plane: true
+    control_plane_as_worker: true
+    count: 1
+    host_uids: ["node-103", "node-104", "node-105"]
