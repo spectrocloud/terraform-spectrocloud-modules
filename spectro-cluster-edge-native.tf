@@ -138,6 +138,13 @@ resource "spectrocloud_cluster_edge_native" "this" {
           effect = taints.value.effect
         }
       }
+      dynamic "edge_host" {
+        for_each = try(machine_pool.value.edge_host, [])
+        content {
+          host_uid = try(edge_host.value.host_uid, "")
+          static_ip = edge_host.value.static_ip
+        }
+      }
     }
   }
 
