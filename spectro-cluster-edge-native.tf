@@ -127,7 +127,13 @@ resource "spectrocloud_cluster_edge_native" "this" {
       update_strategy         = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
 
       additional_labels = try(machine_pool.value.additional_labels, tomap({}))
-      host_uids = machine_pool.value.host_uids
+      /* extract host_uid from machine_pool.value.edge_hosts yaml struct below
+       edge_hosts:
+         - host_uid:
+           static_ip: */
+      host_uids = toset([for host in machine_pool.value.edge_hosts : host.host_uid])
+      // old plain list.
+      #host_uids = machine_pool.value.host_uids
 
       dynamic "taints" {
         for_each = try(machine_pool.value.taints, [])
