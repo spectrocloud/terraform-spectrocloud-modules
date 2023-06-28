@@ -132,7 +132,7 @@ resource "spectrocloud_cluster_edge_native" "this" {
          - host_uid:
            static_ip: */
       host_uids = [for host in machine_pool.value.edge_hosts : host.host_uid]
-      // old pain struct.
+      // old plain list.
       #host_uids = machine_pool.value.host_uids
 
       dynamic "taints" {
