@@ -131,7 +131,7 @@ resource "spectrocloud_cluster_edge_native" "this" {
        edge_hosts:
          - host_uid:
            static_ip: */
-      host_uids = [for host in machine_pool.value.edge_hosts : host.host_uid]
+      host_uids = toset([for host in machine_pool.value.edge_hosts : host.host_uid])
       // old plain list.
       #host_uids = machine_pool.value.host_uids
 
