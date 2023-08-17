@@ -188,6 +188,16 @@ resource "spectrocloud_cluster_libvirt" "this" {
           target_storage_pool = placements.value.target_storage_pool
           data_storage_pool   = placements.value.data_storage_pool
           network             = try(placements.value.network, "")
+
+          dynamic "gpu_device" {
+            for_each = try(placements.value.gpu_devices, [])
+            content {
+              device_model = try(gpu_device.value.device_model, "")
+              vendor       = try(gpu_device.value.vendor, "")
+              addresses    = try(gpu_device.value.addresses, tomap({}))
+            }
+          }
+
         }
       }
 
