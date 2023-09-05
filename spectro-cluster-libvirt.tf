@@ -3,6 +3,7 @@ resource "spectrocloud_cluster_libvirt" "this" {
   name          = each.value.name
   apply_setting = try(each.value.apply_setting, "")
   tags          = try(each.value.tags, [])
+  cluster_meta_attribute = try(each.value.cluster_meta_attribute, "")
 
   cloud_config {
     ssh_keys     = concat(try(try(each.value.cloud_config.ssh_key, "") == "" ? try(each.value.cloud_config.ssh_keys, []) : [each.value.cloud_config.ssh_key], []), try(each.value.cloud_config.ssh_keys, []))

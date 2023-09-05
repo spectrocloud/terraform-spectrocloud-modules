@@ -3,6 +3,7 @@ resource "spectrocloud_cluster_edge_native" "this" {
   name          = each.value.name
   apply_setting = try(each.value.apply_setting, "")
   tags          = try(each.value.tags, [])
+  cluster_meta_attribute = try(each.value.cluster_meta_attribute, "")
   skip_completion = try(each.value.skip_completion, true)
 
   cloud_config {
