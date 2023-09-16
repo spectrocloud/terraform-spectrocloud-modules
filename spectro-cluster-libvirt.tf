@@ -163,6 +163,7 @@ resource "spectrocloud_cluster_libvirt" "this" {
       control_plane           = try(machine_pool.value.control_plane, false)
       control_plane_as_worker = try(machine_pool.value.control_plane_as_worker, false)
       count                   = machine_pool.value.count
+      node_repave_interval    = try(machine_pool.value.node_repave_interval, 0)
       update_strategy         = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
       xsl_template            = try(machine_pool.value.xsl_template, null)
 
