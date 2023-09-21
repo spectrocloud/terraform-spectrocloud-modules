@@ -3,6 +3,7 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
   name          = each.value.name
   tags          = try(each.value.tags, [])
   edge_host_uid = each.value.edge_host_uid
+  cluster_meta_attribute = try(each.value.cluster_meta_attribute, "")
 
   cloud_config {
     ssh_keys     = concat(try(try(each.value.cloud_config.ssh_key, "") == "" ? try(each.value.cloud_config.ssh_keys, []) : [each.value.cloud_config.ssh_key], []), try(each.value.cloud_config.ssh_keys, []))

@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     spectrocloud = {
-      version = "~> 0.11.9"
+      version = "~> 0.11.10"
       source  = "spectrocloud/spectrocloud"
     }
   }
