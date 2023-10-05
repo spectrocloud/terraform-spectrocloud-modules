@@ -1,7 +1,8 @@
 resource "spectrocloud_cluster_libvirt" "this" {
   for_each      = { for x in local.libvirt_clusters : x.name => x }
   name          = each.value.name
-  apply_setting = try(each.value.apply_setting, "")
+  context = try(each.value.context, "project")
+  apply_setting = try(each.value.apply_setting, "DownloadAndInstall")
   tags          = try(each.value.tags, [])
   cluster_meta_attribute = try(each.value.cluster_meta_attribute, "")
 

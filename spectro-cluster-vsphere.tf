@@ -1,6 +1,7 @@
 resource "spectrocloud_cluster_vsphere" "this" {
   for_each      = { for x in local.vsphere_clusters : x.name => x }
   name          = each.value.name
+  context = try(each.value.context, "project")
   tags          = try(each.value.tags, [])
   cloud_account_id = data.spectrocloud_cloudaccount_vsphere.this[each.value.cloud_account].id
 

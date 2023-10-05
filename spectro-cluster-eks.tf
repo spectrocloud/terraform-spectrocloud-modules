@@ -2,7 +2,7 @@ resource "spectrocloud_cluster_eks" "this" {
   for_each      = { for x in local.eks_clusters : x.name => x }
   name          = each.value.name
   context = try(each.value.context, "project")
-  apply_setting = try(each.value.apply_setting, "")
+  apply_setting = try(each.value.apply_setting, "DownloadAndInstall")
   tags          = try(each.value.tags, [])
 
   cloud_config {
