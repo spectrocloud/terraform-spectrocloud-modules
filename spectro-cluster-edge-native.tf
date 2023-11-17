@@ -138,8 +138,8 @@ resource "spectrocloud_cluster_edge_native" "this" {
         for_each = try(machine_pool.value.edge_hosts, [])
 
         content {
-          host_uid  = edge_hosts.value.host_uid
-          static_ip = edge_hosts.value.static_ip
+          host_uid  = edge_host.value.host_uid
+          static_ip = edge_host.value.static_ip
         }
       }
       // old plain list.
