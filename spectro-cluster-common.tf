@@ -8,6 +8,9 @@ locals {
   eks_clusters     = [for key in local.eks_keys : lookup(local.cluster_map, key)]
   tke_keys         = compact([for i, cluster in local.cluster_map : cluster.cloudType == "tke" ? i : ""])
   tke_clusters     = [for key in local.tke_keys : lookup(local.cluster_map, key)]
+
+  maas_keys         = compact([for i, cluster in local.cluster_map : cluster.cloudType == "maas" ? i : ""])
+  maas_clusters     = [for key in local.maas_keys : lookup(local.cluster_map, key)]
   vsphere_keys     = compact([for i, cluster in local.cluster_map : cluster.cloudType == "vsphere" ? i : ""])
   vsphere_clusters = [for key in local.vsphere_keys : lookup(local.cluster_map, key)]
 
@@ -25,7 +28,7 @@ locals {
 
 data "spectrocloud_cluster" "clusters" {
   depends_on = [spectrocloud_cluster_tke.this, spectrocloud_cluster_edge_vsphere.this,
-    spectrocloud_cluster_eks.this, spectrocloud_cluster_libvirt.this]
+    spectrocloud_cluster_eks.this, spectrocloud_cluster_libvirt.this, spectrocloud_cluster_maas.this]
   for_each = local.cluster_map
 
   name = each.value.name

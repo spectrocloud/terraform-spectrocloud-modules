@@ -1,0 +1,35 @@
+name: maas-cl
+cloudType: maas
+context: "project"
+cloud_account: "maas-1"
+profiles:
+  infra:
+    name: DevMaas2
+    version: 1.0.0
+    context: project
+apply_setting: "DownloadAndInstall"
+tags: []
+cloud_config:
+  maas_domain: "maas.sc"
+cluster_profiles:
+  - id: "ProfileID"
+    packs:
+      - name: "PackName"
+        tag: "1.0.0"
+        registry_uid: "RegistryUID"
+        type: "spectro"
+        values: "Values"
+        manifests:
+          - name: "ManifestName"
+            content: "ManifestContent"
+node_groups:
+  - name: master-pool
+    count: 3
+    disk_size_gb: 60
+    control_plane_as_worker: true
+    control_plane: true
+    min_memory_mb: 8192
+    min_cpu: 4
+    azs: ["az2"]
+    placement:
+      - resource_pool: bm-generic
