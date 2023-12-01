@@ -7,6 +7,7 @@ resource "spectrocloud_application" "app_deployment"{
   application_profile_uid = try(local.app_profiles_name_map[each.value.application_name][0], "")
   config  {
     cluster_uid = try(local.clusters_name_map[each.value.config.cluster_name][0], "")
+    cluster_context = try(each.value.config.cluster_context, "project")
     cluster_name = try(each.value.config.cluster_name, "")
     cluster_group_uid = try(local.clusters_group_name_map[each.value.config.cluster_group_name][0])
     dynamic "limits" {

@@ -1,7 +1,8 @@
 resource "spectrocloud_cluster_tke" "this" {
   for_each      = { for x in local.tke_clusters : x.name => x }
   name          = each.value.name
-  apply_setting = try(each.value.apply_setting, "")
+  context = try(each.value.context, "project")
+  apply_setting = try(each.value.apply_setting, "DownloadAndInstall")
   tags          = try(each.value.tags, [])
 
   cloud_config {
