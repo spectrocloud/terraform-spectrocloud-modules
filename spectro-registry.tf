@@ -15,8 +15,10 @@ resource "spectrocloud_registry_oci" "oci_registry" {
   is_private = true
   credentials {
     credential_type = each.value.credential_type
-    arn             = each.value.arn
-    external_id     = each.value.external_id
+    arn             = try(each.value.arn, "")
+    external_id     = try(each.value.external_id, "")
+    access_key = try(each.value.access_key, "")
+    secret_key = try(each.value.secret_key, "")
   }
 }
 
