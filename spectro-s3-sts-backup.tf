@@ -21,7 +21,7 @@ resource "spectrocloud_backup_storage_location" "bsl" {
   region      = each.value.region
   bucket_name = each.value.bucket_name
   s3 {
-    credential_type = try(each.value.credential_type, "sts")
+    credential_type = each.value.credential_type
     arn             = try(each.value.arn, "")
     external_id     = try(each.value.external_id, "")
     access_key      = try(each.value.access_key, "")
