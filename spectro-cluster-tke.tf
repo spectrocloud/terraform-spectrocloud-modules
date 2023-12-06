@@ -127,8 +127,8 @@ resource "spectrocloud_cluster_tke" "this" {
     content {
       name          = machine_pool.value.name
       count         = machine_pool.value.count
-      min           = try(machine_pool.value.min, machine_pool.value.count)
-      max           = try(machine_pool.value.max, machine_pool.value.count)
+      min           = try(machine_pool.value.min, 0)
+      max           = try(machine_pool.value.max, 0)
       instance_type = machine_pool.value.instance_type
       az_subnets    = machine_pool.value.worker_subnets
       disk_size_gb  = machine_pool.value.disk_size_gb

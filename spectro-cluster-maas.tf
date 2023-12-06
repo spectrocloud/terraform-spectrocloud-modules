@@ -125,8 +125,8 @@ resource "spectrocloud_cluster_maas" "this" {
       control_plane           = try(machine_pool.value.control_plane, false)
       control_plane_as_worker = try(machine_pool.value.control_plane_as_worker, false)
       count                   = machine_pool.value.count
-      min           = try(machine_pool.value.min, machine_pool.value.count) # It is possible for the chosen max to be lesser than the min, or for the count to be out of bounds of min or max. Handle these conditions in the provider for this module or as input validation prior to using this module.
-      max           = try(machine_pool.value.max, machine_pool.value.count)
+      min                     = try(machine_pool.value.min, 0)
+      max                     = try(machine_pool.value.max, 0)
       node_repave_interval    = can(machine_pool.value.node_repave_interval) ? machine_pool.value.node_repave_interval : null
       update_strategy         = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
 
