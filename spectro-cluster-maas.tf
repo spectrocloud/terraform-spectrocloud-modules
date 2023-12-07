@@ -140,8 +140,8 @@ resource "spectrocloud_cluster_maas" "this" {
         min_memory_mb = machine_pool.value.min_memory_mb
         min_cpu       = machine_pool.value.min_cpu
       }
-      azs           = machine_pool.value.azs
-
+      azs           = try(machine_pool.value.azs, [])
+      node_tags = try(machine_pool.value.node_tags, [])
       additional_labels = try(machine_pool.value.additional_labels, tomap({}))
 
       dynamic "taints" {
