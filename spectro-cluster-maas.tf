@@ -131,7 +131,7 @@ resource "spectrocloud_cluster_maas" "this" {
       update_strategy         = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
 
       dynamic "placement" {
-        for_each = machine_pool.value.placement
+        for_each = try(machine_pool.value.placement, [])
         content {
           resource_pool = placement.value.resource_pool
         }
