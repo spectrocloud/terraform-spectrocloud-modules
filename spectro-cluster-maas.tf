@@ -4,6 +4,7 @@ resource "spectrocloud_cluster_maas" "this" {
   context = try(each.value.context, "project")
   apply_setting = try(each.value.apply_setting, "DownloadAndInstall")
   tags          = try(each.value.tags, [])
+  skip_completion = try(each.value.skip_completion, true)
 
   cloud_config {
     domain = each.value.cloud_config.maas_domain # "maas.sc"
@@ -143,6 +144,13 @@ resource "spectrocloud_cluster_maas" "this" {
       azs           = try(machine_pool.value.azs, [])
       node_tags = try(machine_pool.value.node_tags, [])
       additional_labels = try(machine_pool.value.additional_labels, tomap({}))
+      dynamic "node" {
+        for_each = try(machine_pool.value.node, [])
+        content {
+          node_id = node.value.node_id
+          action  = node.value.action
+        }
+      }
 
       dynamic "taints" {
         for_each = try(machine_pool.value.taints, [])

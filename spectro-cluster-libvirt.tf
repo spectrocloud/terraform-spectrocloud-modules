@@ -4,6 +4,7 @@ resource "spectrocloud_cluster_libvirt" "this" {
   context = try(each.value.context, "project")
   apply_setting = try(each.value.apply_setting, "DownloadAndInstall")
   tags          = try(each.value.tags, [])
+  skip_completion = try(each.value.skip_completion, true)
   cluster_meta_attribute = try(each.value.cluster_meta_attribute, "")
 
   cloud_config {
@@ -169,6 +170,13 @@ resource "spectrocloud_cluster_libvirt" "this" {
       xsl_template            = try(machine_pool.value.xsl_template, null)
 
       additional_labels = try(machine_pool.value.additional_labels, tomap({}))
+      dynamic "node" {
+        for_each = try(machine_pool.value.node, [])
+        content {
+          node_id = node.value.node_id
+          action  = node.value.action
+        }
+      }
 
       dynamic "taints" {
         for_each = try(machine_pool.value.taints, [])

@@ -4,6 +4,8 @@ resource "spectrocloud_cluster_eks" "this" {
   context = try(each.value.context, "project")
   apply_setting = try(each.value.apply_setting, "DownloadAndInstall")
   tags          = try(each.value.tags, [])
+  skip_completion = try(each.value.skip_completion, true)
+  description  = try(each.value.description, "")
 
   cloud_config {
     region              = each.value.cloud_config.aws_region
@@ -142,6 +144,13 @@ resource "spectrocloud_cluster_eks" "this" {
       azs           = []
 
       additional_labels = try(machine_pool.value.additional_labels, tomap({}))
+      dynamic "node" {
+          for_each = try(machine_pool.value.node, [])
+          content {
+            node_id = node.value.node_id
+            action  = node.value.action
+          }
+      }
 
       dynamic "taints" {
         for_each = try(machine_pool.value.taints, [])
