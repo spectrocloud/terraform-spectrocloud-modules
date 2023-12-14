@@ -4,6 +4,7 @@ resource "spectrocloud_cluster_tke" "this" {
   context = try(each.value.context, "project")
   apply_setting = try(each.value.apply_setting, "DownloadAndInstall")
   tags          = try(each.value.tags, [])
+  skip_completion = try(each.value.skip_completion, true)
 
   cloud_config {
     region              = each.value.cloud_config.tke_region
@@ -135,6 +136,13 @@ resource "spectrocloud_cluster_tke" "this" {
       azs           = []
 
       additional_labels = try(machine_pool.value.additional_labels, tomap({}))
+      dynamic "node" {
+        for_each = try(machine_pool.value.node, [])
+        content {
+          node_id = node.value.node_id
+          action  = node.value.action
+        }
+      }
 
       dynamic "taints" {
         for_each = try(machine_pool.value.taints, [])

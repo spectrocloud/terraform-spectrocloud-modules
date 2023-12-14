@@ -2,13 +2,14 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_spectrocloud"></a> [spectrocloud](#requirement\_spectrocloud) | ~> 0.11.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.4.4 |
+| <a name="requirement_spectrocloud"></a> [spectrocloud](#requirement\_spectrocloud) | ~> 0.17.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_spectrocloud"></a> [spectrocloud](#provider\_spectrocloud) | ~> 0.11.0 |
+| <a name="provider_spectrocloud"></a> [spectrocloud](#provider\_spectrocloud) | ~> 0.17.1 |
 
 ## Modules
 
@@ -25,12 +26,14 @@ No modules.
 | [spectrocloud_application_profile.app_profile](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/application_profile) | resource |
 | [spectrocloud_backup_storage_location.bsl](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/backup_storage_location) | resource |
 | [spectrocloud_cloudaccount_aws.account](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/cloudaccount_aws) | resource |
+| [spectrocloud_cloudaccount_maas.account](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/cloudaccount_maas) | resource |
 | [spectrocloud_cloudaccount_tencent.account](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/cloudaccount_tencent) | resource |
-| [spectrocloud_cluster_edge.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/cluster_edge) | resource |
+| [spectrocloud_cluster_edge_native.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/cluster_edge_native) | resource |
 | [spectrocloud_cluster_edge_vsphere.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/cluster_edge_vsphere) | resource |
 | [spectrocloud_cluster_eks.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/cluster_eks) | resource |
 | [spectrocloud_cluster_group.clustergroup](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/cluster_group) | resource |
 | [spectrocloud_cluster_libvirt.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/cluster_libvirt) | resource |
+| [spectrocloud_cluster_maas.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/cluster_maas) | resource |
 | [spectrocloud_cluster_profile.profile_resource](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/cluster_profile) | resource |
 | [spectrocloud_cluster_profile_import.import](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/cluster_profile_import) | resource |
 | [spectrocloud_cluster_tke.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/resources/cluster_tke) | resource |
@@ -45,6 +48,7 @@ No modules.
 | [spectrocloud_application_profile.app_profile](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/data-sources/application_profile) | data source |
 | [spectrocloud_backup_storage_location.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/data-sources/backup_storage_location) | data source |
 | [spectrocloud_cloudaccount_aws.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/data-sources/cloudaccount_aws) | data source |
+| [spectrocloud_cloudaccount_maas.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/data-sources/cloudaccount_maas) | data source |
 | [spectrocloud_cloudaccount_tencent.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/data-sources/cloudaccount_tencent) | data source |
 | [spectrocloud_cloudaccount_vsphere.this](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/data-sources/cloudaccount_vsphere) | data source |
 | [spectrocloud_cluster.cluster_gps](https://registry.terraform.io/providers/spectrocloud/spectrocloud/latest/docs/data-sources/cluster) | data source |
@@ -75,6 +79,7 @@ No modules.
 | <a name="input_cluster_profile_imports_context"></a> [cluster\_profile\_imports\_context](#input\_cluster\_profile\_imports\_context) | n/a | `string` | `"project"` | no |
 | <a name="input_clusters"></a> [clusters](#input\_clusters) | n/a | `map` | `{}` | no |
 | <a name="input_macros"></a> [macros](#input\_macros) | n/a | `map(any)` | `{}` | no |
+| <a name="input_override_values"></a> [override\_values](#input\_override\_values) | n/a | `bool` | `true` | no |
 | <a name="input_profiles"></a> [profiles](#input\_profiles) | n/a | `map` | `{}` | no |
 | <a name="input_projects"></a> [projects](#input\_projects) | n/a | `map(any)` | `{}` | no |
 | <a name="input_registries"></a> [registries](#input\_registries) | n/a | `map(any)` | `{}` | no |
@@ -85,11 +90,16 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_cluster-profile-pack-map"></a> [cluster-profile-pack-map](#output\_cluster-profile-pack-map) | n/a |
+| <a name="output_cluster_profile_packs"></a> [cluster\_profile\_packs](#output\_cluster\_profile\_packs) | n/a |
+| <a name="output_cluster_system_profiles_map"></a> [cluster\_system\_profiles\_map](#output\_cluster\_system\_profiles\_map) | n/a |
+| <a name="output_data-profiles"></a> [data-profiles](#output\_data-profiles) | n/a |
 | <a name="output_debug"></a> [debug](#output\_debug) | n/a |
 | <a name="output_debug_addon_pack_manifests"></a> [debug\_addon\_pack\_manifests](#output\_debug\_addon\_pack\_manifests) | n/a |
 | <a name="output_debug_aws_accounts"></a> [debug\_aws\_accounts](#output\_debug\_aws\_accounts) | n/a |
 | <a name="output_debug_cluster_infra_profiles_map"></a> [debug\_cluster\_infra\_profiles\_map](#output\_debug\_cluster\_infra\_profiles\_map) | n/a |
+| <a name="output_debug_cluster_infra_profiles_pack_map"></a> [debug\_cluster\_infra\_profiles\_pack\_map](#output\_debug\_cluster\_infra\_profiles\_pack\_map) | n/a |
 | <a name="output_debug_cluster_profile_pack_map"></a> [debug\_cluster\_profile\_pack\_map](#output\_debug\_cluster\_profile\_pack\_map) | not addon specific |
-| <a name="output_debug_cluster_system_profiles_map"></a> [debug\_cluster\_system\_profiles\_map](#output\_debug\_cluster\_system\_profiles\_map) | n/a |
 | <a name="output_debug_libvirt_system"></a> [debug\_libvirt\_system](#output\_debug\_libvirt\_system) | n/a |
-| <a name="output_debug_system_pack_manifests"></a> [debug\_system\_pack\_manifests](#output\_debug\_system\_pack\_manifests) | n/a |
+| <a name="output_debug_maas_accounts"></a> [debug\_maas\_accounts](#output\_debug\_maas\_accounts) | n/a |
+| <a name="output_system-pack-params-replaced"></a> [system-pack-params-replaced](#output\_system-pack-params-replaced) | output "debug\_system\_pack\_manifests" { value = local.system\_pack\_manifests } |
