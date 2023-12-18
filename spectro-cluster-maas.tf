@@ -5,6 +5,7 @@ resource "spectrocloud_cluster_maas" "this" {
   apply_setting = try(each.value.apply_setting, "DownloadAndInstall")
   tags          = try(each.value.tags, [])
   skip_completion = try(each.value.skip_completion, true)
+  description  = try(each.value.description, "")
 
   cloud_config {
     domain = each.value.cloud_config.maas_domain # "maas.sc"

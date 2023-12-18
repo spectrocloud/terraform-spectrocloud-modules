@@ -6,6 +6,7 @@ resource "spectrocloud_cluster_edge_native" "this" {
   tags          = try(each.value.tags, [])
   skip_completion = try(each.value.skip_completion, true)
   cluster_meta_attribute = try(each.value.cluster_meta_attribute, "")
+  description  = try(each.value.description, "")
 
   cloud_config {
     ssh_keys = try(each.value.cloud_config.ssh_keys, "")
