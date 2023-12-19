@@ -3,7 +3,7 @@ resource "spectrocloud_cluster_vsphere" "this" {
   name          = each.value.name
   context = try(each.value.context, "project")
   tags          = try(each.value.tags, [])
-  skip_completion = try(each.value.skip_completion, true)
+  skip_completion = try(each.value.skip_completion, false)
   cloud_account_id = data.spectrocloud_cloudaccount_vsphere.this[each.value.cloud_account].id
   description  = try(each.value.description, "")
 

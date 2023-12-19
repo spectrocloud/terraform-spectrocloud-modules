@@ -4,7 +4,7 @@ resource "spectrocloud_cluster_libvirt" "this" {
   context = try(each.value.context, "project")
   apply_setting = try(each.value.apply_setting, "DownloadAndInstall")
   tags          = try(each.value.tags, [])
-  skip_completion = try(each.value.skip_completion, true)
+  skip_completion = try(each.value.skip_completion, false)
   cluster_meta_attribute = try(each.value.cluster_meta_attribute, "")
   description  = try(each.value.description, "")
 

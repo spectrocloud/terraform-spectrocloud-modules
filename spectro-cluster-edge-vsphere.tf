@@ -3,7 +3,7 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
   name          = each.value.name
   context = try(each.value.context, "project")
   tags          = try(each.value.tags, [])
-  skip_completion = try(each.value.skip_completion, true)
+  skip_completion = try(each.value.skip_completion, false)
   edge_host_uid = each.value.edge_host_uid
   cluster_meta_attribute = try(each.value.cluster_meta_attribute, "")
   description  = try(each.value.description, "")
