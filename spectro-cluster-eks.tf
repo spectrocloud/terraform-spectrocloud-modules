@@ -13,8 +13,9 @@ resource "spectrocloud_cluster_eks" "this" {
     ssh_key_name        = try(each.value.cloud_config.ssh_key_name, null)
     az_subnets          = can(each.value.cloud_config.eks_subnets) ? each.value.cloud_config.eks_subnets : null
     azs                 = []
-    public_access_cidrs = []
     endpoint_access     = each.value.cloud_config.endpoint_access
+    public_access_cidrs = try(each.value.cloud_config.public_access_cidrs, [])
+    private_access_cidrs = try(each.value.cloud_config.private_access_cidrs, [])
     encryption_config_arn = can(each.value.cloud_config.encryption_config_arn) ? each.value.cloud_config.encryption_config_arn : null
   }
 
