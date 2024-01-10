@@ -28,7 +28,8 @@ locals {
 
 data "spectrocloud_cluster" "clusters" {
   depends_on = [spectrocloud_cluster_tke.this, spectrocloud_cluster_edge_vsphere.this,
-    spectrocloud_cluster_eks.this, spectrocloud_cluster_libvirt.this, spectrocloud_cluster_maas.this]
+    spectrocloud_cluster_eks.this, spectrocloud_cluster_libvirt.this, spectrocloud_cluster_maas.this,
+    spectrocloud_cluster_vsphere.this, spectrocloud_cluster_edge_native.this]
   for_each = local.cluster_map
 
   name = each.value.name
