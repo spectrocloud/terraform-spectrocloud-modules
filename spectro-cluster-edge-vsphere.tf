@@ -1,9 +1,12 @@
 resource "spectrocloud_cluster_edge_vsphere" "this" {
   for_each      = { for x in local.edge_vsphere_clusters : x.name => x }
   name          = each.value.name
+  context = try(each.value.context, "project")
   tags          = try(each.value.tags, [])
+  skip_completion = try(each.value.skip_completion, false)
   edge_host_uid = each.value.edge_host_uid
   cluster_meta_attribute = try(each.value.cluster_meta_attribute, "")
+  description  = try(each.value.description, "")
 
   cloud_config {
     ssh_keys     = concat(try(try(each.value.cloud_config.ssh_key, "") == "" ? try(each.value.cloud_config.ssh_keys, []) : [each.value.cloud_config.ssh_key], []), try(each.value.cloud_config.ssh_keys, []))
@@ -177,6 +180,13 @@ resource "spectrocloud_cluster_edge_vsphere" "this" {
       update_strategy         = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
 
       additional_labels = try(machine_pool.value.additional_labels, tomap({}))
+      dynamic "node" {
+        for_each = try(machine_pool.value.node, [])
+        content {
+          node_id = node.value.node_id
+          action  = node.value.action
+        }
+      }
 
       dynamic "taints" {
         for_each = try(machine_pool.value.taints, [])

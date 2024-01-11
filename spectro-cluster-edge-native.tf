@@ -1,13 +1,15 @@
 resource "spectrocloud_cluster_edge_native" "this" {
   for_each      = { for x in local.edge_native_clusters : x.name => x }
   name          = each.value.name
-  apply_setting = try(each.value.apply_setting, "")
+  context = try(each.value.context, "project")
+  apply_setting = try(each.value.apply_setting, "DownloadAndInstall")
   tags          = try(each.value.tags, [])
+  skip_completion = try(each.value.skip_completion, false)
   cluster_meta_attribute = try(each.value.cluster_meta_attribute, "")
-  skip_completion = try(each.value.skip_completion, true)
+  description  = try(each.value.description, "")
 
   cloud_config {
-    ssh_key = try(each.value.cloud_config.ssh_key, "")
+    ssh_keys = try(each.value.cloud_config.ssh_keys, "")
     vip = try(each.value.cloud_config.vip, "")
     ntp_servers = try(each.value.cloud_config.ntp_servers, [])
   }
@@ -128,11 +130,22 @@ resource "spectrocloud_cluster_edge_native" "this" {
       update_strategy         = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
 
       additional_labels = try(machine_pool.value.additional_labels, tomap({}))
-      /* extract host_uid from machine_pool.value.edge_hosts yaml struct below
-       edge_hosts:
-         - host_uid:
-           static_ip: */
-      host_uids = toset([for host in machine_pool.value.edge_hosts : host.host_uid])
+      dynamic "node" {
+        for_each = try(machine_pool.value.node, [])
+        content {
+          node_id = node.value.node_id
+          action  = node.value.action
+        }
+      }
+
+      dynamic "edge_host" {
+        for_each = try(machine_pool.value.edge_hosts, [])
+
+        content {
+          host_uid  = edge_host.value.host_uid
+          static_ip = edge_host.value.static_ip
+        }
+      }
       // old plain list.
       #host_uids = machine_pool.value.host_uids
 

@@ -2,8 +2,10 @@ resource "spectrocloud_cluster_eks" "this" {
   for_each      = { for x in local.eks_clusters : x.name => x }
   name          = each.value.name
   context = try(each.value.context, "project")
-  apply_setting = try(each.value.apply_setting, "")
+  apply_setting = try(each.value.apply_setting, "DownloadAndInstall")
   tags          = try(each.value.tags, [])
+  skip_completion = try(each.value.skip_completion, false)
+  description  = try(each.value.description, "")
 
   cloud_config {
     region              = each.value.cloud_config.aws_region
@@ -11,8 +13,9 @@ resource "spectrocloud_cluster_eks" "this" {
     ssh_key_name        = try(each.value.cloud_config.ssh_key_name, null)
     az_subnets          = can(each.value.cloud_config.eks_subnets) ? each.value.cloud_config.eks_subnets : null
     azs                 = []
-    public_access_cidrs = []
     endpoint_access     = each.value.cloud_config.endpoint_access
+    public_access_cidrs = try(each.value.cloud_config.public_access_cidrs, [])
+    private_access_cidrs = try(each.value.cloud_config.private_access_cidrs, [])
     encryption_config_arn = can(each.value.cloud_config.encryption_config_arn) ? each.value.cloud_config.encryption_config_arn : null
   }
 
@@ -132,8 +135,9 @@ resource "spectrocloud_cluster_eks" "this" {
       name          = machine_pool.value.name
       update_strategy = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
       count         = machine_pool.value.count
-      min           = try(machine_pool.value.min, machine_pool.value.count) # It is possible for the chosen max to be lesser than the min, or for the count to be out of bounds of min or max. Handle these conditions in the provider for this module or as input validation prior to using this module.
-      max           = try(machine_pool.value.max, machine_pool.value.count)
+      # The min and max settings for EKS will only be taken into account if the autoscaler pack is added to the cluster. By default, both min and max values are set to 0. To activate autoscaling, assign the desired sizes to both the minimum and maximum settings.
+      min           = try(machine_pool.value.min, 0)
+      max           = try(machine_pool.value.max, 0)
       capacity_type = try(machine_pool.value.capacity_type, "on-demand")
       instance_type = machine_pool.value.instance_type
       az_subnets    = can(machine_pool.value.worker_subnets) ? machine_pool.value.worker_subnets : null
@@ -141,6 +145,13 @@ resource "spectrocloud_cluster_eks" "this" {
       azs           = []
 
       additional_labels = try(machine_pool.value.additional_labels, tomap({}))
+      dynamic "node" {
+          for_each = try(machine_pool.value.node, [])
+          content {
+            node_id = node.value.node_id
+            action  = node.value.action
+          }
+      }
 
       dynamic "taints" {
         for_each = try(machine_pool.value.taints, [])
@@ -150,6 +161,14 @@ resource "spectrocloud_cluster_eks" "this" {
           value  = taints.value.value
           effect = taints.value.effect
         }
+      }
+
+      eks_launch_template {
+        ami_id = try(machine_pool.value.eks_launch_template.ami_id, null)
+        root_volume_type = try(machine_pool.value.eks_launch_template.root_volume_type, null)
+        root_volume_iops = try(machine_pool.value.eks_launch_template.root_volume_iops, null)
+        root_volume_throughput = try(machine_pool.value.eks_launch_template.root_volume_throughput, null)
+        additional_security_groups = try(machine_pool.value.eks_launch_template.additional_security_groups, null)
       }
     }
   }

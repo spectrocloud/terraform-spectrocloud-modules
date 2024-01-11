@@ -1,8 +1,11 @@
 resource "spectrocloud_cluster_vsphere" "this" {
   for_each      = { for x in local.vsphere_clusters : x.name => x }
   name          = each.value.name
+  context = try(each.value.context, "project")
   tags          = try(each.value.tags, [])
+  skip_completion = try(each.value.skip_completion, false)
   cloud_account_id = data.spectrocloud_cloudaccount_vsphere.this[each.value.cloud_account].id
+  description  = try(each.value.description, "")
 
   cloud_config {
     ssh_key      = each.value.cloud_config.ssh_key
@@ -130,6 +133,13 @@ resource "spectrocloud_cluster_vsphere" "this" {
       update_strategy         = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
 
       additional_labels = try(machine_pool.value.additional_labels, tomap({}))
+      dynamic "node" {
+        for_each = try(machine_pool.value.node, [])
+        content {
+          node_id = node.value.node_id
+          action  = node.value.action
+        }
+      }
 
       dynamic "taints" {
         for_each = try(machine_pool.value.taints, [])

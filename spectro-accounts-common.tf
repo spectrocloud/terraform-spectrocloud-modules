@@ -7,4 +7,6 @@ locals {
   tke_accounts     = [for key in local.account_tke_keys : lookup(local.account_map, key)]
   account_vsphere_keys = compact([for i, account in local.account_map : account.cloudType == "vsphere" ? i : ""])
   vsphere_accounts     = [for key in local.account_vsphere_keys : lookup(local.account_map, key)]
+  account_maas_keys = compact([for i, account in local.account_map : account.cloudType == "maas" ? i : ""])
+  maas_accounts     = [for key in local.account_maas_keys : lookup(local.account_map, key)]
 }

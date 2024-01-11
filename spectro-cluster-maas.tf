@@ -1,12 +1,17 @@
-resource "spectrocloud_cluster_edge" "this" {
-  for_each      = { for x in local.edge_clusters : x.name => x }
+resource "spectrocloud_cluster_maas" "this" {
+  for_each      = { for x in local.maas_clusters : x.name => x }
   name          = each.value.name
-  apply_setting = try(each.value.apply_setting, "")
+  context = try(each.value.context, "project")
+  apply_setting = try(each.value.apply_setting, "DownloadAndInstall")
   tags          = try(each.value.tags, [])
+  skip_completion = try(each.value.skip_completion, false)
+  description  = try(each.value.description, "")
 
   cloud_config {
-    ssh_key = try(each.value.cloud_config.ssh_key, "")
+    domain = each.value.cloud_config.maas_domain # "maas.sc"
   }
+
+  os_patch_schedule = can(each.value.os_patch_schedule) ? each.value.os_patch_schedule : null
 
   dynamic "cluster_rbac_binding" {
     for_each = try(each.value.cluster_rbac_binding, [])
@@ -43,7 +48,6 @@ resource "spectrocloud_cluster_edge" "this" {
     }
   }
 
-  #infra profile
   cluster_profile {
     id = (local.profile_map[format("%s%%%s%%%s",
     each.value.profiles.infra.name,
@@ -58,53 +62,16 @@ resource "spectrocloud_cluster_edge" "this" {
         registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
         type         = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
         values       = "${(try(pack.value.is_manifest_pack, false)) ?
-        local.cluster-profile-pack-map[format("%s%%%s%%%s$%s",each.value.profiles.infra.name, try(each.value.profiles.infra.version, "1.0.0"), try(each.value.profiles.infra.context, "project"), pack.value.name)].values :
+        local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", each.value.profiles.infra.name, try(each.value.profiles.infra.version, "1.0.0"), try(each.value.profiles.infra.context, "project"), pack.value.name)].values :
         (pack.value.override_type == "values") ?
         pack.value.values :
-
         (pack.value.override_type == "params" ?
           local.infra-pack-params-replaced[format("%s$%s%%%s%%%s$%s", each.value.name, each.value.profiles.infra.name, try(each.value.profiles.infra.version, "1.0.0"), try(each.value.profiles.infra.context, "project"), pack.value.name)] :
         local.infra-pack-template-params-replaced[format("%s$%s%%%s%%%s$%s", each.value.name, each.value.profiles.infra.name, try(each.value.profiles.infra.version, "1.0.0"), try(each.value.profiles.infra.context, "project"), pack.value.name)])
         }"
 
         dynamic "manifest" {
-          for_each = try([local.infra_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, each.value.profiles.infra.name, try(each.value.profiles.infra.version, "1.0.0"), try(each.value.profiles.infra.context, "project"), pack.value.name)]], [])
-          content {
-            name    = manifest.value.name
-            content = manifest.value.content
-          }
-        }
-      }
-    }
-  }
-
-  #system profile
-  cluster_profile {
-    id = (local.profile_map[format("%s%%%s%%%s",
-    each.value.profiles.system.name,
-    try(each.value.profiles.system.version, "1.0.0"),
-    try(each.value.profiles.system.context, "project"))].id)
-
-    dynamic "pack" {
-      for_each = try(each.value.profiles.system.packs, [])
-      content {
-        name         = pack.value.name
-        tag          = try(pack.value.version, "")
-        registry_uid = try(local.all_registry_map[pack.value.registry][0], "")
-        type         = (try(pack.value.is_manifest_pack, false)) ? "manifest" : "spectro"
-        values       = "${can(pack.value.override_type) ? (
-          (try(pack.value.is_manifest_pack, false)) ?
-          local.cluster-profile-pack-map[format("%s%%%s%%%s$%s", each.value.profiles.system.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)].values :
-          (pack.value.override_type == "values") ?
-          pack.value.values :
-          (pack.value.override_type == "params" ?
-             local.system-pack-params-replaced[format("%s$%s%%%s%%%s$%s", each.value.name, each.value.profiles.system.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)] :
-          local.system-pack-template-params-replaced[format("%s$%s%%%s%%%s$%s", each.value.name, each.value.profiles.system.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)])) :
-          (pack.value.values)
-          }"
-
-        dynamic "manifest" {
-          for_each = try(local.system_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, try(each.value.profiles.system.version, "1.0.0"), try(each.value.profiles.system.context, "project"), pack.value.name)], [])
+          for_each = try([local.infra_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, each.value.profiles.infra.name, try(each.value.profiles.infra.version, "1.0.0"), try(each.value.profile.infra.context, "project"), pack.value.name)]], [])
           content {
             name    = manifest.value.name
             content = manifest.value.content
@@ -119,9 +86,9 @@ resource "spectrocloud_cluster_edge" "this" {
 
     content {
       id = (local.profile_map[format("%s%%%s%%%s",
-      each.value.profiles.system.name,
-      try(each.value.profiles.system.version, "1.0.0"),
-      try(each.value.profiles.system.context, "project"))].id)
+      cluster_profile.value.name,
+      try(cluster_profile.value.version, "1.0.0"),
+      try(cluster_profile.value.context, "project"))].id)
 
       dynamic "pack" {
         for_each = try(cluster_profile.value.packs, [])
@@ -135,12 +102,12 @@ resource "spectrocloud_cluster_edge" "this" {
           (pack.value.override_type == "values") ?
           pack.value.values :
           (pack.value.override_type == "params" ?
-            local.addon_pack_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)] :
-          local.addon_pack_template_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)])
+            local.addon_pack_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, cluster_profile.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)] :
+          local.addon_pack_template_params_replaced[format("%s$%s%%%s%%%s$%s", each.value.name, cluster_profile.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)])
           }"
 
           dynamic "manifest" {
-            for_each = try(local.addon_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)], [])
+            for_each = try(local.addon_pack_manifests[format("%s$%s%%%s%%%s$%s", each.value.name, cluster_profile.value.name, try(cluster_profile.value.version, "1.0.0"), try(cluster_profile.value.context, "project"), pack.value.name)], [])
             content {
               name    = manifest.value.name
               content = manifest.value.content
@@ -151,6 +118,8 @@ resource "spectrocloud_cluster_edge" "this" {
     }
   }
 
+  cloud_account_id = lookup(local.maas_cloud_account_names, each.value.cloud_account, null)
+
   dynamic "machine_pool" {
     for_each = each.value.node_groups
     content {
@@ -158,11 +127,31 @@ resource "spectrocloud_cluster_edge" "this" {
       control_plane           = try(machine_pool.value.control_plane, false)
       control_plane_as_worker = try(machine_pool.value.control_plane_as_worker, false)
       count                   = machine_pool.value.count
+      min                     = try(machine_pool.value.min, 0)
+      max                     = try(machine_pool.value.max, 0)
       node_repave_interval    = can(machine_pool.value.node_repave_interval) ? machine_pool.value.node_repave_interval : null
+      update_strategy         = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
 
-update_strategy         = try(machine_pool.value.update_strategy, "RollingUpdateScaleOut")
-
+      dynamic "placement" {
+        for_each = try(machine_pool.value.placement, [])
+        content {
+          resource_pool = placement.value.resource_pool
+        }
+      }
+      instance_type {
+        min_memory_mb = machine_pool.value.min_memory_mb
+        min_cpu       = machine_pool.value.min_cpu
+      }
+      azs           = try(machine_pool.value.azs, [])
+      node_tags = try(machine_pool.value.node_tags, [])
       additional_labels = try(machine_pool.value.additional_labels, tomap({}))
+      dynamic "node" {
+        for_each = try(machine_pool.value.node, [])
+        content {
+          node_id = node.value.node_id
+          action  = node.value.action
+        }
+      }
 
       dynamic "taints" {
         for_each = try(machine_pool.value.taints, [])
@@ -173,15 +162,6 @@ update_strategy         = try(machine_pool.value.update_strategy, "RollingUpdate
           effect = taints.value.effect
         }
       }
-
-      dynamic "placements" {
-        for_each = machine_pool.value.placements
-
-        content {
-          appliance_id = placements.value.appliance
-        }
-      }
-
     }
   }
 

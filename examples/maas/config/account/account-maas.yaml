@@ -1,0 +1,6 @@
+name: "maas-account-tf"
+cloudType: maas
+maas_api_endpoint: "{Enter endpoint}"
+maas_api_key: "{Enter key}"
+private_cloud_gateway_id: "{Enter gateway id here}"
+
