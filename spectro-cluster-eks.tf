@@ -163,12 +163,15 @@ resource "spectrocloud_cluster_eks" "this" {
         }
       }
 
-      eks_launch_template {
-        ami_id = try(machine_pool.value.eks_launch_template.ami_id, null)
-        root_volume_type = try(machine_pool.value.eks_launch_template.root_volume_type, null)
-        root_volume_iops = try(machine_pool.value.eks_launch_template.root_volume_iops, null)
-        root_volume_throughput = try(machine_pool.value.eks_launch_template.root_volume_throughput, null)
-        additional_security_groups = try(machine_pool.value.eks_launch_template.additional_security_groups, null)
+      dynamic "eks_launch_template" {
+        for_each = try(machine_pool.value.eks_launch_template, null) != null ? [machine_pool.value.eks_launch_template] : []
+        content {
+          ami_id                    = try(eks_launch_template.value.ami_id, null)
+          root_volume_type          = try(eks_launch_template.value.root_volume_type, null)
+          root_volume_iops          = try(eks_launch_template.value.root_volume_iops, null)
+          root_volume_throughput    = try(eks_launch_template.value.root_volume_throughput, null)
+          additional_security_groups = try(eks_launch_template.value.additional_security_groups, null)
+        }
       }
     }
   }
