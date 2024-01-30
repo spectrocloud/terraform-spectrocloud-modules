@@ -1,0 +1,6 @@
+macros:
+  - name: macro1-simyam
+    value: val1-simyam
+  - name: macro2-simyam
+    value: val2-simyam
+project: Default

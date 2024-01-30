@@ -40,6 +40,11 @@ variable "macros" {
   type    = map(any)
   default = {}
 }
+// Added for new macros support
+variable "macros_list" {
+  type    = map(any)
+  default = {}
+}
 
 variable "application_profiles" {
   type    = any
