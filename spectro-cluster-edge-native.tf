@@ -12,6 +12,7 @@ resource "spectrocloud_cluster_edge_native" "this" {
     ssh_keys = try(each.value.cloud_config.ssh_keys, "")
     vip = try(each.value.cloud_config.vip, "")
     ntp_servers = try(each.value.cloud_config.ntp_servers, [])
+    overlay_cidr_range = try(each.value.cloud_config.overlay_cidr_range, "")
   }
 
   dynamic "cluster_rbac_binding" {
