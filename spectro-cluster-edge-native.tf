@@ -144,7 +144,7 @@ resource "spectrocloud_cluster_edge_native" "this" {
 
         content {
           host_uid  = edge_host.value.host_uid
-          static_ip = edge_host.value.static_ip
+          static_ip = try(edge_host.value.static_ip,"")
         }
       }
       // old plain list.
