@@ -2,6 +2,20 @@ name: profile_infra
 description: profile_infra
 type: cluster
 defaultRepoURL: "${REPO_URL}"
+profile_variables:
+  - name: head_version
+    display_name: Head Version
+  - name: cred_type
+    display_name: Credential Type
+  - name:  default_version
+    display_name: Version
+    format: version
+    description: description hard-version
+    default_value: v0.0.1
+    regex: "*.*"
+    required: true
+    immutable: false
+    hidden: false
 packs:
   - name: "amazon-linux-eks"
     registry: Public Repo

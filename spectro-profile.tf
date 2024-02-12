@@ -143,6 +143,26 @@ resource "spectrocloud_cluster_profile" "profile_resource" {
   type        = each.value.type
   tags        = try(each.value.tags, null)
 
+  dynamic "profile_variables" {
+    for_each = can(each.value.profile_variables) ? [1] : []
+    content {
+      dynamic "variable" {
+        for_each = try(each.value.profile_variables, [])
+        content {
+          name         = variable.value.name
+          display_name = variable.value.display_name
+          format = try(variable.value.format, "string")
+          description =  try(variable.value.description, "")
+          default_value =  try(variable.value.default_value, "")
+          regex =  try(variable.value.regex, "")
+          required =  try(variable.value.required, false)
+          immutable =  try(variable.value.immutable, false)
+          hidden =  try(variable.value.hidden, false)
+        }
+      }
+    }
+  }
+
   dynamic "pack" {
     for_each = each.value.packs
     content {
