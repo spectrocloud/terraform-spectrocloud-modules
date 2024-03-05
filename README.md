@@ -5,10 +5,10 @@ You can use modules to create lightweight abstractions, using yaml files transla
 
 ## Disclaimer
 
-This repository serves as a demonstration example for utilizing the SpectroCloud Terraform provider to create resources using YAML as a source. 
-Please note that SpectroCloud does not actively maintain or provide modules support for all active Spectrocloud terraform provider releases.
+This repository serves as a demonstration for utilizing the SpectroCloud Terraform Provider to create resources using YAML as a source. 
+SpectroCloud does not actively maintain or provide modules support for all active Spectrocloud Terraform Provider releases/features.
 
-Feel free to fork this repository and customize it to meet your specific requirements.
+This repository can be forked and customized to meet your specific requirements.
 
 # Module structure. ####
 Create yaml files such as: ```cluster.yaml```, ```profile.yaml```, ```main.tf``` and others describing the cloud resources and module configuration. [More examples could be found here](https://github.com/spectrocloud/terraform-spectrocloud-modules/tree/main/examples).
