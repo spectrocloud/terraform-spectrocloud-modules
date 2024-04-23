@@ -17,7 +17,7 @@ cloud_config:
   datacenter: "Spectrocloud"
   folder: "nikolay-ws/spc-nikwithcred-mar25"
 node_groups:
-  - name: master-pool
+  - name: cp-pool
     control_plane: true
     control_plane_as_worker: true
     count: 1

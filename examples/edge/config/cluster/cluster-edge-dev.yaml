@@ -41,7 +41,7 @@ namespaces:
       memory_MiB: "2048"
 
 node_groups:
-  - name: master-pool
+  - name: cp-pool
     control_plane: true
     control_plane_as_worker: true
     count: 1

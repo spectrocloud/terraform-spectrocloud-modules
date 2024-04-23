@@ -184,7 +184,7 @@ cloud_config:
   datacenter: Datacenter
   folder: SC_Sushil
 node_groups:
-  - name: master-pool
+  - name: cp-pool
     count: 3
     disk_size_gb: 60
     control_plane_as_worker: false
