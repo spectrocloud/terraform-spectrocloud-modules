@@ -87,7 +87,7 @@ locals {
     ]) : v.name => v.value...
   }
 
-  packs           = flatten([for v in var.profiles : [for vv in v.packs : vv if can(vv.version)]])
+  packs           = flatten([for v in var.profiles : [for vv in v.packs : vv if can(vv.version) && (vv.type != "manifest")]])
   pack_data_names = [for v in local.packs : v.name]
 
   pack_versions       = [for v in local.packs : v.version]
@@ -114,7 +114,7 @@ data "spectrocloud_pack" "data_packs" {
 
   name         = local.pack_data_names[count.index]
   version      = local.pack_versions[count.index]
-  type         = local.pack_types[count.index]
+  type         = local.pack_types[count.index] == "oci" ? "operator-instance" : local.pack_types[0]
   registry_uid = try(local.all_registry_map[local.pack_all_registries[count.index]][0], "")
 }
 
