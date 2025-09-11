@@ -76,3 +76,5 @@ c9ec10016b2d68319425c21b4143c95d56bb5f57:examples/gitops/project/profile/profile
 c66e95d682c9b2fee6c6b7c3796b530c9cd1d9b9:examples/edge-vsphere/config/profile/profile-system.yaml:generic-api-key:464
 a819ffabb001ee1b76358847b53421cda37ab843:examples/config/profile/profile1-export-system.yaml:generic-api-key:465
 6956a23557dd267fce14830de0b55b9edc6ab2d5:examples/libvirt/config/profile/profile-system.yaml:generic-api-key:523
+b687c16d8c38fb4a8a2c1c7f966173e52dc3763e:spectro/generated/core-global.yaml:generic-api-key:16196
+d73e3c924eb5780993cc33f155e54b5565460df1:config/manager/credentials.yaml:generic-api-key:8
